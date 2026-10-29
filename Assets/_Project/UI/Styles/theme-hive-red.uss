@@ -1,0 +1,14 @@
+/* Assets/_Project/UI/Styles/theme-hive-red.uss */
+.theme-hive {
+    --c-bg: rgb(26, 5, 8);
+    --c-surface: rgba(43, 10, 16, 0.88);
+    --c-accent: rgb(255, 59, 59);
+    --c-accent-dim: rgba(255, 59, 59, 0.3);
+    --c-text: rgb(255, 229, 229);
+    --c-muted: rgb(200, 130, 130);
+    --c-ok: rgb(255, 160, 160);
+    --c-warn: rgb(255, 120, 80);
+    --c-danger: rgb(255, 59, 59);
+    --c-fake: rgb(255, 120, 80);
+}
+.theme-hive.a11y-hc { --c-bg: rgb(0, 0, 0); --c-surface: rgb(0, 0, 0); --c-text: rgb(255, 255, 255); --c-muted: rgb(235, 200, 200); }

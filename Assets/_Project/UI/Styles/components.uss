@@ -1,0 +1,67 @@
+/* Assets/_Project/UI/Styles/components.uss */
+.hud-panel {
+    background-color: var(--c-surface);
+    border-color: var(--c-accent);
+    border-width: 1px;
+    border-radius: 6px;
+}
+.a11y-hc .hud-panel { border-width: 2px; }
+
+.hud-seal { color: var(--c-ok); }
+.hud-seal--hidden { display: none; }
+
+/* Retrato de Elena por emoción */
+.radio-portrait { background-color: var(--c-bg); border-width: 2px; border-radius: 999px; border-color: var(--c-accent); transition-property: scale, border-color; transition-duration: 300ms; }
+.radio-portrait.pulse-on { scale: 1.06 1.06; }
+.emotion-calm { border-color: var(--c-accent); }
+.emotion-happy { border-color: var(--c-ok); }
+.emotion-scared { border-color: var(--c-warn); }
+.emotion-urgent { border-color: var(--c-danger); }
+.emotion-sad { border-color: var(--c-muted); }
+.emotion-whisper { border-color: var(--c-muted); opacity: 0.8; }
+
+.radio-trust-track { height: 4px; background-color: var(--c-accent-dim); border-radius: 2px; }
+.radio-trust-fill { height: 100%; width: 0; background-color: var(--c-accent); border-radius: 2px; transition-property: width; transition-duration: 400ms; }
+
+/* Botones rápidos con foco visible (WCAG 2.4.7) */
+.btn-quick { -unity-text-align: middle-left; font-size: 13px; color: var(--c-text); background-color: var(--c-accent-dim); border-color: var(--c-accent); border-width: 1px; border-radius: 4px; padding: 6px 8px; margin: 0; }
+.btn-quick:hover { background-color: var(--c-accent); color: var(--c-bg); }
+.btn-quick:focus { border-width: 2px; border-color: var(--c-warn); }
+.btn-quick:disabled { opacity: 0.4; }
+
+/* Espectrograma y batería */
+.spectrogram-bar { width: 6px; margin-right: 2px; height: 4%; background-color: var(--c-accent); border-radius: 1px; }
+.spectrogram.noise-high .spectrogram-bar { background-color: var(--c-danger); }
+.battery-track { height: 8px; background-color: var(--c-accent-dim); border-radius: 4px; }
+.battery-fill { height: 100%; width: 100%; background-color: var(--c-accent); border-radius: 4px; }
+.battery-fill.low { background-color: var(--c-danger); }
+
+/* Mira */
+.crosshair { left: 50%; top: 50%; width: 6px; height: 6px; margin-left: -3px; margin-top: -3px; border-radius: 3px; background-color: var(--c-text); opacity: 0.7; }
+
+/* Notificaciones: estado base oculto, .hud-notification--visible las muestra */
+.hud-notification { width: 360px; margin-bottom: 8px; padding: 10px 12px; background-color: var(--c-surface); border-color: var(--c-accent); border-width: 1px; border-radius: 6px; opacity: 0; translate: 0 -12px; transition-property: opacity, translate; transition-duration: 250ms; }
+.hud-notification--visible { opacity: 1; translate: 0 0; }
+
+/* Mensaje FALSO (Mimicry): 4 anomalías sutiles, ninguna depende solo del color */
+.hud-notification--fake { border-color: var(--c-fake); letter-spacing: 3px; -unity-font-style: italic; rotate: -0.6deg; }
+.hud-notification--fake .hud-notification__sender { color: var(--c-fake); }
+/* Para la tipografía alterada, añadir cuando exista el archivo:
+   -unity-font: url('../Fonts/HudGlitch.ttf'); */
+
+.wave-bar { width: 4px; margin-right: 2px; background-color: var(--c-accent); border-radius: 1px; }
+.hud-notification--fake .wave-bar { background-color: var(--c-fake); }
+
+/* Subtítulos centrados */
+.subtitles { left: 20%; right: 20%; padding: 6px 12px; background-color: var(--c-surface); border-radius: 4px; }
+
+/* Plot twist */
+.glitch-overlay { background-color: rgba(255, 59, 59, 0); transition-property: background-color; transition-duration: 60ms; }
+.glitch-overlay.hud-glitch-critical { background-color: rgba(255, 59, 59, 0.28); }
+
+.hud-shattered-a { translate: -60px -40px; rotate: -9deg; opacity: 0; transition-property: translate, rotate, opacity; transition-duration: 700ms; }
+.hud-shattered-b { translate: 70px 30px; rotate: 11deg; opacity: 0; transition-property: translate, rotate, opacity; transition-duration: 700ms; }
+.hud-shattered-c { translate: 0 90px; rotate: 4deg; opacity: 0; transition-property: translate, rotate, opacity; transition-duration: 700ms; }
+
+.root-debug { background-color: rgba(10, 0, 2, 0.92); }
+.hud-infected-mode .hud-panel { border-color: var(--c-danger); }

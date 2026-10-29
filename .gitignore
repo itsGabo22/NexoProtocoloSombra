@@ -1,0 +1,55 @@
+# Unity generados
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]serSettings/
+MemoryCaptures/
+Recordings/
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Crash y paquetes de build
+sysinfo.txt
+*.apk
+*.aab
+*.unitypackage
+*.app
+crashlytics-build.properties
+
+# Packs de terceros (Drive)
+/Assets/_ThirdPartyAssets/
+/Assets/_ThirdPartyAssets.meta
+
+# Secretos
+/Assets/_Project/Data/Secrets/
+/Assets/_Project/Data/Secrets.meta
+*.env
+secrets.json
+
+# Antigravity: solo se versiona rules.md
+.antigravity/*
+!.antigravity/rules.md
+
+# SO
+.DS_Store
+Thumbs.db

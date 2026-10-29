@@ -1,0 +1,18 @@
+/* Assets/_Project/UI/Styles/theme-nexo-blue.uss */
+.theme-nexo {
+    --c-bg: rgb(11, 18, 32);
+    --c-surface: rgba(17, 27, 46, 0.85);
+    --c-accent: rgb(34, 211, 238);
+    --c-accent-dim: rgba(34, 211, 238, 0.25);
+    --c-text: rgb(230, 241, 255);
+    --c-muted: rgb(124, 147, 176);
+    --c-ok: rgb(52, 211, 153);
+    --c-warn: rgb(251, 191, 36);
+    --c-danger: rgb(248, 113, 113);
+    --c-fake: rgb(251, 146, 60);
+}
+/* Alto contraste: selector compuesto = mayor especificidad, gana sin importar el orden */
+.theme-nexo.a11y-hc { --c-bg: rgb(0, 0, 0); --c-surface: rgb(0, 0, 0); --c-text: rgb(255, 255, 255); --c-muted: rgb(225, 225, 225); }
+/* Daltonismo (paleta Okabe-Ito) */
+.theme-nexo.cb-deutan, .theme-nexo.cb-protan { --c-ok: rgb(86, 180, 233); --c-danger: rgb(230, 159, 0); --c-fake: rgb(204, 121, 167); }
+.theme-nexo.cb-tritan { --c-ok: rgb(0, 158, 115); --c-danger: rgb(213, 94, 0); --c-fake: rgb(240, 228, 66); }

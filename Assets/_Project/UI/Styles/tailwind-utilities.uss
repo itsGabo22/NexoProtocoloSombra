@@ -1,0 +1,116 @@
+/* Assets/_Project/UI/Styles/tailwind-utilities.uss */
+
+/* ---------- Display y flex ---------- */
+.hidden { display: none; }
+.flex { display: flex; }
+.flex-row { flex-direction: row; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex-grow: 1; flex-shrink: 1; flex-basis: 0; }
+.grow { flex-grow: 1; }
+.shrink-0 { flex-shrink: 0; }
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.items-stretch { align-items: stretch; }
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.justify-between { justify-content: space-between; }
+.self-center { align-self: center; }
+.self-end { align-self: flex-end; }
+
+/* ---------- Posición ---------- */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.inset-0 { left: 0; right: 0; top: 0; bottom: 0; }
+.top-0 { top: 0; } .bottom-0 { bottom: 0; } .left-0 { left: 0; } .right-0 { right: 0; }
+.top-4 { top: 16px; } .bottom-4 { bottom: 16px; } .left-4 { left: 16px; } .right-4 { right: 16px; }
+.overflow-hidden { overflow: hidden; }
+
+/* ---------- Tamaño ---------- */
+.w-full { width: 100%; } .h-full { height: 100%; }
+.w-25p { width: 25%; } .w-50p { width: 50%; } .w-75p { width: 75%; }
+.w-8 { width: 32px; } .w-16 { width: 64px; } .w-24 { width: 96px; } .w-32 { width: 128px; } .w-64 { width: 256px; } .w-80 { width: 320px; }
+.h-2 { height: 8px; } .h-4 { height: 16px; } .h-8 { height: 32px; } .h-16 { height: 64px; } .h-24 { height: 96px; }
+.min-w-0 { min-width: 0; }
+
+/* ---------- Padding ---------- */
+.p-0 { padding: 0; } .p-1 { padding: 4px; } .p-2 { padding: 8px; } .p-3 { padding: 12px; } .p-4 { padding: 16px; } .p-6 { padding: 24px; } .p-8 { padding: 32px; }
+.px-1 { padding-left: 4px; padding-right: 4px; } .px-2 { padding-left: 8px; padding-right: 8px; } .px-3 { padding-left: 12px; padding-right: 12px; } .px-4 { padding-left: 16px; padding-right: 16px; } .px-6 { padding-left: 24px; padding-right: 24px; }
+.py-1 { padding-top: 4px; padding-bottom: 4px; } .py-2 { padding-top: 8px; padding-bottom: 8px; } .py-3 { padding-top: 12px; padding-bottom: 12px; } .py-4 { padding-top: 16px; padding-bottom: 16px; } .py-6 { padding-top: 24px; padding-bottom: 24px; }
+
+/* ---------- Margin ---------- */
+.m-0 { margin: 0; } .m-1 { margin: 4px; } .m-2 { margin: 8px; } .m-4 { margin: 16px; }
+.mt-1 { margin-top: 4px; } .mt-2 { margin-top: 8px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
+.mb-1 { margin-bottom: 4px; } .mb-2 { margin-bottom: 8px; } .mb-4 { margin-bottom: 16px; } .mb-6 { margin-bottom: 24px; }
+.ml-1 { margin-left: 4px; } .ml-2 { margin-left: 8px; } .ml-4 { margin-left: 16px; }
+.mr-1 { margin-right: 4px; } .mr-2 { margin-right: 8px; } .mr-4 { margin-right: 16px; }
+
+/* ---------- Gap emulado (margen en hijos) ---------- */
+.gap-x-1 > * { margin-right: 4px; } .gap-x-2 > * { margin-right: 8px; } .gap-x-4 > * { margin-right: 16px; }
+.gap-y-1 > * { margin-bottom: 4px; } .gap-y-2 > * { margin-bottom: 8px; } .gap-y-4 > * { margin-bottom: 16px; }
+
+/* ---------- Color (semántico: cambia con el tema) ---------- */
+.bg-base { background-color: var(--c-bg); }
+.bg-surface { background-color: var(--c-surface); }
+.bg-accent { background-color: var(--c-accent); }
+.bg-accent-dim { background-color: var(--c-accent-dim); }
+.bg-ok { background-color: var(--c-ok); }
+.bg-warn { background-color: var(--c-warn); }
+.bg-danger { background-color: var(--c-danger); }
+.bg-fake { background-color: var(--c-fake); }
+.bg-transparent { background-color: rgba(0, 0, 0, 0); }
+.text-accent { color: var(--c-accent); }
+.text-main { color: var(--c-text); }
+.text-muted { color: var(--c-muted); }
+.text-ok { color: var(--c-ok); }
+.text-warn { color: var(--c-warn); }
+.text-danger { color: var(--c-danger); }
+.text-fake { color: var(--c-fake); }
+.border-accent { border-color: var(--c-accent); }
+.border-muted { border-color: var(--c-muted); }
+.border-danger { border-color: var(--c-danger); }
+.border-fake { border-color: var(--c-fake); }
+
+/* ---------- Color (paleta fija, no cambia con el tema) ---------- */
+.bg-slate-900 { background-color: rgb(15, 23, 42); }
+.bg-slate-800 { background-color: rgb(30, 41, 59); }
+.text-cyan-400 { color: rgb(34, 211, 238); }
+.text-red-400 { color: rgb(248, 113, 113); }
+.text-amber-400 { color: rgb(251, 191, 36); }
+.text-emerald-400 { color: rgb(52, 211, 153); }
+.text-orange-400 { color: rgb(251, 146, 60); }
+
+/* ---------- Tipografía ---------- */
+.text-xs { font-size: 11px; } .text-sm { font-size: 13px; } .text-base { font-size: 15px; } .text-lg { font-size: 18px; }
+.text-xl { font-size: 24px; } .text-2xl { font-size: 32px; } .text-3xl { font-size: 44px; }
+.font-bold { -unity-font-style: bold; }
+.font-italic { -unity-font-style: italic; }
+.text-left { -unity-text-align: middle-left; }
+.text-center { -unity-text-align: middle-center; }
+.text-right { -unity-text-align: middle-right; }
+.tracking-wide { letter-spacing: 2px; }
+.tracking-wider { letter-spacing: 4px; }
+.wrap { white-space: normal; }
+.nowrap { white-space: nowrap; }
+
+/* ---------- Bordes ---------- */
+.border { border-width: 1px; } .border-2 { border-width: 2px; } .border-0 { border-width: 0; }
+.rounded-sm { border-radius: 2px; } .rounded-md { border-radius: 6px; } .rounded-lg { border-radius: 12px; } .rounded-full { border-radius: 999px; }
+
+/* ---------- Opacidad y transformaciones ---------- */
+.opacity-0 { opacity: 0; } .opacity-25 { opacity: 0.25; } .opacity-50 { opacity: 0.5; } .opacity-75 { opacity: 0.75; } .opacity-100 { opacity: 1; }
+.pointer-none { picking-mode: ignore; }
+.scale-95 { scale: 0.95 0.95; } .scale-100 { scale: 1 1; } .scale-110 { scale: 1.1 1.1; }
+
+/* ---------- Transiciones ---------- */
+.transition { transition-property: opacity, translate, scale, rotate, background-color, color, width; transition-duration: 200ms; transition-timing-function: ease-out; }
+.duration-100 { transition-duration: 100ms; } .duration-300 { transition-duration: 300ms; } .duration-500 { transition-duration: 500ms; } .duration-1000 { transition-duration: 1000ms; }
+
+/* ---------- Escala de interfaz (accesibilidad) ---------- */
+.ui-scale-lg .text-xs { font-size: 13px; } .ui-scale-lg .text-sm { font-size: 15px; } .ui-scale-lg .text-base { font-size: 18px; } .ui-scale-lg .text-lg { font-size: 21px; }
+.ui-scale-xl .text-xs { font-size: 15px; } .ui-scale-xl .text-sm { font-size: 18px; } .ui-scale-xl .text-base { font-size: 21px; } .ui-scale-xl .text-lg { font-size: 25px; }
+
+/* ---------- Reducir movimiento ---------- */
+.reduce-motion * { transition-duration: 0s; }
