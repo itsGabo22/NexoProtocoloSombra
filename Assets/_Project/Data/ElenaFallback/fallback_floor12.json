@@ -4,7 +4,7 @@
       "floor": 12,
       "key": "SAFE_PATH",
       "response": {
-        "dialogue": "Por el pasillo de la izquierda no hay nadie, lo veo por la cámara. Ve agachado, ¿sí?",
+        "dialogue": "Por el pasillo de la izquierda no hay nadie, lo veo por la camara. Ve agachado, ¿si?",
         "emotion": "WHISPER",
         "ui_action": "HIGHLIGHT_SAFE_ROUTE",
         "ui_parameter": "",
@@ -15,7 +15,7 @@
       "floor": 12,
       "key": "OPEN_DOOR",
       "response": {
-        "dialogue": "Ya, ya, ya... ¡listo! Te abrí la puerta de las escaleras. Corre, Alex.",
+        "dialogue": "Ya, ya, ya... ¡listo! Te abri la puerta de las escaleras. Corre, Alex.",
         "emotion": "URGENT",
         "ui_action": "UNLOCK_DOOR",
         "ui_parameter": "F12_Door_Stairs",
@@ -26,7 +26,7 @@
       "floor": 12,
       "key": "FEAR",
       "response": {
-        "dialogue": "Tengo el llavero de mi mamá. Dice que nos va a cuidar. Tú sigue caminando, Alex.",
+        "dialogue": "Tengo el llavero de mi mama. Dice que nos va a cuidar. Tu sigue caminando, Alex.",
         "emotion": "SAD",
         "ui_action": "NONE",
         "ui_parameter": "",
@@ -37,7 +37,7 @@
       "floor": 12,
       "key": "GENERIC",
       "response": {
-        "dialogue": "Estoy aquí, Alex. No me dejes sola, por favor.",
+        "dialogue": "Estoy aqui, Alex. No me dejes sola, por favor.",
         "emotion": "SCARED",
         "ui_action": "NONE",
         "ui_parameter": "",
