@@ -7,8 +7,10 @@ Este registro documenta todo asset externo necesario para abrir y compilar el pr
 ## Registro
 
 | Pack / archivo | Uso | Fuente | Licencia | Versión de Drive | Responsable | Estado |
-| --- | --- | --- | --- | --- | --- | --- |
-| Sin assets registrados todavía | — | — | — | — | Carlos | Pendiente |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `Pack_Nokobot_Guns` | Modelo y prefab M1911 Handgun (piso 12) | Unity Asset Store (Nokobot Modern Guns) | Standard Unity Asset Store EULA | v1.0 (Oct 30) | Carlos | Sincronizado en `_ThirdPartyAssets/` |
+| `Pack_OfficeBuilding` | Módulos, muros, puertas y props de oficina (piso 12) | Unity Asset Store (Modular Office Building) | Standard Unity Asset Store EULA | v1.0 (Oct 30) | Carlos | Sincronizado en `_ThirdPartyAssets/` |
+| `Pack_UnityLearnTemplate` | Skyboxes, audio base y VFX del prototipo | Unity Technologies | Unity Companion License | v1.0 (Oct 30) | Carlos | Sincronizado en `_ThirdPartyAssets/` |
 
 ## Protocolo obligatorio para packs
 
@@ -22,6 +24,10 @@ Este registro documenta todo asset externo necesario para abrir y compilar el pr
 ## Assets propios curados
 
 Solo los modelos, texturas y audio propios que terminan en el build se versionan con Git LFS, dentro de `Assets/_Project/`. Objetivo total orientativo: menos de 500 MB.
+- `Assets/_Project/Models/Characters/Ch33_nonPBR1.fbx` (Personaje Alex / Mixamo)
+- `Assets/_Project/Animations/Clips/Ch33_nonPBR@Pistol Walk Backward.fbx` (Animación de retroceso)
+- `Assets/_Project/Animations/Controllers/AC_Alex.controller` (Animator Controller)
+- `Assets/_Project/Scenes/Floors/Floor12_Offices.unity` (Escena Piso 12 de Carlos)
 
 ## Fuentes y licencias pendientes
 
@@ -29,4 +35,4 @@ Solo los modelos, texturas y audio propios que terminan en el build se versionan
 - [ ] Animaciones de Mixamo: registrar cuenta, personaje y clips utilizados.
 - [ ] Fuente monoespaciada del HUD: registrar licencia.
 - [ ] Fuente corrupta para Mimicry: registrar licencia.
-- [ ] Packs de oficina, laboratorio y lobby: registrar enlaces y licencias.
+- [ ] Packs de laboratorio (Piso 6) y lobby (Piso 1): registrar enlaces y licencias.
