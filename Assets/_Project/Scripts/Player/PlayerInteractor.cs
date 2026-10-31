@@ -29,7 +29,7 @@ namespace Nexo.Player
             }
             if (_hudController == null)
             {
-                _hudController = FindFirstObjectByType<HUDController>();
+                _hudController = FindAnyObjectByType<HUDController>();
             }
         }
 
