@@ -35,6 +35,7 @@ namespace Nexo.Core
             GameEvents.OnLightsChanged += HandleLightsChanged;
             GameEvents.OnElenaResponse += HandleElenaResponse;
             GameEvents.OnNotification += HandleNotification;
+            GameEvents.OnInfectedNearbyChanged += SetInfectedNearby;
         }
 
         private void OnDisable()
@@ -46,6 +47,7 @@ namespace Nexo.Core
             GameEvents.OnLightsChanged -= HandleLightsChanged;
             GameEvents.OnElenaResponse -= HandleElenaResponse;
             GameEvents.OnNotification -= HandleNotification;
+            GameEvents.OnInfectedNearbyChanged -= SetInfectedNearby;
         }
 
         private void HandleFloorChanged(int floor)
