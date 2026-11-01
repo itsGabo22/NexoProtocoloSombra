@@ -73,7 +73,7 @@
             <ui:Label text='Reiniciando protocolo del Piso 12...' class='text-base text-muted mt-2' />
         </ui:VisualElement>
 
-        <ui:VisualElement picking-mode='Ignore' name='hud-glitch'class='glitch-overlay absolute inset-0 pointer-none' />
+        <ui:VisualElement picking-mode='Ignore' name='hud-glitch' class='glitch-overlay absolute inset-0 pointer-none' />
         <ui:VisualElement picking-mode='Ignore' name='hud-debug' class='root-debug hidden absolute inset-0 flex-col justify-center p-8 pointer-none'>
             <ui:Label text='NEXOOS v4.2 // MODO DEPURACIÓN ROOT' class='text-lg text-danger font-bold tracking-wider mb-4' />
             <ui:Label name='hud-debug-text' text='' class='text-base text-main wrap' />
