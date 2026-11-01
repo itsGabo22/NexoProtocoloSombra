@@ -89,3 +89,7 @@
 .order-sector__label { font-size: 13px; color: var(--c-text); -unity-text-align: middle-center; white-space: normal; margin-top: 4px; }
 .order-sector--selected { scale: 1.1 1.1; background-color: var(--c-accent-dim); border-color: var(--c-accent); }
 .order-sector--selected .order-sector__label { color: var(--c-accent); -unity-font-style: bold; }
+
+/* ---------- Pantalla de captura ---------- */
+.hud-capture { background-color: rgba(10, 0, 2, 0.85); opacity: 0; transition-property: opacity; transition-duration: 400ms; }
+.hud-capture--visible { opacity: 1; }
