@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui='UnityEngine.UIElements' editor-extension-mode='False'>
+    <Style src='../Styles/tailwind-utilities.uss' />
+    <Style src='../Styles/theme-nexo-blue.uss' />
+    <Style src='../Styles/components.uss' />
+
+    <!-- Rueda de órdenes [Q]: oculta por defecto; los sectores (máx. 6) los crea OrderWheelController -->
+    <ui:VisualElement name='order-wheel-root' class='theme-nexo order-wheel-overlay hidden absolute inset-0 flex-col'>
+        <ui:VisualElement name='order-wheel-ring' class='order-wheel-ring relative'>
+            <ui:Label name='order-wheel-center' text='ÓRDENES' class='order-wheel-center' />
+        </ui:VisualElement>
+        <ui:Label text='[Q] soltar para confirmar · [ESC] cancelar' class='text-xs text-muted mt-2' />
+    </ui:VisualElement>
+</ui:UXML>

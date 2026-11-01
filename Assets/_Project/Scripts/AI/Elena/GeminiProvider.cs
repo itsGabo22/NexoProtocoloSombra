@@ -109,7 +109,7 @@ namespace Nexo.AI.Elena
 
             // Construir turno actual del usuario enriquecido con el contexto diegético
             string contextJson = JsonUtility.ToJson(context);
-            string promptText = $"CONTEXTO_JUEGO: {contextJson}\nPREGUNTA_JUGADOR: {context.question_selected}";
+            string promptText = $"CONTEXTO_JSON: {contextJson}\nPREGUNTA_JUGADOR: {context.player_text}";
 
             contentsList.Add(new RequestContent
             {

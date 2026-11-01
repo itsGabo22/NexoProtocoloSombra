@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui='UnityEngine.UIElements' editor-extension-mode='False'>
+    <Style src='../Styles/tailwind-utilities.uss' />
+    <Style src='../Styles/theme-nexo-blue.uss' />
+    <Style src='../Styles/components.uss' />
+
+    <!-- Terminal de seguridad del Piso 12: oculta por defecto, la muestra TerminalController -->
+    <ui:VisualElement name='terminal-root' class='theme-nexo terminal-overlay hidden absolute inset-0 flex-col items-center justify-center'>
+        <ui:VisualElement name='terminal-window' class='hud-panel terminal-window flex-col p-4'>
+
+            <ui:VisualElement class='flex-row items-center justify-between'>
+                <ui:VisualElement class='flex-col'>
+                    <ui:Label text='NEXOOS // SEGURIDAD' class='text-xs text-muted tracking-wide' />
+                    <ui:Label name='terminal-title' text='TERMINAL PISO 12' class='text-lg text-accent font-bold' />
+                </ui:VisualElement>
+                <ui:Button name='terminal-close' text='[ESC] CERRAR' class='btn-quick' />
+            </ui:VisualElement>
+
+            <ui:VisualElement class='flex-row items-start mt-4'>
+                <ui:VisualElement class='flex-col grow'>
+                    <ui:Label text='CÁMARAS' class='text-xs text-muted tracking-wide mb-2' />
+                    <ui:VisualElement name='terminal-feeds' class='terminal-feeds flex-row flex-wrap' />
+                </ui:VisualElement>
+
+                <ui:VisualElement class='terminal-doors flex-col ml-4'>
+                    <ui:Label text='PUERTAS' class='text-xs text-muted tracking-wide mb-2' />
+                    <ui:VisualElement name='terminal-doors' class='flex-col' />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:Label name='terminal-status' text='' class='text-xs text-muted mt-2' />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -7,8 +7,9 @@
         "dialogue": "Por el pasillo de la izquierda no hay nadie, lo veo por la camara. Ve agachado, ¿si?",
         "emotion": "WHISPER",
         "ui_action": "HIGHLIGHT_SAFE_ROUTE",
-        "ui_parameter": "",
-        "trust_level": 55
+        "target_id": "",
+        "trust_level": 55,
+        "glitch_intensity": 0.0
       }
     },
     {
@@ -18,8 +19,9 @@
         "dialogue": "Ya, ya, ya... ¡listo! Te abri la puerta de las escaleras. Corre, Alex.",
         "emotion": "URGENT",
         "ui_action": "UNLOCK_DOOR",
-        "ui_parameter": "F12_Door_Stairs",
-        "trust_level": 60
+        "target_id": "F12_Door_Stairs",
+        "trust_level": 60,
+        "glitch_intensity": 0.0
       }
     },
     {
@@ -29,8 +31,9 @@
         "dialogue": "Tengo el llavero de mi mama. Dice que nos va a cuidar. Tu sigue caminando, Alex.",
         "emotion": "SAD",
         "ui_action": "NONE",
-        "ui_parameter": "",
-        "trust_level": 65
+        "target_id": "",
+        "trust_level": 65,
+        "glitch_intensity": 0.0
       }
     },
     {
@@ -40,8 +43,9 @@
         "dialogue": "Estoy aqui, Alex. No me dejes sola, por favor.",
         "emotion": "SCARED",
         "ui_action": "NONE",
-        "ui_parameter": "",
-        "trust_level": 50
+        "target_id": "",
+        "trust_level": 50,
+        "glitch_intensity": 0.0
       }
     }
   ]

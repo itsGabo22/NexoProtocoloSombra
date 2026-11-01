@@ -20,6 +20,7 @@ namespace Nexo.UI
         private const string ThemeHive = "theme-hive";
         private const int BarCount = 24;
         private const long NotificationMs = 5500;
+        private const float GlitchThreshold = 0.05f;
 
         private static readonly string[] RootDebugLines =
         {
@@ -34,11 +35,18 @@ namespace Nexo.UI
 
         [SerializeField] private bool _reduceMotion;
 
+        [Header("Órdenes Tácticas de Elena")]
+        [Tooltip("Destino por defecto de HIGHLIGHT_SAFE_ROUTE cuando Elena no indica target_id.")]
+        [SerializeField] private string _safeRouteDefaultTarget = "F12_Door_Stairs";
+        [SerializeField] private float _radarRangeMeters = 18f;
+
         private VisualElement _root;
         private VisualElement _spectrogram;
         private VisualElement _notifications;
         private VisualElement _glitch;
         private VisualElement _debug;
+        private VisualElement _capture;
+        private VisualElement _crosshair;
         private VisualElement _portrait;
         private VisualElement _trustFill;
         private VisualElement _batteryFill;
@@ -54,7 +62,6 @@ namespace Nexo.UI
         private Label _typing;
         private Label _seal;
         private Label _interactPrompt;
-        private Label _subtitles;
 
         private readonly List<VisualElement> _bars = new();
         private readonly float[] _barLevels = new float[BarCount];
@@ -64,8 +71,10 @@ namespace Nexo.UI
         private IVisualElementScheduledItem _typewriter;
         private IVisualElementScheduledItem _spectro;
         private IVisualElementScheduledItem _pulse;
+        private IVisualElementScheduledItem _glitchPulse;
         private string _emotionClass;
         private float _noise;
+        private int _infectedNearby;
 
         public void SetReduceMotion(bool reduce) => _reduceMotion = reduce;
 
@@ -87,8 +96,11 @@ namespace Nexo.UI
             GameEvents.OnElenaResponse += HandleElenaResponse;
             GameEvents.OnElenaThinking += HandleElenaThinking;
             GameEvents.OnQuickQuestionsChanged += HandleQuickLabels;
-            GameEvents.OnSubtitle += HandleSubtitle;
             GameEvents.OnHudCorruptionRequested += PlayCorruptionSequence;
+            GameEvents.OnPlayerCaught += ShowCaptureScreen;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
+            GameEvents.OnUiAction += HandleUiAction;
+            GameEvents.OnInfectedNearbyChanged += HandleInfectedNearbyChanged;
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -113,8 +125,11 @@ namespace Nexo.UI
             GameEvents.OnElenaResponse -= HandleElenaResponse;
             GameEvents.OnElenaThinking -= HandleElenaThinking;
             GameEvents.OnQuickQuestionsChanged -= HandleQuickLabels;
-            GameEvents.OnSubtitle -= HandleSubtitle;
             GameEvents.OnHudCorruptionRequested -= PlayCorruptionSequence;
+            GameEvents.OnPlayerCaught -= ShowCaptureScreen;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
+            GameEvents.OnUiAction -= HandleUiAction;
+            GameEvents.OnInfectedNearbyChanged -= HandleInfectedNearbyChanged;
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -127,6 +142,8 @@ namespace Nexo.UI
             _spectro?.Pause();
             _typewriter?.Pause();
             _pulse?.Pause();
+            _glitchPulse?.Pause();
+            _glitch?.RemoveFromClassList("hud-glitch-pulse");
         }
 
         private void PulsePortrait()
@@ -150,7 +167,6 @@ namespace Nexo.UI
             _batteryValue = _root.Q<Label>("hud-battery-value");
             _debugText = _root.Q<Label>("hud-debug-text");
             _interactPrompt = _root.Q<Label>("hud-interact");
-            _subtitles = _root.Q<Label>("hud-subtitles");
 
             _portrait = _root.Q<VisualElement>("radio-elena-portrait");
             _trustFill = _root.Q<VisualElement>("radio-trust-fill");
@@ -159,6 +175,8 @@ namespace Nexo.UI
             _notifications = _root.Q<VisualElement>("hud-notifications");
             _glitch = _root.Q<VisualElement>("hud-glitch");
             _debug = _root.Q<VisualElement>("hud-debug");
+            _capture = _root.Q<VisualElement>("hud-capture");
+            _crosshair = _root.Q<VisualElement>("hud-crosshair");
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -235,6 +253,27 @@ namespace Nexo.UI
                 _trustFill.style.width = Length.Percent(Mathf.Clamp(response.trust_level, 0, 100));
             }
             StartTypewriter(response.dialogue);
+
+            if (response.glitch_intensity > GlitchThreshold) PulseGlitch(response.glitch_intensity);
+        }
+
+        /// <summary>
+        /// Un único destello breve de interferencia (WCAG 2.3.1); se omite si está activo reducir movimiento.
+        /// </summary>
+        private void PulseGlitch(float intensity)
+        {
+            if (_reduceMotion || _glitch == null) return;
+
+            _glitchPulse?.Pause();
+            _glitch.AddToClassList("hud-glitch-pulse");
+
+            long durationMs = 80 + (long)(Mathf.Clamp01(intensity) * 220f);
+            _glitchPulse = _glitch.schedule.Execute(EndGlitchPulse).StartingIn(durationMs);
+        }
+
+        private void EndGlitchPulse()
+        {
+            _glitch.RemoveFromClassList("hud-glitch-pulse");
         }
 
         private void SetEmotion(ElenaEmotion emotion)
@@ -272,18 +311,75 @@ namespace Nexo.UI
             }
         }
 
+        private void HandleInfectedNearbyChanged(int count)
+        {
+            _infectedNearby = Mathf.Max(0, count);
+        }
+
+        /// <summary>
+        /// Traduce las órdenes tácticas de Elena (ya validadas por ElenaUiCommandRouter) en notificaciones del HUD.
+        /// </summary>
+        private void HandleUiAction(ElenaUiAction action, string targetId)
+        {
+            switch (action)
+            {
+                case ElenaUiAction.PingEnemyRadar:
+                    string plural = _infectedNearby == 1 ? "firma hostil" : "firmas hostiles";
+                    ShowNotification(new HudNotification("RADAR", $"⚠ {_infectedNearby} {plural} a menos de {Mathf.RoundToInt(_radarRangeMeters)} m. Muévete en silencio.", false));
+                    break;
+
+                case ElenaUiAction.HighlightSafeRoute:
+                    string destination = string.IsNullOrEmpty(targetId) ? _safeRouteDefaultTarget : targetId;
+                    ShowNotification(new HudNotification("RUTA SEGURA", $"➜ Ruta despejada hacia {destination}. Mantente agachado.", false));
+                    _crosshair?.AddToClassList("crosshair--route");
+                    _root.schedule.Execute(ClearRouteHighlight).StartingIn(NotificationMs);
+                    break;
+
+                case ElenaUiAction.ShowHint:
+                    string hint = string.IsNullOrEmpty(targetId) ? "Revisa la terminal de seguridad: controla las puertas del piso." : targetId;
+                    ShowNotification(new HudNotification("PISTA", $"ℹ {hint}", false));
+                    break;
+            }
+        }
+
+        private void ClearRouteHighlight()
+        {
+            _crosshair?.RemoveFromClassList("crosshair--route");
+        }
+
+        private void ShowCaptureScreen()
+        {
+            if (_capture == null || !_capture.ClassListContains("hidden")) return;
+
+            _capture.RemoveFromClassList("hidden");
+            _capture.schedule.Execute(AddCaptureVisible).StartingIn(20);
+        }
+
+        private void AddCaptureVisible()
+        {
+            _capture.AddToClassList("hud-capture--visible");
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            // El piso se (re)cargó: retirar la pantalla de captura con fundido
+            if (_capture == null || _capture.ClassListContains("hidden")) return;
+
+            _capture.RemoveFromClassList("hud-capture--visible");
+            _capture.schedule.Execute(HideCapture).StartingIn(400);
+        }
+
+        private void HideCapture()
+        {
+            _capture.AddToClassList("hidden");
+        }
+
         public void SetInteractPrompt(string prompt)
         {
             if (_interactPrompt == null) return;
             bool hasPrompt = !string.IsNullOrEmpty(prompt);
             _interactPrompt.EnableInClassList("hidden", !hasPrompt);
             _interactPrompt.text = prompt;
-        }
-
-        private void HandleSubtitle(string text)
-        {
-            if (_subtitles == null) return;
-            _subtitles.text = text ?? string.Empty;
         }
 
         public void ShowNotification(HudNotification data)

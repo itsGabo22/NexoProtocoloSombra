@@ -65,3 +65,38 @@
 
 .root-debug { background-color: rgba(10, 0, 2, 0.92); }
 .hud-infected-mode .hud-panel { border-color: var(--c-danger); }
+
+/* ---------- Terminal de seguridad ---------- */
+.terminal-overlay { background-color: rgba(0, 0, 0, 0.6); }
+.terminal-window { width: 900px; }
+.terminal-feeds { flex-grow: 1; }
+.terminal-feed { width: 256px; margin-right: 8px; margin-bottom: 8px; border-color: var(--c-accent); border-width: 1px; border-radius: 4px; overflow: hidden; }
+.terminal-feed__image { width: 256px; height: 144px; background-color: var(--c-bg); -unity-background-scale-mode: scale-to-fit; }
+.terminal-feed__label { font-size: 11px; color: var(--c-accent); padding: 2px 6px; background-color: var(--c-surface); }
+.terminal-doors { width: 280px; }
+.terminal-door { flex-direction: row; align-items: center; justify-content: space-between; padding: 6px 8px; margin-bottom: 6px; border-color: var(--c-accent-dim); border-width: 1px; border-radius: 4px; }
+.terminal-door__state { font-size: 11px; color: var(--c-muted); }
+.terminal-door--open .terminal-door__state { color: var(--c-ok); }
+.terminal-door--locked .terminal-door__state { color: var(--c-danger); }
+.terminal-door__button { width: 90px; }
+
+/* ---------- Rueda de órdenes ---------- */
+.order-wheel-overlay { background-color: rgba(0, 0, 0, 0.35); align-items: center; justify-content: center; }
+.order-wheel-ring { width: 420px; height: 420px; border-radius: 210px; border-width: 2px; border-color: var(--c-accent-dim); background-color: var(--c-surface); }
+.order-wheel-center { position: absolute; left: 150px; top: 150px; width: 120px; height: 120px; border-radius: 60px; border-width: 1px; border-color: var(--c-accent); background-color: var(--c-bg); -unity-text-align: middle-center; white-space: normal; font-size: 13px; color: var(--c-text); }
+.order-sector { position: absolute; width: 112px; height: 80px; margin-left: -56px; margin-top: -40px; align-items: center; justify-content: center; border-radius: 8px; border-width: 1px; border-color: rgba(0, 0, 0, 0); transition-property: scale, background-color, border-color; transition-duration: 120ms; }
+.order-sector__icon { width: 32px; height: 32px; -unity-background-scale-mode: scale-to-fit; -unity-background-image-tint-color: var(--c-accent); }
+.order-sector__label { font-size: 13px; color: var(--c-text); -unity-text-align: middle-center; white-space: normal; margin-top: 4px; }
+.order-sector--selected { scale: 1.1 1.1; background-color: var(--c-accent-dim); border-color: var(--c-accent); }
+.order-sector--selected .order-sector__label { color: var(--c-accent); -unity-font-style: bold; }
+
+/* ---------- Pantalla de captura ---------- */
+.hud-capture { background-color: rgba(10, 0, 2, 0.85); opacity: 0; transition-property: opacity; transition-duration: 400ms; }
+.hud-capture--visible { opacity: 1; }
+
+/* ---------- Ruta segura (HIGHLIGHT_SAFE_ROUTE) ---------- */
+.crosshair { transition-property: scale, background-color, opacity; transition-duration: 250ms; }
+.crosshair.crosshair--route { background-color: var(--c-ok); opacity: 1; scale: 1.8 1.8; }
+
+/* ---------- Interferencia de transmisión (glitch_intensity) ---------- */
+.glitch-overlay.hud-glitch-pulse { background-color: rgba(34, 211, 238, 0.16); }

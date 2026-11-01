@@ -88,8 +88,8 @@ namespace Nexo.AI.Elena
             GameEvents.RaiseElenaThinking(true);
 
             ElenaRequestContext context = _stateTracker != null
-                ? _stateTracker.CaptureContext(questionText)
-                : new ElenaRequestContext { floor = 12, question_selected = questionText };
+                ? _stateTracker.CaptureContext(intentKey, questionText)
+                : new ElenaRequestContext { floor = 12, player_intent = intentKey, player_text = questionText };
 
             ElenaResponse response = null;
             bool isOnline = Application.internetReachability != NetworkReachability.NotReachable;

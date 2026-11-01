@@ -1,3 +1,4 @@
+using System;
 using Nexo.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -43,11 +44,19 @@ namespace Nexo.Player
         private float _pitch = 0f;
         private bool _isCrouching = false;
         private bool _isFrozen = false;
+        private bool _inputLocked = false;
 
         public Vector2 MoveInput { get; private set; }
         public bool IsMoving => _controller != null && _controller.isGrounded && MoveInput.sqrMagnitude > 0.01f;
         public bool IsCrouching => _isCrouching;
         public bool IsSprinting { get; private set; }
+
+        /// <summary>
+        /// Se emite cuando el jugador empieza (true) o deja (false) de esprintar en movimiento.
+        /// </summary>
+        public event Action<bool> SprintStateChanged;
+
+        private bool _wasSprintingMoving;
 
         private void Awake()
         {
@@ -80,6 +89,17 @@ namespace Nexo.Player
             Cursor.visible = false;
         }
 
+        /// <summary>
+        /// Bloquea la entrada de movimiento/cámara y libera el cursor mientras hay UI modal abierta
+        /// (terminal de seguridad, rueda de órdenes). La gravedad sigue aplicándose.
+        /// </summary>
+        public void SetInputLocked(bool locked, bool showCursor)
+        {
+            _inputLocked = locked;
+            Cursor.lockState = locked && showCursor ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = locked && showCursor;
+        }
+
         private void OnEnable()
         {
             GameEvents.OnPlotTwistTriggered += HandlePlotTwistTriggered;
@@ -94,6 +114,8 @@ namespace Nexo.Player
         {
             _isFrozen = true;
             MoveInput = Vector2.zero;
+            IsSprinting = false;
+            NotifySprintState();
             if (_characterAnimator != null)
             {
                 _characterAnimator.SetFloat(SpeedHash, 0f);
@@ -110,11 +132,21 @@ namespace Nexo.Player
             HandleCrouch();
             HandleMovement();
             UpdateAnimator();
+            NotifySprintState();
+        }
+
+        private void NotifySprintState()
+        {
+            bool sprintingMoving = IsSprinting && IsMoving;
+            if (sprintingMoving == _wasSprintingMoving) return;
+
+            _wasSprintingMoving = sprintingMoving;
+            SprintStateChanged?.Invoke(sprintingMoving);
         }
 
         private void HandleLook()
         {
-            if (Mouse.current == null) return;
+            if (_inputLocked || Mouse.current == null) return;
 
             Vector2 mouseDelta = Mouse.current.delta.ReadValue() * (_mouseSensitivity * 0.08f);
 
@@ -131,7 +163,7 @@ namespace Nexo.Player
 
         private void HandleCrouch()
         {
-            if (Keyboard.current != null && (Keyboard.current.leftCtrlKey.wasPressedThisFrame || Keyboard.current.cKey.wasPressedThisFrame))
+            if (!_inputLocked && Keyboard.current != null && (Keyboard.current.leftCtrlKey.wasPressedThisFrame || Keyboard.current.cKey.wasPressedThisFrame))
             {
                 if (_isCrouching)
                 {
@@ -175,7 +207,7 @@ namespace Nexo.Player
             Vector2 rawInput = Vector2.zero;
             bool sprintPressed = false;
 
-            if (Keyboard.current != null)
+            if (!_inputLocked && Keyboard.current != null)
             {
                 if (Keyboard.current.wKey.isPressed) rawInput.y += 1f;
                 if (Keyboard.current.sKey.isPressed) rawInput.y -= 1f;

@@ -1,3 +1,4 @@
+using System.Collections;
 using Nexo.AI.Elena;
 using Nexo.Core;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Nexo.Interaction
 
         private Vector3 _closedPosition;
         private Vector3 _targetPosition;
+        private Coroutine _moveRoutine;
 
         public string DoorId => _doorId;
         public bool IsLocked => _isLocked;
@@ -53,6 +55,13 @@ namespace Nexo.Interaction
         private void OnDisable()
         {
             GameEvents.OnUiAction -= HandleUiAction;
+
+            // Si se desactiva a mitad de recorrido, fijar la hoja en su destino
+            if (_moveRoutine != null && _doorHinge != null)
+            {
+                _doorHinge.localPosition = _targetPosition;
+                _moveRoutine = null;
+            }
         }
 
         private void HandleUiAction(ElenaUiAction action, string targetId)
@@ -77,30 +86,50 @@ namespace Nexo.Interaction
         public void UnlockAndOpen()
         {
             _isLocked = false;
-            _isOpen = true;
-            if (_doorHinge != null)
-            {
-                _targetPosition = _closedPosition + _openOffset;
-            }
+            SetOpen(true);
             GameEvents.RaiseNotification(new HudNotification("ELENA", $"Puerta {_doorId} desbloqueada remotamente.", false));
         }
 
         public void ToggleDoor()
         {
-            _isOpen = !_isOpen;
-            if (_doorHinge != null)
+            SetOpen(!_isOpen);
+        }
+
+        /// <summary>
+        /// Abre o cierra la puerta (usado por el jugador, Elena y la terminal de seguridad).
+        /// </summary>
+        public void SetOpen(bool open)
+        {
+            _isOpen = open;
+            if (_doorHinge == null) return;
+
+            _targetPosition = _isOpen ? _closedPosition + _openOffset : _closedPosition;
+
+            // La corrutina solo vive mientras la hoja está en movimiento
+            if (_moveRoutine != null) StopCoroutine(_moveRoutine);
+            if (isActiveAndEnabled)
             {
-                _targetPosition = _isOpen ? _closedPosition + _openOffset : _closedPosition;
+                _moveRoutine = StartCoroutine(MoveDoorRoutine());
+            }
+            else
+            {
+                _doorHinge.localPosition = _targetPosition;
             }
         }
 
-        // JUSTIFICACIÓN UPDATE: Interpolación suave de traslación física/visual de la hoja de puerta.
-        private void Update()
+        /// <summary>
+        /// Interpola la hoja de la puerta hacia su posición objetivo y termina al llegar.
+        /// </summary>
+        private IEnumerator MoveDoorRoutine()
         {
-            if (_doorHinge != null && (_doorHinge.localPosition - _targetPosition).sqrMagnitude > 0.0001f)
+            while ((_doorHinge.localPosition - _targetPosition).sqrMagnitude > 0.0001f)
             {
                 _doorHinge.localPosition = Vector3.Lerp(_doorHinge.localPosition, _targetPosition, Time.deltaTime * _transitionSpeed);
+                yield return null;
             }
+
+            _doorHinge.localPosition = _targetPosition;
+            _moveRoutine = null;
         }
     }
 }
