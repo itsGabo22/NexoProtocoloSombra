@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nexo.AI.Elena;
 using Nexo.Core;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Nexo.Interaction
         public static readonly List<LightSwitchInteractable> Registry = new();
 
         [Header("Identificación de Habitación")]
-        [SerializeField] private string _roomId = "F12_Office_Entrance";
+        [SerializeField] private string _roomId = "F12_Cubicles";
 
         [Header("Luminarias y Renderers Emisivos Controlados")]
         [SerializeField] private Light[] _lights;
@@ -31,11 +32,24 @@ namespace Nexo.Interaction
             {
                 Registry.Add(this);
             }
+            GameEvents.OnUiAction += HandleUiAction;
         }
 
         private void OnDisable()
         {
             Registry.Remove(this);
+            GameEvents.OnUiAction -= HandleUiAction;
+        }
+
+        /// <summary>
+        /// Elena puede alternar remotamente las luces del cuarto indicado en target_id (TOGGLE_HALLWAY_LIGHTS).
+        /// </summary>
+        private void HandleUiAction(ElenaUiAction action, string targetId)
+        {
+            if (action != ElenaUiAction.ToggleHallwayLights) return;
+            if (!string.Equals(targetId, _roomId, System.StringComparison.OrdinalIgnoreCase)) return;
+
+            SetPower(!IsOn);
         }
 
         public void Interact()
