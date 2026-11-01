@@ -1,3 +1,4 @@
+using System;
 using Nexo.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -49,6 +50,13 @@ namespace Nexo.Player
         public bool IsCrouching => _isCrouching;
         public bool IsSprinting { get; private set; }
 
+        /// <summary>
+        /// Se emite cuando el jugador empieza (true) o deja (false) de esprintar en movimiento.
+        /// </summary>
+        public event Action<bool> SprintStateChanged;
+
+        private bool _wasSprintingMoving;
+
         private void Awake()
         {
             _controller = GetComponent<CharacterController>();
@@ -94,6 +102,8 @@ namespace Nexo.Player
         {
             _isFrozen = true;
             MoveInput = Vector2.zero;
+            IsSprinting = false;
+            NotifySprintState();
             if (_characterAnimator != null)
             {
                 _characterAnimator.SetFloat(SpeedHash, 0f);
@@ -110,6 +120,16 @@ namespace Nexo.Player
             HandleCrouch();
             HandleMovement();
             UpdateAnimator();
+            NotifySprintState();
+        }
+
+        private void NotifySprintState()
+        {
+            bool sprintingMoving = IsSprinting && IsMoving;
+            if (sprintingMoving == _wasSprintingMoving) return;
+
+            _wasSprintingMoving = sprintingMoving;
+            SprintStateChanged?.Invoke(sprintingMoving);
         }
 
         private void HandleLook()
