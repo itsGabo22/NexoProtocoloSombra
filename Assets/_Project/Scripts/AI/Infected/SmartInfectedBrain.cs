@@ -275,6 +275,7 @@ namespace Nexo.AI.Infected
             FacePlayer();
             SetAnimatorTrigger(AttackTriggerHash);
             PlayerAttacked?.Invoke(this);
+            GameEvents.RaisePlayerCaught(); // PlayerCaptureHandler (Systems_Persistent) reinicia el piso
             return true;
         }
 
