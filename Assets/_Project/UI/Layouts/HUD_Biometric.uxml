@@ -4,10 +4,10 @@
     <Style src='../Styles/theme-hive-red.uss' />
     <Style src='../Styles/components.uss' />
 
-    <ui:VisualElement name='hud-root' class='theme-nexo absolute inset-0 pointer-none'>
+    <ui:VisualElement picking-mode='Ignore' name='hud-root' class='theme-nexo absolute inset-0 pointer-none'>
 
         <!-- Vitales (arriba izquierda) -->
-        <ui:VisualElement name='hud-vitals' class='hud-panel absolute top-4 left-4 w-64 flex-col p-3 pointer-none'>
+        <ui:VisualElement picking-mode='Ignore' name='hud-vitals' class='hud-panel absolute top-4 left-4 w-64 flex-col p-3 pointer-none'>
             <ui:Label text='ESTADO BIOMÉTRICO' class='text-xs text-muted tracking-wide' />
             <ui:Label name='hud-vitals-value' text='99% SANO' class='text-xl text-ok font-bold mt-1' />
             <ui:Label name='hud-vitals-status' text='NO INFECTADO' class='text-sm text-main' />
@@ -37,7 +37,7 @@
         </ui:VisualElement>
 
         <!-- Espectrograma de ruido (abajo izquierda) -->
-        <ui:VisualElement name='hud-noise' class='hud-panel absolute bottom-4 left-4 w-64 flex-col p-3 pointer-none'>
+        <ui:VisualElement picking-mode='Ignore' name='hud-noise' class='hud-panel absolute bottom-4 left-4 w-64 flex-col p-3 pointer-none'>
             <ui:VisualElement class='flex-row justify-between'>
                 <ui:Label text='RUIDO' class='text-xs text-muted tracking-wide' />
                 <ui:Label name='hud-noise-value' text='0' class='text-xs text-accent' />
@@ -46,7 +46,7 @@
         </ui:VisualElement>
 
         <!-- Batería de visión térmica (abajo derecha) -->
-        <ui:VisualElement name='hud-battery' class='hud-panel absolute bottom-4 right-4 w-64 flex-col p-3 pointer-none'>
+        <ui:VisualElement picking-mode='Ignore' name='hud-battery' class='hud-panel absolute bottom-4 right-4 w-64 flex-col p-3 pointer-none'>
             <ui:VisualElement class='flex-row justify-between'>
                 <ui:Label text='VISIÓN TÉRMICA' class='text-xs text-muted tracking-wide' />
                 <ui:Label name='hud-battery-value' text='100%' class='text-xs text-accent' />
@@ -57,18 +57,24 @@
         </ui:VisualElement>
 
         <!-- Centro libre: mira y prompt de interacción -->
-        <ui:VisualElement name='hud-crosshair' class='crosshair absolute pointer-none' />
-        <ui:Label name='hud-interact' text='' class='hidden absolute text-sm text-main pointer-none' />
+        <ui:VisualElement picking-mode='Ignore' name='hud-crosshair' class='crosshair absolute pointer-none' />
+        <ui:Label picking-mode='Ignore' name='hud-interact' text='' class='hidden absolute text-sm text-main pointer-none' />
 
         <!-- Capa de notificaciones (reales y falsas) -->
-        <ui:VisualElement name='hud-notifications' class='absolute top-4 flex-col items-center pointer-none' />
+        <ui:VisualElement picking-mode='Ignore' name='hud-notifications' class='absolute top-4 flex-col items-center pointer-none' />
 
         <!-- Subtítulos -->
-        <ui:Label name='hud-subtitles' text='' class='subtitles absolute bottom-4 text-base text-main text-center wrap pointer-none' />
+        <ui:Label picking-mode='Ignore' name='hud-subtitles' text='' class='subtitles absolute bottom-4 text-base text-main text-center wrap pointer-none' />
 
         <!-- Plot twist: destello, panel ROOT DEBUG -->
-        <ui:VisualElement name='hud-glitch' class='glitch-overlay absolute inset-0 pointer-none' />
-        <ui:VisualElement name='hud-debug' class='root-debug hidden absolute inset-0 flex-col justify-center p-8 pointer-none'>
+        <!-- Pantalla de captura: la muestra HUDController con OnPlayerCaught y la oculta al recargar el piso -->
+        <ui:VisualElement picking-mode='Ignore' name='hud-capture' class='hud-capture hidden absolute inset-0 flex-col items-center justify-center pointer-none'>
+            <ui:Label text='SEÑAL VITAL PERDIDA' class='text-3xl text-danger font-bold tracking-wider' />
+            <ui:Label text='Reiniciando protocolo del Piso 12...' class='text-base text-muted mt-2' />
+        </ui:VisualElement>
+
+        <ui:VisualElement picking-mode='Ignore' name='hud-glitch' class='glitch-overlay absolute inset-0 pointer-none' />
+        <ui:VisualElement picking-mode='Ignore' name='hud-debug' class='root-debug hidden absolute inset-0 flex-col justify-center p-8 pointer-none'>
             <ui:Label text='NEXOOS v4.2 // MODO DEPURACIÓN ROOT' class='text-lg text-danger font-bold tracking-wider mb-4' />
             <ui:Label name='hud-debug-text' text='' class='text-base text-main wrap' />
         </ui:VisualElement>

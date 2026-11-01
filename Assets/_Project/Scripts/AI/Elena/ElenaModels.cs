@@ -13,26 +13,36 @@ namespace Nexo.AI.Elena
         Whisper
     }
 
+    /// <summary>
+    /// Acciones de interfaz que Elena puede ordenar. En JSON se escriben en SNAKE_CASE
+    /// (NONE|HIGHLIGHT_SAFE_ROUTE|PING_ENEMY_RADAR|UNLOCK_DOOR|TOGGLE_HALLWAY_LIGHTS|SHOW_HINT).
+    /// </summary>
     public enum ElenaUiAction
     {
         None,
         HighlightSafeRoute,
         PingEnemyRadar,
         UnlockDoor,
-        CutLights,
-        DimFlashlight,
-        GlitchHud,
-        FakeNotification
+        ToggleHallwayLights,
+        ShowHint
     }
 
+    /// <summary>
+    /// Contrato JSON estricto de respuesta de Elena (idéntico en Gemini, fallback y tests).
+    /// </summary>
     [Serializable]
     public sealed class ElenaResponse
     {
+        public const int MaxDialogueLength = 220;
+
         public string dialogue = string.Empty;
         public string emotion = "calm";
         public string ui_action = "none";
-        public string ui_parameter = string.Empty;
+        /// <summary>Destino de la acción: DoorId para UNLOCK_DOOR, RoomId para TOGGLE_HALLWAY_LIGHTS; vacío si no aplica.</summary>
+        public string target_id = string.Empty;
         public int trust_level = 50;
+        /// <summary>Interferencia de la transmisión (0.0 - 1.0).</summary>
+        public float glitch_intensity = 0f;
 
         public ElenaEmotion ParsedEmotion
         {
@@ -70,12 +80,14 @@ namespace Nexo.AI.Elena
                 return false;
             }
 
-            if (dialogue.Length > 220)
+            if (dialogue.Length > MaxDialogueLength)
             {
-                dialogue = dialogue.Substring(0, 220);
+                dialogue = dialogue.Substring(0, MaxDialogueLength);
             }
 
             trust_level = Mathf.Clamp(trust_level, 0, 100);
+            glitch_intensity = Mathf.Clamp01(glitch_intensity);
+            target_id = target_id == null ? string.Empty : target_id.Trim();
 
             // Validar que emotion sea conocida si fue especificada
             if (!string.IsNullOrWhiteSpace(emotion))
@@ -103,18 +115,24 @@ namespace Nexo.AI.Elena
         }
     }
 
+    /// <summary>
+    /// Contexto diegético enviado a Gemini como CONTEXTO_JSON (capturado por GameStateTracker).
+    /// </summary>
     [Serializable]
     public sealed class ElenaRequestContext
     {
         public int floor = 12;
-        public string player_room = "F12_Office_Entrance";
-        public float player_noise = 0f;
-        public float player_battery = 1f;
+        public string room_id = "F12_Cubicles";
         public int infected_nearby = 0;
-        public int anomalies_detected = 0;
-        public string[] available_doors = Array.Empty<string>();
+        public bool lights_on = true;
+        public float noise_level = 0f;
+        public float battery = 1f;
+        public int anomalies_seen = 0;
         public int trust_level = 50;
-        public string question_selected = string.Empty;
+        /// <summary>Intención de la pregunta rápida (SAFE_PATH, OPEN_DOOR, FEAR, GENERIC).</summary>
+        public string player_intent = "GENERIC";
+        public string player_text = string.Empty;
+        public string[] available_doors = Array.Empty<string>();
     }
 
     [Serializable]
