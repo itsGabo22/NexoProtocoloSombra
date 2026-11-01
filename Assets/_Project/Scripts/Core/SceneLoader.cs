@@ -40,6 +40,18 @@ namespace Nexo.Core
             StartCoroutine(LoadFloorRoutine(sceneName));
         }
 
+        /// <summary>
+        /// Descarga y vuelve a cargar el piso actual (reinicio tras captura). Devuelve false si ya hay una carga en curso.
+        /// </summary>
+        public bool ReloadFloor()
+        {
+            if (_isLoading) return false;
+
+            string sceneName = string.IsNullOrEmpty(_loadedFloorScene) ? _floorSceneName : _loadedFloorScene;
+            LoadFloor(sceneName);
+            return true;
+        }
+
         private IEnumerator LoadFloorRoutine(string sceneName)
         {
             _isLoading = true;
