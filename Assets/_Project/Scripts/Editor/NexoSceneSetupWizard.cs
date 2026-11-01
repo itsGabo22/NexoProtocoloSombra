@@ -75,6 +75,7 @@ namespace Nexo.EditorTools
 
                 EditorUtility.DisplayProgressBar("Nexo Setup", "Registrando escenas en Build Profiles...", 0.9f);
                 RegisterBuildScenes();
+                NexoPlayModeBootstrap.Apply();
             }
             finally
             {
