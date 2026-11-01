@@ -20,6 +20,7 @@ namespace Nexo.UI
         private const string ThemeHive = "theme-hive";
         private const int BarCount = 24;
         private const long NotificationMs = 5500;
+        private const float GlitchThreshold = 0.05f;
 
         private static readonly string[] RootDebugLines =
         {
@@ -70,6 +71,7 @@ namespace Nexo.UI
         private IVisualElementScheduledItem _typewriter;
         private IVisualElementScheduledItem _spectro;
         private IVisualElementScheduledItem _pulse;
+        private IVisualElementScheduledItem _glitchPulse;
         private string _emotionClass;
         private float _noise;
         private int _infectedNearby;
@@ -140,6 +142,8 @@ namespace Nexo.UI
             _spectro?.Pause();
             _typewriter?.Pause();
             _pulse?.Pause();
+            _glitchPulse?.Pause();
+            _glitch?.RemoveFromClassList("hud-glitch-pulse");
         }
 
         private void PulsePortrait()
@@ -249,6 +253,27 @@ namespace Nexo.UI
                 _trustFill.style.width = Length.Percent(Mathf.Clamp(response.trust_level, 0, 100));
             }
             StartTypewriter(response.dialogue);
+
+            if (response.glitch_intensity > GlitchThreshold) PulseGlitch(response.glitch_intensity);
+        }
+
+        /// <summary>
+        /// Un único destello breve de interferencia (WCAG 2.3.1); se omite si está activo reducir movimiento.
+        /// </summary>
+        private void PulseGlitch(float intensity)
+        {
+            if (_reduceMotion || _glitch == null) return;
+
+            _glitchPulse?.Pause();
+            _glitch.AddToClassList("hud-glitch-pulse");
+
+            long durationMs = 80 + (long)(Mathf.Clamp01(intensity) * 220f);
+            _glitchPulse = _glitch.schedule.Execute(EndGlitchPulse).StartingIn(durationMs);
+        }
+
+        private void EndGlitchPulse()
+        {
+            _glitch.RemoveFromClassList("hud-glitch-pulse");
         }
 
         private void SetEmotion(ElenaEmotion emotion)
