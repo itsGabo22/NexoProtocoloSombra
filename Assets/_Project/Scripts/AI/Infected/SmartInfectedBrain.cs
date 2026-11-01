@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Nexo.Core;
 using UnityEngine;
 using UnityEngine.AI;
@@ -49,6 +50,10 @@ namespace Nexo.AI.Infected
         [Tooltip("Rango a intensidad 100. El rango real es intensity / 100 * este valor.")]
         [SerializeField] private float _maxHearingRange = 25f;
 
+        [Header("Proximidad (contexto de Elena / radar)")]
+        [Tooltip("Distancia al jugador a la que este infectado cuenta en infected_nearby.")]
+        [SerializeField] private float _nearbyRadius = 18f;
+
         [Header("Sabotaje de Luces")]
         [SerializeField] private bool _sabotageEnabled = true;
         [SerializeField] private float _sabotageRadius = 12f;
@@ -77,6 +82,10 @@ namespace Nexo.AI.Infected
         private float _lastAttackTime = float.NegativeInfinity;
         private float _lastSabotageTime;
         private float _lastMimicryTime;
+        private bool _isNearPlayer;
+
+        // Infectados actualmente dentro de _nearbyRadius del jugador (compartido entre instancias)
+        private static readonly HashSet<SmartInfectedBrain> NearbyInfected = new();
 
         /// <summary>Se emite cuando el infectado conecta un ataque cuerpo a cuerpo con el jugador.</summary>
         public event Action<SmartInfectedBrain> PlayerAttacked;
@@ -142,6 +151,29 @@ namespace Nexo.AI.Infected
                 _tickRoutine = null;
             }
             StopLookAround();
+
+            // Al descargarse el piso (o morir) deja de contar como cercano
+            UpdateProximity(false);
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            NearbyInfected.Clear();
+        }
+
+        /// <summary>
+        /// Mantiene el conjunto compartido de infectados cercanos y publica el recuento solo cuando cambia.
+        /// </summary>
+        private void UpdateProximity(bool isNear)
+        {
+            if (isNear == _isNearPlayer) return;
+            _isNearPlayer = isNear;
+
+            if (isNear) NearbyInfected.Add(this);
+            else NearbyInfected.Remove(this);
+
+            GameEvents.RaiseInfectedNearbyChanged(NearbyInfected.Count);
         }
 
         /// <summary>
@@ -175,6 +207,7 @@ namespace Nexo.AI.Infected
 
                 _currentState?.Tick();
                 UpdateAnimatorSpeed();
+                UpdateProximity(DistanceToPlayer() <= _nearbyRadius);
 
                 yield return _tickWait;
             }
