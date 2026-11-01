@@ -28,6 +28,7 @@ namespace Nexo.Core
             GameEvents.OnFloorChanged += HandleFloorChanged;
             GameEvents.OnNoiseChanged += HandleNoiseChanged;
             GameEvents.OnBatteryChanged += HandleBatteryChanged;
+            GameEvents.OnAvailableDoorsChanged += SetAvailableDoors;
         }
 
         private void OnDisable()
@@ -35,6 +36,7 @@ namespace Nexo.Core
             GameEvents.OnFloorChanged -= HandleFloorChanged;
             GameEvents.OnNoiseChanged -= HandleNoiseChanged;
             GameEvents.OnBatteryChanged -= HandleBatteryChanged;
+            GameEvents.OnAvailableDoorsChanged -= SetAvailableDoors;
         }
 
         private void HandleFloorChanged(int floor)
