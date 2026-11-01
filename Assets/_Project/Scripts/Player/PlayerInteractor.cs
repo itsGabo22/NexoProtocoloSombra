@@ -1,4 +1,5 @@
 using System.Collections;
+using Nexo.Core;
 using Nexo.Interaction;
 using Nexo.UI;
 using UnityEngine;
@@ -27,6 +28,7 @@ namespace Nexo.Player
         private IInteractable _currentInteractable;
         private Coroutine _scanRoutine;
         private WaitForSeconds _scanWait;
+        private bool _isCaptured;
 
         private void Awake()
         {
@@ -54,10 +56,10 @@ namespace Nexo.Player
                 _interactAction.action.Enable();
             }
 
-            if (_cameraTransform != null)
-            {
-                _scanRoutine = StartCoroutine(ScanRoutine());
-            }
+            GameEvents.OnPlayerCaught += HandlePlayerCaught;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
+
+            if (!_isCaptured) StartScanning();
         }
 
         private void OnDisable()
@@ -67,6 +69,35 @@ namespace Nexo.Player
                 _interactAction.action.performed -= HandleInteractPerformed;
             }
 
+            GameEvents.OnPlayerCaught -= HandlePlayerCaught;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
+
+            StopScanning();
+        }
+
+        private void HandlePlayerCaught()
+        {
+            // Durante la captura no se detecta ni se interactúa con nada hasta el reinicio del piso
+            _isCaptured = true;
+            StopScanning();
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            if (!_isCaptured) return;
+
+            _isCaptured = false;
+            StartScanning();
+        }
+
+        private void StartScanning()
+        {
+            if (_scanRoutine != null || _cameraTransform == null) return;
+            _scanRoutine = StartCoroutine(ScanRoutine());
+        }
+
+        private void StopScanning()
+        {
             if (_scanRoutine != null)
             {
                 StopCoroutine(_scanRoutine);
@@ -112,7 +143,7 @@ namespace Nexo.Player
 
         private void HandleInteractPerformed(InputAction.CallbackContext context)
         {
-            if (_currentInteractable == null) return;
+            if (_isCaptured || _currentInteractable == null) return;
 
             _currentInteractable.Interact();
 
