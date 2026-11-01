@@ -32,6 +32,7 @@ namespace Nexo.UI
         private Button _closeButton;
 
         private SecurityTerminal _terminal;
+        private bool _isCaptured;
 
         public bool IsOpen => _terminal != null;
 
@@ -58,6 +59,8 @@ namespace Nexo.UI
 
             SecurityTerminal.Opened += Open;
             GameEvents.OnUiAction += HandleUiAction;
+            GameEvents.OnPlayerCaught += HandlePlayerCaught;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
             if (_closeButton != null) _closeButton.clicked += Close;
             if (_closeAction != null)
             {
@@ -70,6 +73,8 @@ namespace Nexo.UI
         {
             SecurityTerminal.Opened -= Open;
             GameEvents.OnUiAction -= HandleUiAction;
+            GameEvents.OnPlayerCaught -= HandlePlayerCaught;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
             if (_closeButton != null) _closeButton.clicked -= Close;
             if (_closeAction != null) _closeAction.action.performed -= HandleClosePerformed;
 
@@ -81,7 +86,7 @@ namespace Nexo.UI
         /// </summary>
         public void Open(SecurityTerminal terminal)
         {
-            if (_root == null || terminal == null || IsOpen) return;
+            if (_root == null || terminal == null || IsOpen || _isCaptured) return;
 
             _terminal = terminal;
             _terminal.SetFeedsActive(true);
@@ -96,7 +101,12 @@ namespace Nexo.UI
             if (_playerMovement != null) _playerMovement.SetInputLocked(true, true);
         }
 
-        public void Close()
+        public void Close() => Close(true);
+
+        /// <summary>
+        /// Cierra la terminal. Con restoreInput = false no devuelve el control al jugador (captura en curso).
+        /// </summary>
+        private void Close(bool restoreInput)
         {
             if (!IsOpen) return;
 
@@ -107,7 +117,19 @@ namespace Nexo.UI
             _feeds?.Clear();
             _root.AddToClassList(HiddenClass);
 
-            if (_playerMovement != null) _playerMovement.SetInputLocked(false, false);
+            if (restoreInput && _playerMovement != null) _playerMovement.SetInputLocked(false, false);
+        }
+
+        private void HandlePlayerCaught()
+        {
+            // PlayerCaptureHandler mantiene congelado al jugador hasta el reinicio del piso
+            _isCaptured = true;
+            Close(false);
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            _isCaptured = false;
         }
 
         private void HandleClosePerformed(InputAction.CallbackContext context)
