@@ -57,6 +57,7 @@ namespace Nexo.UI
         private int _selected = -1;
         private bool _isOpen;
         private bool _isLocked;
+        private bool _isCaptured;
 
         /// <summary>Se emite con el OrderId confirmado (para órdenes que no son preguntas a Elena).</summary>
         public event Action<string> OrderSelected;
@@ -83,6 +84,8 @@ namespace Nexo.UI
             _root.RegisterCallback<PointerMoveEvent>(HandlePointerMove);
             _root.RegisterCallback<PointerDownEvent>(HandlePointerDown);
             GameEvents.OnPlotTwistTriggered += HandlePlotTwistTriggered;
+            GameEvents.OnPlayerCaught += HandlePlayerCaught;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
 
             if (_wheelAction != null)
             {
@@ -105,6 +108,8 @@ namespace Nexo.UI
                 _root.UnregisterCallback<PointerDownEvent>(HandlePointerDown);
             }
             GameEvents.OnPlotTwistTriggered -= HandlePlotTwistTriggered;
+            GameEvents.OnPlayerCaught -= HandlePlayerCaught;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
 
             if (_wheelAction != null)
             {
@@ -131,6 +136,18 @@ namespace Nexo.UI
 
         private void HandleCancelPerformed(InputAction.CallbackContext context) => Close();
 
+        private void HandlePlayerCaught()
+        {
+            // Cerrar sin confirmar ni devolver el control: PlayerCaptureHandler congela al jugador
+            _isCaptured = true;
+            Close(false);
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            _isCaptured = false;
+        }
+
         private void HandlePlotTwistTriggered()
         {
             _isLocked = true;
@@ -154,7 +171,7 @@ namespace Nexo.UI
 
         public void Open()
         {
-            if (_root == null || _isOpen || _isLocked) return;
+            if (_root == null || _isOpen || _isLocked || _isCaptured) return;
             if (_terminalController != null && _terminalController.IsOpen) return;
 
             _isOpen = true;
@@ -165,13 +182,18 @@ namespace Nexo.UI
             if (_playerMovement != null) _playerMovement.SetInputLocked(true, true);
         }
 
-        public void Close()
+        public void Close() => Close(true);
+
+        /// <summary>
+        /// Cierra la rueda sin confirmar. Con restoreInput = false no devuelve el control al jugador.
+        /// </summary>
+        private void Close(bool restoreInput)
         {
             if (!_isOpen) return;
 
             _isOpen = false;
             _root.AddToClassList(HiddenClass);
-            if (_playerMovement != null) _playerMovement.SetInputLocked(false, false);
+            if (restoreInput && _playerMovement != null) _playerMovement.SetInputLocked(false, false);
         }
 
         private void Confirm()
