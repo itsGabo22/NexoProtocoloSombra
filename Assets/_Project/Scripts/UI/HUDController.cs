@@ -54,7 +54,6 @@ namespace Nexo.UI
         private Label _typing;
         private Label _seal;
         private Label _interactPrompt;
-        private Label _subtitles;
 
         private readonly List<VisualElement> _bars = new();
         private readonly float[] _barLevels = new float[BarCount];
@@ -87,7 +86,6 @@ namespace Nexo.UI
             GameEvents.OnElenaResponse += HandleElenaResponse;
             GameEvents.OnElenaThinking += HandleElenaThinking;
             GameEvents.OnQuickQuestionsChanged += HandleQuickLabels;
-            GameEvents.OnSubtitle += HandleSubtitle;
             GameEvents.OnHudCorruptionRequested += PlayCorruptionSequence;
 
             for (int i = 0; i < _quick.Length; i++)
@@ -113,7 +111,6 @@ namespace Nexo.UI
             GameEvents.OnElenaResponse -= HandleElenaResponse;
             GameEvents.OnElenaThinking -= HandleElenaThinking;
             GameEvents.OnQuickQuestionsChanged -= HandleQuickLabels;
-            GameEvents.OnSubtitle -= HandleSubtitle;
             GameEvents.OnHudCorruptionRequested -= PlayCorruptionSequence;
 
             for (int i = 0; i < _quick.Length; i++)
@@ -150,7 +147,6 @@ namespace Nexo.UI
             _batteryValue = _root.Q<Label>("hud-battery-value");
             _debugText = _root.Q<Label>("hud-debug-text");
             _interactPrompt = _root.Q<Label>("hud-interact");
-            _subtitles = _root.Q<Label>("hud-subtitles");
 
             _portrait = _root.Q<VisualElement>("radio-elena-portrait");
             _trustFill = _root.Q<VisualElement>("radio-trust-fill");
@@ -278,12 +274,6 @@ namespace Nexo.UI
             bool hasPrompt = !string.IsNullOrEmpty(prompt);
             _interactPrompt.EnableInClassList("hidden", !hasPrompt);
             _interactPrompt.text = prompt;
-        }
-
-        private void HandleSubtitle(string text)
-        {
-            if (_subtitles == null) return;
-            _subtitles.text = text ?? string.Empty;
         }
 
         public void ShowNotification(HudNotification data)
