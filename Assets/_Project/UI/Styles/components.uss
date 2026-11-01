@@ -97,3 +97,6 @@
 /* ---------- Ruta segura (HIGHLIGHT_SAFE_ROUTE) ---------- */
 .crosshair { transition-property: scale, background-color, opacity; transition-duration: 250ms; }
 .crosshair.crosshair--route { background-color: var(--c-ok); opacity: 1; scale: 1.8 1.8; }
+
+/* ---------- Interferencia de transmisión (glitch_intensity) ---------- */
+.glitch-overlay.hud-glitch-pulse { background-color: rgba(34, 211, 238, 0.16); }
