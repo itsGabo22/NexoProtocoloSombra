@@ -137,6 +137,11 @@ namespace Nexo.EditorTools
             controller.height = 1.8f;
             controller.radius = 0.35f;
             controller.center = new Vector3(0f, 0.9f, 0f);
+            // Skin ~10% del radio evita engancharse en esquinas; minMoveDistance 0 evita que el movimiento lento se ignore
+            controller.skinWidth = 0.04f;
+            controller.stepOffset = 0.3f;
+            controller.slopeLimit = 45f;
+            controller.minMoveDistance = 0f;
 
             // Modelo Mixamo con AC_Alex (opcional si los assets existen)
             Animator animator = null;
