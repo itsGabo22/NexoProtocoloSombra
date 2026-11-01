@@ -93,3 +93,7 @@
 /* ---------- Pantalla de captura ---------- */
 .hud-capture { background-color: rgba(10, 0, 2, 0.85); opacity: 0; transition-property: opacity; transition-duration: 400ms; }
 .hud-capture--visible { opacity: 1; }
+
+/* ---------- Ruta segura (HIGHLIGHT_SAFE_ROUTE) ---------- */
+.crosshair { transition-property: scale, background-color, opacity; transition-duration: 250ms; }
+.crosshair.crosshair--route { background-color: var(--c-ok); opacity: 1; scale: 1.8 1.8; }
