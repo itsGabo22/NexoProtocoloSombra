@@ -62,6 +62,8 @@ namespace Nexo.Core
         public static event Action OnHudCorruptionRequested;
         public static event Action OnHudCorruptionFinished;
         public static event Action OnPlotTwistTriggered;
+        public static event Action<string[]> OnAvailableDoorsChanged;
+        public static event Action<Transform> OnPlayerSpawned;
 
         public static void RaiseNoiseChanged(float noise) => OnNoiseChanged?.Invoke(noise);
         public static void RaiseBatteryChanged(float battery) => OnBatteryChanged?.Invoke(battery);
@@ -79,6 +81,8 @@ namespace Nexo.Core
         public static void RaiseHudCorruptionRequested() => OnHudCorruptionRequested?.Invoke();
         public static void RaiseHudCorruptionFinished() => OnHudCorruptionFinished?.Invoke();
         public static void RaisePlotTwistTriggered() => OnPlotTwistTriggered?.Invoke();
+        public static void RaiseAvailableDoorsChanged(string[] doorIds) => OnAvailableDoorsChanged?.Invoke(doorIds);
+        public static void RaisePlayerSpawned(Transform player) => OnPlayerSpawned?.Invoke(player);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -99,6 +103,8 @@ namespace Nexo.Core
             OnHudCorruptionRequested = null;
             OnHudCorruptionFinished = null;
             OnPlotTwistTriggered = null;
+            OnAvailableDoorsChanged = null;
+            OnPlayerSpawned = null;
         }
     }
 }
