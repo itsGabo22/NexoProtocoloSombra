@@ -34,12 +34,18 @@ namespace Nexo.UI
 
         [SerializeField] private bool _reduceMotion;
 
+        [Header("Órdenes Tácticas de Elena")]
+        [Tooltip("Destino por defecto de HIGHLIGHT_SAFE_ROUTE cuando Elena no indica target_id.")]
+        [SerializeField] private string _safeRouteDefaultTarget = "F12_Door_Stairs";
+        [SerializeField] private float _radarRangeMeters = 18f;
+
         private VisualElement _root;
         private VisualElement _spectrogram;
         private VisualElement _notifications;
         private VisualElement _glitch;
         private VisualElement _debug;
         private VisualElement _capture;
+        private VisualElement _crosshair;
         private VisualElement _portrait;
         private VisualElement _trustFill;
         private VisualElement _batteryFill;
@@ -66,6 +72,7 @@ namespace Nexo.UI
         private IVisualElementScheduledItem _pulse;
         private string _emotionClass;
         private float _noise;
+        private int _infectedNearby;
 
         public void SetReduceMotion(bool reduce) => _reduceMotion = reduce;
 
@@ -90,6 +97,8 @@ namespace Nexo.UI
             GameEvents.OnHudCorruptionRequested += PlayCorruptionSequence;
             GameEvents.OnPlayerCaught += ShowCaptureScreen;
             GameEvents.OnFloorChanged += HandleFloorChanged;
+            GameEvents.OnUiAction += HandleUiAction;
+            GameEvents.OnInfectedNearbyChanged += HandleInfectedNearbyChanged;
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -117,6 +126,8 @@ namespace Nexo.UI
             GameEvents.OnHudCorruptionRequested -= PlayCorruptionSequence;
             GameEvents.OnPlayerCaught -= ShowCaptureScreen;
             GameEvents.OnFloorChanged -= HandleFloorChanged;
+            GameEvents.OnUiAction -= HandleUiAction;
+            GameEvents.OnInfectedNearbyChanged -= HandleInfectedNearbyChanged;
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -161,6 +172,7 @@ namespace Nexo.UI
             _glitch = _root.Q<VisualElement>("hud-glitch");
             _debug = _root.Q<VisualElement>("hud-debug");
             _capture = _root.Q<VisualElement>("hud-capture");
+            _crosshair = _root.Q<VisualElement>("hud-crosshair");
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -272,6 +284,42 @@ namespace Nexo.UI
                 _quick[i].SetEnabled(has);
                 if (has) _quick[i].text = $"[{i + 1}] {labels[i]}";
             }
+        }
+
+        private void HandleInfectedNearbyChanged(int count)
+        {
+            _infectedNearby = Mathf.Max(0, count);
+        }
+
+        /// <summary>
+        /// Traduce las órdenes tácticas de Elena (ya validadas por ElenaUiCommandRouter) en notificaciones del HUD.
+        /// </summary>
+        private void HandleUiAction(ElenaUiAction action, string targetId)
+        {
+            switch (action)
+            {
+                case ElenaUiAction.PingEnemyRadar:
+                    string plural = _infectedNearby == 1 ? "firma hostil" : "firmas hostiles";
+                    ShowNotification(new HudNotification("RADAR", $"⚠ {_infectedNearby} {plural} a menos de {Mathf.RoundToInt(_radarRangeMeters)} m. Muévete en silencio.", false));
+                    break;
+
+                case ElenaUiAction.HighlightSafeRoute:
+                    string destination = string.IsNullOrEmpty(targetId) ? _safeRouteDefaultTarget : targetId;
+                    ShowNotification(new HudNotification("RUTA SEGURA", $"➜ Ruta despejada hacia {destination}. Mantente agachado.", false));
+                    _crosshair?.AddToClassList("crosshair--route");
+                    _root.schedule.Execute(ClearRouteHighlight).StartingIn(NotificationMs);
+                    break;
+
+                case ElenaUiAction.ShowHint:
+                    string hint = string.IsNullOrEmpty(targetId) ? "Revisa la terminal de seguridad: controla las puertas del piso." : targetId;
+                    ShowNotification(new HudNotification("PISTA", $"ℹ {hint}", false));
+                    break;
+            }
+        }
+
+        private void ClearRouteHighlight()
+        {
+            _crosshair?.RemoveFromClassList("crosshair--route");
         }
 
         private void ShowCaptureScreen()
