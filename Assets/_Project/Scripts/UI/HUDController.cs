@@ -39,6 +39,7 @@ namespace Nexo.UI
         private VisualElement _notifications;
         private VisualElement _glitch;
         private VisualElement _debug;
+        private VisualElement _capture;
         private VisualElement _portrait;
         private VisualElement _trustFill;
         private VisualElement _batteryFill;
@@ -87,6 +88,8 @@ namespace Nexo.UI
             GameEvents.OnElenaThinking += HandleElenaThinking;
             GameEvents.OnQuickQuestionsChanged += HandleQuickLabels;
             GameEvents.OnHudCorruptionRequested += PlayCorruptionSequence;
+            GameEvents.OnPlayerCaught += ShowCaptureScreen;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -112,6 +115,8 @@ namespace Nexo.UI
             GameEvents.OnElenaThinking -= HandleElenaThinking;
             GameEvents.OnQuickQuestionsChanged -= HandleQuickLabels;
             GameEvents.OnHudCorruptionRequested -= PlayCorruptionSequence;
+            GameEvents.OnPlayerCaught -= ShowCaptureScreen;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -155,6 +160,7 @@ namespace Nexo.UI
             _notifications = _root.Q<VisualElement>("hud-notifications");
             _glitch = _root.Q<VisualElement>("hud-glitch");
             _debug = _root.Q<VisualElement>("hud-debug");
+            _capture = _root.Q<VisualElement>("hud-capture");
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -266,6 +272,33 @@ namespace Nexo.UI
                 _quick[i].SetEnabled(has);
                 if (has) _quick[i].text = $"[{i + 1}] {labels[i]}";
             }
+        }
+
+        private void ShowCaptureScreen()
+        {
+            if (_capture == null || !_capture.ClassListContains("hidden")) return;
+
+            _capture.RemoveFromClassList("hidden");
+            _capture.schedule.Execute(AddCaptureVisible).StartingIn(20);
+        }
+
+        private void AddCaptureVisible()
+        {
+            _capture.AddToClassList("hud-capture--visible");
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            // El piso se (re)cargó: retirar la pantalla de captura con fundido
+            if (_capture == null || _capture.ClassListContains("hidden")) return;
+
+            _capture.RemoveFromClassList("hud-capture--visible");
+            _capture.schedule.Execute(HideCapture).StartingIn(400);
+        }
+
+        private void HideCapture()
+        {
+            _capture.AddToClassList("hidden");
         }
 
         public void SetInteractPrompt(string prompt)
