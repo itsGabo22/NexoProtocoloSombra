@@ -2,6 +2,7 @@
     <Style src='../Styles/tailwind-utilities.uss' />
     <Style src='../Styles/theme-nexo-blue.uss' />
     <Style src='../Styles/theme-hive-red.uss' />
+    <Style src='../Styles/nexo-menu-tokens.uss' />
     <Style src='../Styles/components.uss' />
 
     <ui:VisualElement picking-mode='Ignore' name='hud-root' class='theme-nexo absolute inset-0 pointer-none'>
