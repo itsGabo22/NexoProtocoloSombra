@@ -11,4 +11,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Floors/Floor12_Offices.unity
     guid: 4930b49e0809ed748b6df8e954754d1f
+  - enabled: 1
+    path: Assets/_Project/Scenes/Floors/Floor06_Labs.unity
+    guid: 9479952b65755fa43930338cc7efddc5
+  - enabled: 1
+    path: Assets/_Project/Scenes/Floors/Floor01_Lobby.unity
+    guid: 5596aaa49564b2e4ab3797ebf6d14b36
   m_configObjects: {}
