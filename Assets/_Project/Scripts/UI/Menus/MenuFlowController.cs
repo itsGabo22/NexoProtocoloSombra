@@ -73,12 +73,14 @@ namespace Nexo.UI.Menus
         {
             AccessibilitySettings.Changed += HandleAccessibilityChanged;
             MenuEvents.ShowFloorRestartedRequested += HandleShowFloorRestartedRequested;
+            MenuEvents.ShowCreditsRequested += HandleShowCreditsRequested;
         }
 
         private void OnDisable()
         {
             AccessibilitySettings.Changed -= HandleAccessibilityChanged;
             MenuEvents.ShowFloorRestartedRequested -= HandleShowFloorRestartedRequested;
+            MenuEvents.ShowCreditsRequested -= HandleShowCreditsRequested;
 
             _activeScreen?.Unbind();
             _activeScreen = null;
@@ -146,6 +148,15 @@ namespace Nexo.UI.Menus
         private void HandleShowFloorRestartedRequested()
         {
             ShowScreen(ScreenId.FloorRestarted);
+        }
+
+        /// <summary>
+        /// Final del giro: créditos con el mismo tratamiento que cualquier menú (HUD oculto, cursor visible,
+        /// movimiento del jugador bloqueado). Esc en Créditos vuelve al menú principal.
+        /// </summary>
+        private void HandleShowCreditsRequested()
+        {
+            ShowScreen(ScreenId.Credits);
         }
 
         private void HandleAccessibilityChanged(AccessibilityOptions options)
