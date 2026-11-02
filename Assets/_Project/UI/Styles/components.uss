@@ -42,6 +42,10 @@
 /* Notificaciones: estado base oculto, .hud-notification--visible las muestra */
 .hud-notification { width: 360px; margin-bottom: 8px; padding: 10px 12px; background-color: var(--c-surface); border-color: var(--c-accent); border-width: 1px; border-radius: 6px; opacity: 0; translate: 0 -12px; transition-property: opacity, translate; transition-duration: 250ms; }
 .hud-notification--visible { opacity: 1; translate: 0 0; }
+/* Pila bajo los vitales: tope de altura para no alcanzar el panel de ruido (abajo izquierda) a 100/125/150 %;
+   si hay demasiadas tarjetas se recortan las más antiguas (arriba) y las nuevas siguen visibles */
+.hud-notifications-stack { max-height: 720px; overflow: hidden; justify-content: flex-end; }
+.hud-notifications-stack > .hud-notification { flex-shrink: 0; }
 
 /* Mensaje FALSO (Mimicry): 4 anomalías sutiles, ninguna depende solo del color */
 .hud-notification--fake { border-color: var(--c-fake); letter-spacing: 3px; -unity-font-style: italic; rotate: -0.6deg; }
