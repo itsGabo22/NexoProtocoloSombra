@@ -1,4 +1,5 @@
 using Nexo.Accessibility;
+using Nexo.Narrative;
 using Nexo.Player;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -89,6 +90,13 @@ namespace Nexo.UI.Menus
 
         private void Start()
         {
+            // Tras la recarga posterior al giro final se va directo al menú principal (una sola vez)
+            if (MenuStartState.ConsumeSkipBoot())
+            {
+                ShowScreen(ScreenId.MainMenu);
+                return;
+            }
+
             ShowScreen(_playBootOnStart ? ScreenId.BootAwakening : ScreenId.None);
         }
 
@@ -98,6 +106,13 @@ namespace Nexo.UI.Menus
         public void ShowScreen(ScreenId screen)
         {
             if (_document == null) return;
+
+            // Volver al menú tras el giro (p. ej. Esc en Créditos) pasa por MenuGameFlowBridge, que recarga la escena
+            if (screen == ScreenId.MainMenu && NarrativeEvents.TwistHasPlayed)
+            {
+                MenuEvents.RaiseReturnToMainMenuRequested();
+                return;
+            }
 
             _activeScreen?.Unbind();
             _activeScreen = null;
