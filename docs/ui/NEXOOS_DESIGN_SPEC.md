@@ -172,7 +172,7 @@ No existen: `gap`, `rem`, CSS Grid, `@keyframes`, `box-shadow`, degradados, `bac
   - `MATERIA` / `Diseño de Interfaces · Ingeniería de Software, 5.º semestre`
   - `DIÁLOGOS DE ELENA` / `Gemini 2.5 Flash`
   - `ARMA M1911` / `Nokobot, Modern Guns · Handgun v1.2 (Unity Asset Store) · Standard Unity Asset Store EULA`
-  - `PERSONAJE Y ANIMACIONES` / `Mixamo [confirmar licencia]`
+  - `PERSONAJE Y ANIMACIONES` / `Mixamo (Adobe)`
   - `EDIFICIO DE OFICINAS Y ENTORNO` / `[Autor del pack y licencia]`
 - Pista `Vuelve al menú principal.`; KeyHint: `Esc` Atrás.
 

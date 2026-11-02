@@ -30,7 +30,7 @@
             <ui:Label name="cr-weapon-label" text="ARMA M1911" class="label text-muted nx-mb-4" />
             <ui:Label name="cr-weapon-value" text="Nokobot, Modern Guns · Handgun v1.2 (Unity Asset Store) · Standard Unity Asset Store EULA" class="body text-main wrap nx-mb-24" />
             <ui:Label name="cr-character-label" text="PERSONAJE Y ANIMACIONES" class="label text-muted nx-mb-4" />
-            <ui:Label name="cr-character-value" text="Mixamo [confirmar licencia]" class="body text-main wrap nx-mb-24" />
+            <ui:Label name="cr-character-value" text="Mixamo (Adobe)" class="body text-main wrap nx-mb-24" />
             <ui:Label name="cr-building-label" text="EDIFICIO DE OFICINAS Y ENTORNO" class="label text-muted nx-mb-4" />
             <ui:Label name="cr-building-value" text="[Autor del pack y licencia]" class="body text-main wrap nx-mb-24" />
         </ui:VisualElement>

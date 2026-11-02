@@ -24,7 +24,7 @@ Este registro documenta todo asset externo necesario para abrir y compilar el pr
 ## Assets propios curados
 
 Solo los modelos, texturas y audio propios que terminan en el build se versionan con Git LFS, dentro de `Assets/_Project/`. Objetivo total orientativo: menos de 500 MB.
-- `Assets/_Project/Models/Characters/Ch33_nonPBR1.fbx` (Personaje Alex / Mixamo)
+- `Assets/_Project/Models/Characters/Ch33_nonPBR1.fbx` (Personaje Alex · Mixamo (Adobe))
 - `Assets/_Project/Animations/Clips/Ch33_nonPBR@Pistol Walk Backward.fbx` (Animación de retroceso)
 - `Assets/_Project/Animations/Controllers/AC_Alex.controller` (Animator Controller)
 - `Assets/_Project/Scenes/Floors/Floor12_Offices.unity` (Escena Piso 12 de Carlos)
