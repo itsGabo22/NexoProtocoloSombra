@@ -31,7 +31,8 @@
         { "name": "", "id": "ba9f5a01-1b52-4e2f-9f4a-20ac89f22015", "path": "<Keyboard>/q", "interactions": "", "processors": "", "groups": "KeyboardMouse", "action": "OrderWheel", "isComposite": false, "isPartOfComposite": false },
         { "name": "", "id": "ba9f5a01-1b52-4e2f-9f4a-20ac89f22016", "path": "<Gamepad>/leftShoulder", "interactions": "", "processors": "", "groups": "Gamepad", "action": "OrderWheel", "isComposite": false, "isPartOfComposite": false },
         { "name": "", "id": "ba9f5a01-1b52-4e2f-9f4a-20ac89f22017", "path": "<Keyboard>/escape", "interactions": "", "processors": "", "groups": "KeyboardMouse", "action": "Pause", "isComposite": false, "isPartOfComposite": false },
-        { "name": "", "id": "ba9f5a01-1b52-4e2f-9f4a-20ac89f22018", "path": "<Gamepad>/start", "interactions": "", "processors": "", "groups": "Gamepad", "action": "Pause", "isComposite": false, "isPartOfComposite": false }
+        { "name": "", "id": "ba9f5a01-1b52-4e2f-9f4a-20ac89f22018", "path": "<Gamepad>/start", "interactions": "", "processors": "", "groups": "Gamepad", "action": "Pause", "isComposite": false, "isPartOfComposite": false },
+        { "name": "", "id": "1413ab3d-5bc3-45dd-b36a-7d059a76afd9", "path": "<Keyboard>/p", "interactions": "", "processors": "", "groups": "KeyboardMouse", "action": "Pause", "isComposite": false, "isPartOfComposite": false }
       ]
     },
     {
