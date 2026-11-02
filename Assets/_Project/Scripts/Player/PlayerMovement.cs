@@ -57,10 +57,14 @@ namespace Nexo.Player
         public event Action<bool> SprintStateChanged;
 
         private bool _wasSprintingMoving;
+        private bool _hasSpeedParam;
+        private bool _hasIsMovingParam;
+        private bool _hasIsCrouchingParam;
 
         private void Awake()
         {
             _controller = GetComponent<CharacterController>();
+            CacheAnimatorParameters();
 
             // Si no se asignó la cabeza manualmente, buscarla en la jerarquía del modelo Mixamo
             if (_headBoneToHide == null)
@@ -118,8 +122,8 @@ namespace Nexo.Player
             NotifySprintState();
             if (_characterAnimator != null)
             {
-                _characterAnimator.SetFloat(SpeedHash, 0f);
-                _characterAnimator.SetBool(IsMovingHash, false);
+                if (_hasSpeedParam) _characterAnimator.SetFloat(SpeedHash, 0f);
+                if (_hasIsMovingParam) _characterAnimator.SetBool(IsMovingHash, false);
             }
         }
 
@@ -235,9 +239,35 @@ namespace Nexo.Player
             float speedMagnitude = MoveInput.magnitude;
             if (IsSprinting) speedMagnitude *= 1.5f;
 
-            _characterAnimator.SetFloat(SpeedHash, speedMagnitude);
-            _characterAnimator.SetBool(IsMovingHash, IsMoving);
-            _characterAnimator.SetBool(IsCrouchingHash, _isCrouching);
+            if (_hasSpeedParam) _characterAnimator.SetFloat(SpeedHash, speedMagnitude);
+            if (_hasIsMovingParam) _characterAnimator.SetBool(IsMovingHash, IsMoving);
+            if (_hasIsCrouchingParam) _characterAnimator.SetBool(IsCrouchingHash, _isCrouching);
+        }
+
+        /// <summary>
+        /// Comprueba una sola vez qué parámetros existen en el Animator Controller asignado.
+        /// Escribir un parámetro inexistente genera un error por frame que satura la Console y el Editor.log.
+        /// </summary>
+        private void CacheAnimatorParameters()
+        {
+            if (_characterAnimator == null || _characterAnimator.runtimeAnimatorController == null)
+            {
+                _characterAnimator = null;
+                return;
+            }
+
+            foreach (AnimatorControllerParameter parameter in _characterAnimator.parameters)
+            {
+                if (parameter.nameHash == SpeedHash) _hasSpeedParam = parameter.type == AnimatorControllerParameterType.Float;
+                else if (parameter.nameHash == IsMovingHash) _hasIsMovingParam = parameter.type == AnimatorControllerParameterType.Bool;
+                else if (parameter.nameHash == IsCrouchingHash) _hasIsCrouchingParam = parameter.type == AnimatorControllerParameterType.Bool;
+            }
+
+            if (!_hasSpeedParam || !_hasIsMovingParam || !_hasIsCrouchingParam)
+            {
+                Debug.LogWarning($"[PlayerMovement] '{_characterAnimator.runtimeAnimatorController.name}' no tiene todos los parámetros " +
+                                 "Speed (Float), IsMoving (Bool) e IsCrouching (Bool); los que falten se ignoran.", this);
+            }
         }
     }
 }
