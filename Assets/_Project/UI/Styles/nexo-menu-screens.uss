@@ -42,7 +42,7 @@
 /* ---------- 4. Menú principal ---------- */
 .mm-scrim { position: absolute; left: 0; top: 0; bottom: 0; width: 1056px; background-color: rgba(5, 9, 16, 0.55); }
 .mm-brand { position: absolute; left: 160px; top: 128px; }
-.mm-rule { position: absolute; left: 131px; top: 216px; width: 2px; height: 396px; background-color: var(--c-line-faint); }
+.mm-rule { position: absolute; left: 131px; top: 216px; width: 2px; height: 324px; background-color: var(--c-line-faint); }
 .mm-rule-focus { position: absolute; left: 130px; top: 240px; width: 4px; height: 60px; background-color: var(--c-accent); }
 .mm-list { position: absolute; left: 160px; top: 240px; width: 640px; }
 .mm-focus-line { position: absolute; left: 160px; top: 304px; width: 520px; height: 2px; background-color: var(--c-accent); opacity: 0.6; }
