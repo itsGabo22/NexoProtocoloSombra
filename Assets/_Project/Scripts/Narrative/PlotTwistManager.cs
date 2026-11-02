@@ -60,6 +60,7 @@ namespace Nexo.Narrative
             if (_played) return;
 
             _played = true;
+            NarrativeEvents.TwistHasPlayed = true;
             _sequence = StartCoroutine(PlaySequence());
         }
 
