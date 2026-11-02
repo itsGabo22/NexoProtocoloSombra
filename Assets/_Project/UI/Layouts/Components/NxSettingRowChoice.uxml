@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Fila de ajuste, variante choice (spec §5 SettingRow): etiqueta + ‹ valor › (flechas visibles solo con foco).
+         Instancia enfocable con clase nx-focusable; foco con is-focused o :focus. -->
+    <ui:VisualElement name="setting-row" class="nx-setting-row">
+        <ui:Label name="setting-row-label" text="Ajuste" class="nx-setting-row__label body" />
+        <ui:Label name="setting-row-prev" text="‹" class="nx-setting-row__arrow body" />
+        <ui:Label name="setting-row-value" text="Valor" class="nx-setting-row__value body" />
+        <ui:Label name="setting-row-next" text="›" class="nx-setting-row__arrow body" />
+        <ui:VisualElement name="setting-row-separator" picking-mode="Ignore" class="nx-setting-row__sep" />
+    </ui:VisualElement>
+</ui:UXML>
