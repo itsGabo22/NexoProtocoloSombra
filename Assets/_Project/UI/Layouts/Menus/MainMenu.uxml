@@ -1,0 +1,83 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxLensFrame" src="../Components/NxLensFrame.uxml" />
+    <ui:Template name="NxPanel" src="../Components/NxPanel.uxml" />
+    <ui:Template name="NxMenuItem" src="../Components/NxMenuItem.uxml" />
+    <ui:Template name="NxKeyHint" src="../Components/NxKeyHint.uxml" />
+
+    <!-- Pantalla 4: Menú principal (hub) (spec §6.4). -->
+    <ui:VisualElement name="mm-root" class="theme-nexo nx-screen">
+        <!-- Velo lateral plano mientras no exista el sprite degradado. -->
+        <ui:VisualElement name="mm-scrim" picking-mode="Ignore" class="mm-scrim" />
+        <ui:Instance template="NxLensFrame" name="mm-lens" picking-mode="Ignore" class="nx-fill nx-lens--ruler" />
+
+        <ui:Label name="mm-brand" text="NEXO: PROTOCOLO SOMBRA" class="mm-brand label text-muted" />
+
+        <ui:VisualElement name="mm-rule" picking-mode="Ignore" class="mm-rule" />
+        <!-- TODO controller: mover mm-rule-focus, mm-focus-line y mm-focus-end a la fila enfocada (top de la fila + 0, + 64 y + 58). -->
+        <ui:VisualElement name="mm-rule-focus" picking-mode="Ignore" class="mm-rule-focus" />
+
+        <ui:VisualElement name="mm-list" class="mm-list">
+            <ui:Instance template="NxMenuItem" name="mm-item-play" focusable="true" tabindex="0" class="nx-focusable is-focused">
+                <ui:AttributeOverrides element-name="menu-item-number" text="01" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="JUGAR" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="mm-item-options" focusable="true" tabindex="1" class="nx-focusable">
+                <ui:AttributeOverrides element-name="menu-item-number" text="02" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="OPCIONES" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="mm-item-accessibility" focusable="true" tabindex="2" class="nx-focusable">
+                <ui:AttributeOverrides element-name="menu-item-number" text="03" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="ACCESIBILIDAD" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="mm-item-credits" focusable="true" tabindex="3" class="nx-focusable">
+                <ui:AttributeOverrides element-name="menu-item-number" text="04" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="CRÉDITOS" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="mm-item-quit" focusable="true" tabindex="4" class="nx-focusable">
+                <ui:AttributeOverrides element-name="menu-item-number" text="05" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="SALIR" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="mm-focus-line" picking-mode="Ignore" class="mm-focus-line" />
+        <ui:VisualElement name="mm-focus-end" picking-mode="Ignore" class="mm-focus-end" />
+
+        <ui:Instance template="NxPanel" name="mm-bio-panel" class="nx-bio-panel">
+            <ui:AttributeOverrides element-name="panel-label" text="ESTADO BIOMÉTRICO" />
+            <ui:Label name="mm-bio-value" text="99% SANO" class="readout text-main" />
+            <ui:Label name="mm-bio-status" text="NO INFECTADO" class="body-sm text-muted" />
+        </ui:Instance>
+
+        <ui:Instance template="NxPanel" name="mm-elena-panel" class="mm-elena">
+            <ui:AttributeOverrides element-name="panel-label" text="ELENA · CANAL SEGURO" />
+            <ui:Label name="mm-elena-seal" text="✔ BIO-ID VERIFICADO" class="label text-ok" />
+            <!-- TODO controller: estado del canal de Elena. -->
+            <ui:Label name="mm-elena-status" text="En espera" class="body-sm text-main" />
+        </ui:Instance>
+
+        <!-- TODO controller: texto de mm-hint según el ítem enfocado:
+             JUGAR "Inicia el protocolo en el Piso 12." · OPCIONES "Ajusta audio, video y controles." ·
+             ACCESIBILIDAD "Contraste, escala, daltonismo y movimiento." · CRÉDITOS "Conoce quién hizo el juego." · SALIR "Cierra el juego." -->
+        <ui:Label name="mm-hint" text="Inicia el protocolo en el Piso 12." class="nx-hint body text-muted" />
+
+        <ui:VisualElement name="mm-keyhints" picking-mode="Ignore" class="nx-keyhints">
+            <ui:Instance template="NxKeyHint" name="mm-key-move">
+                <ui:AttributeOverrides element-name="keyhint-key" text="↑ ↓" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Mover" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="mm-key-confirm">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Enter" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Confirmar" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Label name="mm-version" text="NEXOOS V4.2" class="nx-version label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>
