@@ -12,6 +12,7 @@ namespace Nexo.Narrative
     [DisallowMultipleComponent]
     public sealed class BioScanner : MonoBehaviour, IInteractable
     {
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
         private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
@@ -76,10 +77,15 @@ namespace Nexo.Narrative
             {
                 if (rend == null) continue;
 
-                // MaterialPropertyBlock: tiñe sin instanciar materiales (URP Lit: _BaseColor y _EmissionColor)
+                // MaterialPropertyBlock: tiñe sin instanciar materiales. Standard usa _Color; URP Lit usa _BaseColor.
+                // La emisión del Standard solo se ve si el material ya tiene activa la palabra clave _EMISSION.
+                Material material = rend.sharedMaterial;
+                if (material == null) continue;
+
                 rend.GetPropertyBlock(_block);
-                _block.SetColor(BaseColorId, color);
-                _block.SetColor(EmissionColorId, color * 2f);
+                if (material.HasProperty(ColorId)) _block.SetColor(ColorId, color);
+                if (material.HasProperty(BaseColorId)) _block.SetColor(BaseColorId, color);
+                if (material.HasProperty(EmissionColorId)) _block.SetColor(EmissionColorId, color * 2f);
                 rend.SetPropertyBlock(_block);
             }
         }
