@@ -32,16 +32,12 @@
                 <ui:AttributeOverrides element-name="menu-item-number" text="02" />
                 <ui:AttributeOverrides element-name="menu-item-text" text="OPCIONES" />
             </ui:Instance>
-            <ui:Instance template="NxMenuItem" name="mm-item-accessibility" focusable="true" tabindex="2" class="nx-focusable">
+            <ui:Instance template="NxMenuItem" name="mm-item-credits" focusable="true" tabindex="2" class="nx-focusable">
                 <ui:AttributeOverrides element-name="menu-item-number" text="03" />
-                <ui:AttributeOverrides element-name="menu-item-text" text="ACCESIBILIDAD" />
-            </ui:Instance>
-            <ui:Instance template="NxMenuItem" name="mm-item-credits" focusable="true" tabindex="3" class="nx-focusable">
-                <ui:AttributeOverrides element-name="menu-item-number" text="04" />
                 <ui:AttributeOverrides element-name="menu-item-text" text="CRÉDITOS" />
             </ui:Instance>
-            <ui:Instance template="NxMenuItem" name="mm-item-quit" focusable="true" tabindex="4" class="nx-focusable">
-                <ui:AttributeOverrides element-name="menu-item-number" text="05" />
+            <ui:Instance template="NxMenuItem" name="mm-item-quit" focusable="true" tabindex="3" class="nx-focusable">
+                <ui:AttributeOverrides element-name="menu-item-number" text="04" />
                 <ui:AttributeOverrides element-name="menu-item-text" text="SALIR" />
             </ui:Instance>
         </ui:VisualElement>
@@ -64,7 +60,7 @@
 
         <!-- TODO controller: texto de mm-hint según el ítem enfocado:
              JUGAR "Inicia el protocolo en el Piso 12." · OPCIONES "Ajusta audio, video y controles." ·
-             ACCESIBILIDAD "Contraste, escala, daltonismo y movimiento." · CRÉDITOS "Conoce quién hizo el juego." · SALIR "Cierra el juego." -->
+             CRÉDITOS "Conoce quién hizo el juego." · SALIR "Cierra el juego." (la accesibilidad está en la pestaña de OPCIONES) -->
         <ui:Label name="mm-hint" text="Inicia el protocolo en el Piso 12." class="nx-hint body text-muted" />
 
         <ui:VisualElement name="mm-keyhints" picking-mode="Ignore" class="nx-keyhints">
