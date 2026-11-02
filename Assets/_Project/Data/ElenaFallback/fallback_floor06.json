@@ -1,0 +1,52 @@
+{
+  "entries": [
+    {
+      "floor": 6,
+      "key": "SAFE_PATH",
+      "response": {
+        "dialogue": "El laboratorio está vacío, lo veo por la cámara. Si se apagan las luces, pulsa F y usa la visión térmica, ¿sí?",
+        "emotion": "WHISPER",
+        "ui_action": "HIGHLIGHT_SAFE_ROUTE",
+        "target_id": "F06_Door_Lab",
+        "trust_level": 62,
+        "glitch_intensity": 0.1
+      }
+    },
+    {
+      "floor": 6,
+      "key": "OPEN_DOOR",
+      "response": {
+        "dialogue": "Espera, espera... ¡ya! Te abrí la puerta de las escaleras. Corre antes de que vuelvan a cerrarla.",
+        "emotion": "URGENT",
+        "ui_action": "UNLOCK_DOOR",
+        "target_id": "F06_Door_Stairs",
+        "trust_level": 66,
+        "glitch_intensity": 0.1
+      }
+    },
+    {
+      "floor": 6,
+      "key": "FEAR",
+      "response": {
+        "dialogue": "Escúchame bien: si te llega un mensaje mío sin el sello BIO-ID, no soy yo. Es una trampa, Alex.",
+        "emotion": "SCARED",
+        "ui_action": "NONE",
+        "target_id": "",
+        "trust_level": 70,
+        "glitch_intensity": 0.15
+      }
+    },
+    {
+      "floor": 6,
+      "key": "GENERIC",
+      "response": {
+        "dialogue": "Aquí abajo se oyen cosas... Si se va la luz, no corras. Pulsa F y mira por dónde vas.",
+        "emotion": "WHISPER",
+        "ui_action": "NONE",
+        "target_id": "",
+        "trust_level": 60,
+        "glitch_intensity": 0.1
+      }
+    }
+  ]
+}

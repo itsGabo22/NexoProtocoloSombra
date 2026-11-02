@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Leyenda de tecla (spec §5 KeyHint): tecla + acción. Separación de 32px entre leyendas (16px a cada lado).
+         Variante de mando: modificador BEM pad de nx-keyhint en la instancia (caja 36x36 redonda). -->
+    <ui:VisualElement name="keyhint" class="nx-keyhint">
+        <ui:Label name="keyhint-key" text="Enter" class="nx-keyhint__key label" />
+        <ui:Label name="keyhint-action" text="Acción" class="nx-keyhint__action body" />
+    </ui:VisualElement>
+</ui:UXML>

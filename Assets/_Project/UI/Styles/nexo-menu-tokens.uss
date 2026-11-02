@@ -1,0 +1,36 @@
+/* Assets/_Project/UI/Styles/nexo-menu-tokens.uss */
+/* Tokens NexoOS de menús (docs/ui/NEXOOS_DESIGN_SPEC.md §1). Solo declara las variables que no existían;
+   bg, surface, text (ink), muted (ink-muted), accent, fake, ok, warn y danger siguen en theme-nexo-blue.uss
+   y theme-hive-red.uss con sus valores actuales. */
+.theme-nexo {
+    --c-surface-raised: rgb(28, 40, 65);
+    --c-on-accent: rgb(5, 34, 43);
+    --c-line: rgb(91, 122, 147);
+    --c-line-faint: rgb(42, 58, 82);
+    --c-focus: rgb(34, 211, 238);
+    --c-scrim: rgba(5, 9, 16, 0.72);
+}
+.theme-hive {
+    --c-surface-raised: rgb(44, 17, 25);
+    --c-on-accent: rgb(26, 5, 8);
+    --c-line: rgb(168, 90, 99);
+    --c-line-faint: rgb(58, 26, 34);
+    /* focus = accent del tema; se usa el accent hive existente rgb(255, 59, 59) */
+    --c-focus: rgb(255, 59, 59);
+    --c-scrim: rgba(12, 3, 6, 0.72);
+}
+/* Alto contraste: selector compuesto (2 clases), gana a las variables de .theme-nexo/.theme-hive (1 clase) */
+.theme-nexo.a11y-hc, .theme-hive.a11y-hc {
+    --c-surface-raised: rgb(10, 10, 10);
+    --c-on-accent: rgb(0, 0, 0);
+    --c-line: rgb(255, 255, 255);
+    --c-line-faint: rgb(107, 107, 107);
+    --c-focus: rgb(255, 225, 77);
+    --c-scrim: rgba(0, 0, 0, 0.9);
+    /* Colores de estado que los bloques a11y-hc de los temas no sobrescriben (spec §1, columna hc) */
+    --c-accent: rgb(0, 229, 255);
+    --c-fake: rgb(255, 176, 0);
+    --c-ok: rgb(92, 242, 255);
+    --c-warn: rgb(255, 210, 63);
+    --c-danger: rgb(255, 154, 154);
+}

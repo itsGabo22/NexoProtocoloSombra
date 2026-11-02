@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Botón NexoOS (spec §5 Button). Sin ui:Button para que la instancia sea el único elemento enfocable.
+         Instancia con clases focus-ring nx-focusable y un modificador BEM de nx-button: primary, danger o disabled (sin modificador = secundario).
+         TODO controller: registrar clic y NavigationSubmitEvent en la instancia. -->
+    <ui:VisualElement name="button" class="nx-button">
+        <ui:Label name="button-icon" text="⚠" class="nx-button__icon button" />
+        <ui:Label name="button-text" text="BOTÓN" class="nx-button__text button" />
+    </ui:VisualElement>
+</ui:UXML>

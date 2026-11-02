@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nexo.Accessibility;
 using Nexo.AI.Elena;
 using Nexo.Core;
 using UnityEngine;
@@ -78,6 +79,11 @@ namespace Nexo.UI
 
         public void SetReduceMotion(bool reduce) => _reduceMotion = reduce;
 
+        private void HandleAccessibilityChanged(AccessibilityOptions options)
+        {
+            SetReduceMotion(options.ReduceMotion);
+        }
+
         private void OnEnable()
         {
             var uiDoc = GetComponent<UIDocument>();
@@ -101,6 +107,8 @@ namespace Nexo.UI
             GameEvents.OnFloorChanged += HandleFloorChanged;
             GameEvents.OnUiAction += HandleUiAction;
             GameEvents.OnInfectedNearbyChanged += HandleInfectedNearbyChanged;
+            AccessibilitySettings.Changed += HandleAccessibilityChanged;
+            HandleAccessibilityChanged(AccessibilitySettings.Current);
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -130,6 +138,7 @@ namespace Nexo.UI
             GameEvents.OnFloorChanged -= HandleFloorChanged;
             GameEvents.OnUiAction -= HandleUiAction;
             GameEvents.OnInfectedNearbyChanged -= HandleInfectedNearbyChanged;
+            AccessibilitySettings.Changed -= HandleAccessibilityChanged;
 
             for (int i = 0; i < _quick.Length; i++)
             {

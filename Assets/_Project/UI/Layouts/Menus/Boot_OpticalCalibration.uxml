@@ -1,0 +1,91 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxLensFrame" src="../Components/NxLensFrame.uxml" />
+    <ui:Template name="NxPanel" src="../Components/NxPanel.uxml" />
+    <ui:Template name="NxMenuItem" src="../Components/NxMenuItem.uxml" />
+    <ui:Template name="NxSegmentedControl" src="../Components/NxSegmentedControl.uxml" />
+    <ui:Template name="NxButton" src="../Components/NxButton.uxml" />
+    <ui:Template name="NxKeyHint" src="../Components/NxKeyHint.uxml" />
+
+    <!-- Pantalla 3: Calibración óptica, solo primer arranque (spec §6.3). -->
+    <ui:VisualElement name="calib-root" class="theme-nexo nx-screen">
+        <ui:VisualElement name="calib-scrim" picking-mode="Ignore" class="calib-scrim" />
+        <ui:Instance template="NxLensFrame" name="calib-lens" picking-mode="Ignore" class="nx-fill" />
+
+        <ui:Label name="calib-step" text="PRIMER ARRANQUE · PASO 2 DE 4" class="calib-step label text-muted" />
+        <ui:Label name="calib-title" text="CALIBRACIÓN ÓPTICA" class="calib-title title text-main" />
+
+        <!-- Pasos: indicadores de progreso, no enfocables. TODO controller: mover is-focused al paso actual y añadir el modificador done de nx-menu-item a los completados. -->
+        <ui:VisualElement name="calib-steps" class="calib-steps">
+            <ui:Instance template="NxMenuItem" name="calib-step-contrast" class="nx-menu-item--marker nx-menu-item--done">
+                <ui:AttributeOverrides element-name="menu-item-number" text="01" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="CONTRASTE" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="calib-step-scale" class="nx-menu-item--marker is-focused">
+                <ui:AttributeOverrides element-name="menu-item-number" text="02" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="ESCALA" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="calib-step-color" class="nx-menu-item--marker">
+                <ui:AttributeOverrides element-name="menu-item-number" text="03" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="COLOR" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="calib-step-motion" class="nx-menu-item--marker">
+                <ui:AttributeOverrides element-name="menu-item-number" text="04" />
+                <ui:AttributeOverrides element-name="menu-item-text" text="MOVIMIENTO" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Instance template="NxPanel" name="calib-card" class="calib-card nx-panel--pad-40 nx-panel--no-label">
+            <ui:Label name="calib-card-heading" text="ESCALA DE LA INTERFAZ" class="heading text-main nx-mb-12" />
+            <ui:Label name="calib-card-body" text="Elige el tamaño con el que lees cómodo. Puedes cambiarlo después en Opciones." class="body text-muted wrap nx-mb-32" />
+
+            <!-- TODO controller: ← → cambian is-selected-1/2/3 y aplican ui-scale-lg (125 %) o ui-scale-xl (150 %) a la raíz. -->
+            <ui:Instance template="NxSegmentedControl" name="calib-scale-options" focusable="true" tabindex="0" class="nx-focusable is-selected-2 is-focused nx-mb-32">
+                <ui:AttributeOverrides element-name="segmented-text-1" text="100%" />
+                <ui:AttributeOverrides element-name="segmented-text-2" text="125%" />
+                <ui:AttributeOverrides element-name="segmented-text-3" text="150%" />
+            </ui:Instance>
+
+            <ui:VisualElement name="calib-preview" class="calib-preview nx-mb-32">
+                <ui:Label name="calib-preview-label" text="VISTA PREVIA A 125%" class="label text-muted" />
+                <ui:Instance template="NxPanel" name="calib-preview-panel" class="calib-preview-panel">
+                    <ui:AttributeOverrides element-name="panel-label" text="ESTADO BIOMÉTRICO" />
+                    <ui:Label name="calib-preview-value" text="99% SANO" class="calib-preview__value" />
+                    <ui:Label name="calib-preview-status" text="NO INFECTADO" class="calib-preview__status" />
+                </ui:Instance>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="calib-actions" class="calib-actions">
+                <ui:Instance template="NxButton" name="calib-continue" focusable="true" tabindex="1" class="focus-ring nx-focusable nx-button--primary">
+                    <ui:AttributeOverrides element-name="button-text" text="CONTINUAR" />
+                </ui:Instance>
+                <ui:Instance template="NxButton" name="calib-skip" focusable="true" tabindex="2" class="focus-ring nx-focusable nx-ml-6">
+                    <ui:AttributeOverrides element-name="button-text" text="OMITIR" />
+                </ui:Instance>
+            </ui:VisualElement>
+        </ui:Instance>
+
+        <ui:VisualElement name="calib-keyhints" picking-mode="Ignore" class="nx-keyhints">
+            <ui:Instance template="NxKeyHint" name="calib-key-change">
+                <ui:AttributeOverrides element-name="keyhint-key" text="← →" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Cambiar tamaño" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="calib-key-confirm">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Enter" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Confirmar" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="calib-key-skip">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Esc" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Omitir calibración" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Label name="calib-version" text="NEXOOS V4.2" class="nx-version label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>

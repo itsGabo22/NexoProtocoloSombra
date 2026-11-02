@@ -21,4 +21,6 @@ MonoBehaviour:
   _systemPrompt: {fileID: 4900000, guid: 400fd2e6c0201644eb17547ec6527f6c, type: 3}
   _fallbackFiles:
   - {fileID: 4900000, guid: d2413153102916b4e95a2ce457f737a5, type: 3}
+  - {fileID: 4900000, guid: 969aec6ae8294e10be9fd62ecb938ae3, type: 3}
+  - {fileID: 4900000, guid: 75febddf96b849b09ddccfb3bcf1101c, type: 3}
   _secrets: {fileID: 11400000, guid: 5cf6b1020acf46a4fb5680577db962ec, type: 2}

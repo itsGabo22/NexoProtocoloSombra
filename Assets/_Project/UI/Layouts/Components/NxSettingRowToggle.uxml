@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Fila de ajuste, variante toggle (spec §5 SettingRow): etiqueta + ACTIVADO/DESACTIVADO + interruptor 56x28.
+         Encendido con la clase is-on en la instancia; el texto se cambia con AttributeOverrides element-name="setting-row-state". -->
+    <ui:VisualElement name="setting-row" class="nx-setting-row">
+        <ui:Label name="setting-row-label" text="Ajuste" class="nx-setting-row__label body" />
+        <ui:Label name="setting-row-state" text="DESACTIVADO" class="nx-setting-row__state label" />
+        <ui:VisualElement name="setting-row-switch" class="nx-switch">
+            <ui:VisualElement name="setting-row-knob" picking-mode="Ignore" class="nx-switch__knob" />
+        </ui:VisualElement>
+        <ui:VisualElement name="setting-row-separator" picking-mode="Ignore" class="nx-setting-row__sep" />
+    </ui:VisualElement>
+</ui:UXML>
