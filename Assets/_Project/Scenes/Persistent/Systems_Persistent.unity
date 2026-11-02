@@ -375,7 +375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Nexo::Nexo.UI.Menus.MenuFlowController
   _bootAwakeningLayout: {fileID: 9197481963319205126, guid: e8b4d9099639485a823ce28f10287b69, type: 3}
-  _bootBiometricScanLayout: {fileID: 9197481963319205126, guid: abd08e67bd5044c89ffe48187643cfaf, type: 3}
+  _bootBiometricScanLayout: {fileID: 9197481963319205126, guid: fee7ebf6275c49eeba422ce5952ff1f6, type: 3}
   _opticalCalibrationLayout: {fileID: 9197481963319205126, guid: abd08e67bd5044c89ffe48187643cfaf, type: 3}
   _mainMenuLayout: {fileID: 9197481963319205126, guid: 2f7efdafa23b4a189bcc8f129569a6f3, type: 3}
   _optionsVideoLayout: {fileID: 9197481963319205126, guid: 6774d0423ee54c5994245d51a3a46aa2, type: 3}
