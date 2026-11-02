@@ -1,4 +1,6 @@
+using System;
 using Nexo.Accessibility;
+using Nexo.Core;
 using Nexo.Narrative;
 using Nexo.Player;
 using UnityEngine;
@@ -57,6 +59,17 @@ namespace Nexo.UI.Menus
         /// <summary>Pantalla a la que vuelve Opciones al cancelar (MainMenu o Pause).</summary>
         public ScreenId OptionsReturnScreen { get; private set; } = ScreenId.MainMenu;
 
+        private int _trackedFloor = FloorLabels.DefaultFloor;
+
+        /// <summary>
+        /// Piso actual para los textos de los menús: FloorMetadata.Active si existe; si no, el último piso
+        /// anunciado por GameEvents/NarrativeEvents (el Piso 12 puede no tener FloorMetadata).
+        /// </summary>
+        public int CurrentFloor => FloorLabels.Resolve(FloorMetadata.Active != null ? FloorMetadata.Active.FloorNumber : 0, _trackedFloor);
+
+        /// <summary>Se emite cuando cambia el piso registrado (lo usa FloorLabelBinder para el HUD y la terminal).</summary>
+        public event Action<int> CurrentFloorChanged;
+
         private void Awake()
         {
             _document = GetComponent<UIDocument>();
@@ -75,6 +88,9 @@ namespace Nexo.UI.Menus
             AccessibilitySettings.Changed += HandleAccessibilityChanged;
             MenuEvents.ShowFloorRestartedRequested += HandleShowFloorRestartedRequested;
             MenuEvents.ShowCreditsRequested += HandleShowCreditsRequested;
+            MenuEvents.PlayRequested += HandlePlayRequested;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
+            NarrativeEvents.FloorChanged += HandleFloorChanged;
         }
 
         private void OnDisable()
@@ -82,6 +98,9 @@ namespace Nexo.UI.Menus
             AccessibilitySettings.Changed -= HandleAccessibilityChanged;
             MenuEvents.ShowFloorRestartedRequested -= HandleShowFloorRestartedRequested;
             MenuEvents.ShowCreditsRequested -= HandleShowCreditsRequested;
+            MenuEvents.PlayRequested -= HandlePlayRequested;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
+            NarrativeEvents.FloorChanged -= HandleFloorChanged;
 
             _activeScreen?.Unbind();
             _activeScreen = null;
@@ -172,6 +191,21 @@ namespace Nexo.UI.Menus
         private void HandleShowCreditsRequested()
         {
             ShowScreen(ScreenId.Credits);
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            if (floor <= 0 || floor == _trackedFloor) return;
+
+            _trackedFloor = floor;
+            CurrentFloorChanged?.Invoke(CurrentFloor);
+        }
+
+        private void HandlePlayRequested()
+        {
+            // JUGAR siempre arranca en el piso inicial (el 12 puede no publicar FloorMetadata)
+            _trackedFloor = FloorLabels.DefaultFloor;
+            CurrentFloorChanged?.Invoke(CurrentFloor);
         }
 
         private void HandleAccessibilityChanged(AccessibilityOptions options)

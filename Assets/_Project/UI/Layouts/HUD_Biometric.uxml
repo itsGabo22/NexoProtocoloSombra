@@ -71,7 +71,7 @@
         <!-- Pantalla de captura: la muestra HUDController con OnPlayerCaught y la oculta al recargar el piso -->
         <ui:VisualElement picking-mode='Ignore' name='hud-capture' class='hud-capture hidden absolute inset-0 flex-col items-center justify-center pointer-none'>
             <ui:Label text='SEÑAL VITAL PERDIDA' class='text-3xl text-danger font-bold tracking-wider' />
-            <ui:Label text='Reiniciando protocolo del Piso 12...' class='text-base text-muted mt-2' />
+            <ui:Label name='hud-capture-floor' text='Reiniciando protocolo del Piso 12...' class='text-base text-muted mt-2' />
         </ui:VisualElement>
 
         <ui:VisualElement picking-mode='Ignore' name='hud-glitch' class='glitch-overlay absolute inset-0 pointer-none' />

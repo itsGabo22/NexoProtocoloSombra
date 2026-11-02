@@ -117,14 +117,9 @@ namespace Nexo.UI.Menus
         {
             _hint = root.Q<Label>("pause-hint");
 
+            // El UXML trae "PISO 12 · OFICINAS" como texto de diseño; se sustituye por el piso actual al abrir
             Label location = root.Q<Label>("pause-location");
-            FloorMetadata floor = FloorMetadata.Active;
-            if (location != null && floor != null)
-            {
-                // El UXML trae "PISO 12 · OFICINAS"; para otros pisos solo se conoce el número
-                string prefix = $"PISO {floor.FloorNumber}";
-                if (!location.text.StartsWith(prefix)) location.text = prefix;
-            }
+            if (location != null) location.text = FloorLabels.Location(flow.CurrentFloor);
 
             for (int i = 0; i < ItemNames.Length; i++)
             {

@@ -21,6 +21,9 @@ namespace Nexo.UI.Menus
 
         public void Bind(MenuFlowController flow, VisualElement root, ScreenId screen)
         {
+            Label subtitle = root.Q<Label>("fr-subtitle");
+            if (subtitle != null) subtitle.text = FloorLabels.Restarted(flow.CurrentFloor);
+
             _items[Retry] = root.Q<VisualElement>("fr-retry");
             _items[MainMenu] = root.Q<VisualElement>("fr-main-menu");
             _navigator.Attach(root, _items, Retry);
