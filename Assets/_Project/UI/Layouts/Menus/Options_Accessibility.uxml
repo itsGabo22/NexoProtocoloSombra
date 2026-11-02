@@ -7,7 +7,6 @@
     <Style src="../../Styles/tailwind-utilities.uss" />
     <Style src="../../Styles/nexo-menu-screens.uss" />
     <ui:Template name="NxPanel" src="../Components/NxPanel.uxml" />
-    <ui:Template name="NxTabBar" src="../Components/NxTabBar.uxml" />
     <ui:Template name="NxSettingRowChoice" src="../Components/NxSettingRowChoice.uxml" />
     <ui:Template name="NxSettingRowToggle" src="../Components/NxSettingRowToggle.uxml" />
     <ui:Template name="NxNotificationCard" src="../Components/NxNotificationCard.uxml" />
@@ -17,7 +16,15 @@
     <!-- Pantalla 7: Opciones · Accesibilidad (spec §6.7). -->
     <ui:VisualElement name="opta-root" class="theme-nexo nx-screen">
         <!-- TODO controller: Q/E cambian de pestaña. -->
-        <ui:Instance template="NxTabBar" name="opta-tabbar" class="opt-tabbar nx-tabbar--accessibility" />
+        <!-- Barra de pestañas en línea: solo existen VIDEO y ACCESIBILIDAD (la plantilla NxTabBar trae cuatro). -->
+        <ui:VisualElement name="opta-tabbar" class="opt-tabbar nx-tabbar nx-tabbar--accessibility">
+            <ui:Label name="tabbar-key-prev" text="Q" class="nx-tabbar__key label" />
+            <ui:VisualElement name="tabbar-tabs" class="nx-tabbar__tabs">
+                <ui:Label name="tabbar-tab-video" text="VIDEO" class="nx-tab nx-tab--video tab" />
+                <ui:Label name="tabbar-tab-accessibility" text="ACCESIBILIDAD" class="nx-tab nx-tab--accessibility tab" />
+            </ui:VisualElement>
+            <ui:Label name="tabbar-key-next" text="E" class="nx-tabbar__key label" />
+        </ui:VisualElement>
 
         <!-- TODO controller: cada fila escribe en AccessibilitySettings y aplica a la raíz a11y-hc, ui-scale-lg/xl, cb-deutan/protan/tritan y reduce-motion. -->
         <ui:Instance template="NxPanel" name="opta-list" class="opt-list nx-panel--flush nx-panel--no-label">
