@@ -15,18 +15,18 @@
 .nx-bio-panel { position: absolute; right: 64px; top: 64px; width: 320px; }
 
 /* ---------- Tipografía (§2) ----------
-   Altura de línea con min-height. Pesos 600/700 aproximados con bold hasta que existan los archivos de fuente. */
-.display-xl { font-size: 112px; min-height: 108px; letter-spacing: 2.24px; -unity-font-style: bold; }
-.title { font-size: 64px; min-height: 68px; letter-spacing: 1.28px; -unity-font-style: bold; }
-.menu-item-focus { font-size: 56px; min-height: 60px; letter-spacing: 1.12px; -unity-font-style: bold; }
-.menu-item { font-size: 40px; min-height: 48px; letter-spacing: 0.8px; }
-.heading { font-size: 36px; min-height: 42px; letter-spacing: 0.36px; -unity-font-style: bold; }
-.tab { font-size: 32px; min-height: 40px; letter-spacing: 0.64px; }
-.button { font-size: 28px; min-height: 36px; letter-spacing: 1.12px; -unity-font-style: bold; }
-.body { font-size: 24px; min-height: 34px; }
-.body-sm { font-size: 20px; min-height: 28px; }
-.label { font-size: 18px; min-height: 24px; letter-spacing: 1.44px; }
-.readout { font-size: 28px; min-height: 32px; }
+   Altura de línea con min-height. Cada clase apunta al archivo del peso que necesita (UI Toolkit no elige pesos). */
+.display-xl { font-size: 112px; min-height: 108px; letter-spacing: 2.24px; -unity-font-definition: url("../Fonts/BarlowCondensed-Bold.ttf"); }
+.title { font-size: 64px; min-height: 68px; letter-spacing: 1.28px; -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); }
+.menu-item-focus { font-size: 56px; min-height: 60px; letter-spacing: 1.12px; -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); }
+.menu-item { font-size: 40px; min-height: 48px; letter-spacing: 0.8px; -unity-font-definition: url("../Fonts/BarlowCondensed-Medium.ttf"); }
+.heading { font-size: 36px; min-height: 42px; letter-spacing: 0.36px; -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); }
+.tab { font-size: 32px; min-height: 40px; letter-spacing: 0.64px; -unity-font-definition: url("../Fonts/BarlowCondensed-Medium.ttf"); }
+.button { font-size: 28px; min-height: 36px; letter-spacing: 1.12px; -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); }
+.body { font-size: 24px; min-height: 34px; -unity-font-definition: url("../Fonts/IBMPlexSans-Regular.ttf"); }
+.body-sm { font-size: 20px; min-height: 28px; -unity-font-definition: url("../Fonts/IBMPlexSans-Regular.ttf"); }
+.label { font-size: 18px; min-height: 24px; letter-spacing: 1.44px; -unity-font-definition: url("../Fonts/IBMPlexMono-Medium.ttf"); }
+.readout { font-size: 28px; min-height: 32px; -unity-font-definition: url("../Fonts/IBMPlexMono-Medium.ttf"); }
 
 /* Escala de interfaz: ui-scale-lg = 125 %, ui-scale-xl = 150 % */
 .ui-scale-lg .display-xl { font-size: 140px; min-height: 135px; }
@@ -101,7 +101,7 @@
 .nx-menu-item__number { width: 56px; color: var(--c-muted); }
 .nx-menu-item__text { flex-grow: 1; color: var(--c-muted); transition-property: font-size, color; transition-duration: 0.12s; transition-timing-function: ease-out; }
 .nx-menu-item__status { display: none; color: var(--c-ok); }
-.is-focused .nx-menu-item__text, .nx-focusable:focus .nx-menu-item__text { font-size: 56px; min-height: 60px; letter-spacing: 1.12px; -unity-font-style: bold; color: var(--c-text); }
+.is-focused .nx-menu-item__text, .nx-focusable:focus .nx-menu-item__text { font-size: 56px; min-height: 60px; letter-spacing: 1.12px; -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); color: var(--c-text); }
 .ui-scale-lg .is-focused .nx-menu-item__text, .ui-scale-lg .nx-focusable:focus .nx-menu-item__text { font-size: 70px; min-height: 75px; }
 .ui-scale-xl .is-focused .nx-menu-item__text, .ui-scale-xl .nx-focusable:focus .nx-menu-item__text { font-size: 84px; min-height: 90px; }
 .nx-menu-item--marker.is-focused .nx-menu-item__marker, .nx-menu-item--marker:focus .nx-menu-item__marker { display: flex; }
@@ -113,7 +113,7 @@
 .nx-tabbar__tabs { flex-grow: 1; flex-direction: row; justify-content: center; }
 .nx-tabbar__key { width: 32px; height: 32px; min-height: 32px; border-width: 2px; border-color: var(--c-line); border-radius: 2px; color: var(--c-text); -unity-text-align: middle-center; }
 .nx-tab { margin-left: 24px; margin-right: 24px; padding-top: 12px; padding-bottom: 8px; min-height: 48px; color: var(--c-muted); border-bottom-width: 2px; border-color: rgba(0, 0, 0, 0); -unity-text-align: middle-center; }
-.nx-tabbar--audio .nx-tab--audio, .nx-tabbar--video .nx-tab--video, .nx-tabbar--controls .nx-tab--controls, .nx-tabbar--accessibility .nx-tab--accessibility { color: var(--c-text); -unity-font-style: bold; border-color: var(--c-accent); }
+.nx-tabbar--audio .nx-tab--audio, .nx-tabbar--video .nx-tab--video, .nx-tabbar--controls .nx-tab--controls, .nx-tabbar--accessibility .nx-tab--accessibility { color: var(--c-text); -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); border-color: var(--c-accent); }
 
 /* ---------- Fila de ajuste ---------- */
 .nx-setting-row { flex-direction: row; align-items: center; height: 64px; padding-left: 24px; padding-right: 24px; border-width: 2px; border-color: rgba(0, 0, 0, 0); transition-property: background-color, border-color; transition-duration: 0.12s; transition-timing-function: ease-out; }
@@ -160,7 +160,7 @@
 .nx-segment__check { display: none; width: 20px; min-height: 20px; margin-right: 8px; font-size: 20px; color: var(--c-on-accent); }
 .nx-segment__text { color: var(--c-text); }
 .is-selected-1 .nx-segment--1, .is-selected-2 .nx-segment--2, .is-selected-3 .nx-segment--3 { background-color: var(--c-accent); border-color: var(--c-accent); }
-.is-selected-1 .nx-segment--1 .nx-segment__text, .is-selected-2 .nx-segment--2 .nx-segment__text, .is-selected-3 .nx-segment--3 .nx-segment__text { color: var(--c-on-accent); -unity-font-style: bold; }
+.is-selected-1 .nx-segment--1 .nx-segment__text, .is-selected-2 .nx-segment--2 .nx-segment__text, .is-selected-3 .nx-segment--3 .nx-segment__text { color: var(--c-on-accent); -unity-font-definition: url("../Fonts/BarlowCondensed-Bold.ttf"); }
 .is-selected-1 .nx-segment--1 .nx-segment__check, .is-selected-2 .nx-segment--2 .nx-segment__check, .is-selected-3 .nx-segment--3 .nx-segment__check { display: flex; }
 .is-selected-1.is-focused .nx-segment-ring--1, .is-selected-2.is-focused .nx-segment-ring--2, .is-selected-3.is-focused .nx-segment-ring--3 { border-color: var(--c-focus); }
 .is-selected-1:focus .nx-segment-ring--1, .is-selected-2:focus .nx-segment-ring--2, .is-selected-3:focus .nx-segment-ring--3 { border-color: var(--c-focus); }

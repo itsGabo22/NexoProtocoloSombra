@@ -20,7 +20,7 @@
 .scan-ring__track { border-width: 2px; border-color: var(--c-line-faint); }
 .scan-ring__arc { border-width: 6px; border-color: var(--c-accent); }
 .scan-ring__center { position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; }
-.scan-ring__status { font-size: 36px; min-height: 42px; letter-spacing: 2.16px; -unity-font-style: bold; color: var(--c-muted); }
+.scan-ring__status { font-size: 36px; min-height: 42px; letter-spacing: 2.16px; -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); color: var(--c-muted); }
 .scan-verdict { position: absolute; left: 0; right: 0; top: 728px; align-items: center; }
 .scan-col { position: absolute; top: 420px; width: 380px; }
 .scan-col--left { left: 160px; }
@@ -35,8 +35,8 @@
 .calib-preview { padding: 24px; background-color: var(--c-bg); border-width: 1px; border-color: var(--c-line-faint); border-radius: 4px; }
 .calib-preview-panel { width: 420px; margin-top: 12px; }
 .calib-preview-panel > .nx-panel > .nx-panel__label { font-size: 22px; min-height: 28px; }
-.calib-preview__value { font-size: 35px; min-height: 40px; color: var(--c-text); }
-.calib-preview__status { font-size: 25px; min-height: 35px; color: var(--c-muted); }
+.calib-preview__value { font-size: 35px; min-height: 40px; color: var(--c-text); -unity-font-definition: url("../Fonts/IBMPlexMono-Medium.ttf"); }
+.calib-preview__status { font-size: 25px; min-height: 35px; color: var(--c-muted); -unity-font-definition: url("../Fonts/IBMPlexSans-Regular.ttf"); }
 .calib-actions { flex-direction: row; align-items: center; }
 
 /* ---------- 4. Menú principal ---------- */
