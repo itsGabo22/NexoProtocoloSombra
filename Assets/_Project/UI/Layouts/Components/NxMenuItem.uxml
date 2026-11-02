@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Ítem de lista de menú (spec §5 MenuList): número (label, ancho 56) + texto.
+         Instancia enfocable con clase nx-focusable; estado con is-focused o :focus.
+         Modificadores BEM de nx-menu-item: marker (cuadrado de foco), no-number y done (muestra menu-item-status). -->
+    <ui:VisualElement name="menu-item" class="nx-menu-item">
+        <ui:VisualElement name="menu-item-marker" picking-mode="Ignore" class="nx-menu-item__marker" />
+        <ui:Label name="menu-item-number" text="01" class="nx-menu-item__number label" />
+        <ui:Label name="menu-item-text" text="ÍTEM" class="nx-menu-item__text menu-item" />
+        <ui:Label name="menu-item-status" text="✔ LISTO" class="nx-menu-item__status label" />
+    </ui:VisualElement>
+</ui:UXML>
