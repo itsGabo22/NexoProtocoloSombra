@@ -3,7 +3,7 @@
    bg, surface, text (ink), muted (ink-muted), accent, fake, ok, warn y danger siguen en theme-nexo-blue.uss
    y theme-hive-red.uss con sus valores actuales. */
 .theme-nexo {
-    --c-surface-raised: rgb(31, 44, 69);
+    --c-surface-raised: rgb(28, 40, 65);
     --c-on-accent: rgb(5, 34, 43);
     --c-line: rgb(91, 122, 147);
     --c-line-faint: rgb(42, 58, 82);
