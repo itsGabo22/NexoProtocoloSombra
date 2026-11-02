@@ -40,6 +40,7 @@ namespace Nexo.UI.Menus
         [SerializeField] private PlayerCaptureHandler _captureHandler;
 
         [Header("Entrada (NexoControls/Player/Pause)")]
+        // En el Editor, Esc libera el cursor bloqueado y puede no llegar al juego: por eso Pause también responde a P.
         [SerializeField] private InputActionReference _pauseAction;
 
         private readonly VisualElement[] _items = new VisualElement[ItemNames.Length];
@@ -87,8 +88,8 @@ namespace Nexo.UI.Menus
 
         private void TryPause()
         {
-            if (FloorMetadata.Active == null) return;                          // sin piso cargado no hay partida que pausar
-            if (_terminal != null && _terminal.IsOpen) return;                 // Esc cierra la terminal
+            // Current == None solo ocurre en juego (tras JUGAR). No se exige FloorMetadata: Floor12_Offices aún no lo tiene.
+            if (_terminal != null && _terminal.IsOpen) return;                 // Esc / P cierran la terminal
             if (_captureHandler != null && _captureHandler.IsCapturing) return; // el piso se está reiniciando
 
             _lastToggleFrame = Time.frameCount;
