@@ -67,9 +67,6 @@
         <ui:VisualElement picking-mode='Ignore' name='hud-crosshair' class='crosshair absolute pointer-none' />
         <ui:Label picking-mode='Ignore' name='hud-interact' text='' class='hud-interact-prompt hidden absolute text-sm text-main pointer-none' />
 
-        <!-- Subtítulos -->
-        <ui:Label picking-mode='Ignore' name='hud-subtitles' text='' class='subtitles absolute bottom-4 text-base text-main text-center wrap pointer-none' />
-
         <!-- Plot twist: destello, panel ROOT DEBUG -->
         <!-- Pantalla de captura: la muestra HUDController con OnPlayerCaught y la oculta al recargar el piso -->
         <ui:VisualElement picking-mode='Ignore' name='hud-capture' class='hud-capture hidden absolute inset-0 flex-col items-center justify-center pointer-none'>
@@ -82,5 +79,8 @@
             <ui:Label text='NEXOOS v4.2 // MODO DEPURACIÓN ROOT' class='text-lg text-danger font-bold tracking-wider mb-4' />
             <ui:Label name='hud-debug-text' text='' class='text-base text-main wrap' />
         </ui:VisualElement>
+
+        <!-- Subtítulos (último hijo: se dibujan sobre el panel ROOT DEBUG) -->
+        <ui:Label picking-mode='Ignore' name='hud-subtitles' text='' class='subtitles absolute bottom-4 text-base text-main text-center wrap pointer-none' />
     </ui:VisualElement>
 </ui:UXML>
