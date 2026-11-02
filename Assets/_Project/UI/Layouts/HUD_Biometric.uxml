@@ -65,7 +65,7 @@
 
         <!-- Centro libre: mira y prompt de interacción -->
         <ui:VisualElement picking-mode='Ignore' name='hud-crosshair' class='crosshair absolute pointer-none' />
-        <ui:Label picking-mode='Ignore' name='hud-interact' text='' class='hidden absolute text-sm text-main pointer-none' />
+        <ui:Label picking-mode='Ignore' name='hud-interact' text='' class='hud-interact-prompt hidden absolute text-sm text-main pointer-none' />
 
         <!-- Subtítulos -->
         <ui:Label picking-mode='Ignore' name='hud-subtitles' text='' class='subtitles absolute bottom-4 text-base text-main text-center wrap pointer-none' />
