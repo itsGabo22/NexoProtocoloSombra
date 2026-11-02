@@ -50,6 +50,8 @@ crashlytics-build.properties
 /Assets/_Project/Data/Secrets.meta
 *.env
 secrets.json
+**/ElenaSecrets.asset
+**/ElenaSecrets.asset.meta
 
 # Antigravity: solo se versiona rules.md
 .antigravity/*
