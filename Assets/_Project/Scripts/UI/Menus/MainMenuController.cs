@@ -3,16 +3,15 @@ using UnityEngine.UIElements;
 namespace Nexo.UI.Menus
 {
     /// <summary>
-    /// Menú principal (hub): JUGAR, OPCIONES, ACCESIBILIDAD, CRÉDITOS, SALIR.
+    /// Menú principal (hub): JUGAR, OPCIONES, CRÉDITOS, SALIR. La accesibilidad vive en la pestaña de OPCIONES.
     /// Mueve la regla y la línea de foco a la fila enfocada y cambia la pista inferior por ítem (spec §6.4).
     /// </summary>
     public sealed class MainMenuController : IMenuScreen, IMenuNavigationHandler
     {
         private const int Play = 0;
         private const int Options = 1;
-        private const int Accessibility = 2;
-        private const int Credits = 3;
-        private const int Quit = 4;
+        private const int Credits = 2;
+        private const int Quit = 3;
 
         // Posiciones de la spec a 1920x1080: lista en top 240, filas sin foco de 48 + 12 de margen
         private const float ListTop = 240f;
@@ -22,14 +21,13 @@ namespace Nexo.UI.Menus
 
         private static readonly string[] ItemNames =
         {
-            "mm-item-play", "mm-item-options", "mm-item-accessibility", "mm-item-credits", "mm-item-quit"
+            "mm-item-play", "mm-item-options", "mm-item-credits", "mm-item-quit"
         };
 
         private static readonly string[] Hints =
         {
             "Inicia el protocolo en el Piso 12.",
             "Ajusta audio, video y controles.",
-            "Contraste, escala, daltonismo y movimiento.",
             "Conoce quién hizo el juego.",
             "Cierra el juego."
         };
@@ -94,9 +92,6 @@ namespace Nexo.UI.Menus
                     break;
                 case Options:
                     _flow.OpenOptions(ScreenId.OptionsVideo, ScreenId.MainMenu);
-                    break;
-                case Accessibility:
-                    _flow.OpenOptions(ScreenId.OptionsAccessibility, ScreenId.MainMenu);
                     break;
                 case Credits:
                     _flow.ShowScreen(ScreenId.Credits);
