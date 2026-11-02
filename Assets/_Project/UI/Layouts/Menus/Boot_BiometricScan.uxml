@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxLensFrame" src="../Components/NxLensFrame.uxml" />
+
+    <!-- Pantalla 2: Escaneo biométrico (spec §6.2). Sin elementos interactivos. -->
+    <ui:VisualElement name="scan-root" picking-mode="Ignore" class="theme-nexo nx-screen">
+        <ui:VisualElement name="scan-scrim" picking-mode="Ignore" class="scan-scrim" />
+        <ui:Instance template="NxLensFrame" name="scan-lens" picking-mode="Ignore" class="nx-fill nx-lens--ruler" />
+
+        <ui:Label name="scan-title" text="ESCANEO BIOMÉTRICO" class="scan-title label text-muted" />
+
+        <ui:VisualElement name="scan-ring" picking-mode="Ignore" class="scan-ring">
+            <ui:VisualElement name="scan-ring-track" picking-mode="Ignore" class="scan-ring__circle scan-ring__track" />
+            <!-- TODO controller: arco de progreso al 99 % con generateVisualContent; ahora es un círculo completo estático. -->
+            <ui:VisualElement name="scan-ring-arc" picking-mode="Ignore" class="scan-ring__circle scan-ring__arc" />
+            <ui:VisualElement name="scan-ring-center" picking-mode="Ignore" class="scan-ring__center">
+                <ui:Label name="scan-percent" text="99%" class="display-xl text-main" />
+                <ui:Label name="scan-status" text="SANO" class="scan-ring__status" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="scan-verdict" picking-mode="Ignore" class="scan-verdict">
+            <ui:Label name="scan-verdict-text" text="NO INFECTADO" class="body text-main" />
+            <ui:Label name="scan-verdict-seal" text="✔ BIO-ID VERIFICADO" class="label text-ok" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="scan-col-left" picking-mode="Ignore" class="scan-col scan-col--left">
+            <ui:Label name="scan-heart-label" text="RITMO CARDÍACO" class="label text-muted" />
+            <ui:Label name="scan-heart-value" text="72 BPM" class="readout text-main nx-mb-32" />
+            <ui:Label name="scan-optics-label" text="ÓPTICA" class="label text-muted" />
+            <ui:Label name="scan-optics-value" text="OK" class="readout text-ok" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="scan-col-right" picking-mode="Ignore" class="scan-col scan-col--right">
+            <ui:Label name="scan-link-label" text="ENLACE SEGURO" class="label text-muted" />
+            <ui:Label name="scan-link-value" text="OK" class="readout text-ok nx-mb-32" />
+            <ui:Label name="scan-bioid-label" text="BIO-ID" class="label text-muted" />
+            <ui:Label name="scan-bioid-value" text="VERIFICADO" class="readout text-main" />
+        </ui:VisualElement>
+
+        <ui:Label name="scan-hint" text="Escaneo completo. Ajustando la interfaz a tu vista." class="nx-hint body text-muted" />
+        <ui:Label name="scan-version" text="NEXOOS V4.2" class="nx-version label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>
