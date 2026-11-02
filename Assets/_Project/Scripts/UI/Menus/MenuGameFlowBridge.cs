@@ -1,4 +1,5 @@
 using Nexo.Core;
+using Nexo.Narrative;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -69,9 +70,20 @@ namespace Nexo.UI.Menus
 
         private void HandleReturnToMainMenuRequested()
         {
-            if (_menuFlow == null) return;
-
             Time.timeScale = 1f;
+
+            // Tras el giro final quedan bloqueados jugador, linterna, rueda, preguntas rápidas y el HUD en modo colmena:
+            // se recarga Systems_Persistent entero (descarga también el piso) y el menú arranca sin la secuencia de inicio
+            if (NarrativeEvents.TwistHasPlayed)
+            {
+                NarrativeEvents.TwistHasPlayed = false;
+                MenuStartState.SkipBootOnce = true;
+                int persistentIndex = gameObject.scene.buildIndex >= 0 ? gameObject.scene.buildIndex : 0;
+                SceneManager.LoadScene(persistentIndex, LoadSceneMode.Single);
+                return;
+            }
+
+            if (_menuFlow == null) return;
 
             // SceneLoader no expone descarga: se descarga la escena del piso activo; JUGAR la vuelve a cargar con LoadFloor
             FloorMetadata floor = FloorMetadata.Active;
