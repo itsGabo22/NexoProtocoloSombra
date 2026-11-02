@@ -31,9 +31,9 @@
             <ui:Label name='radio-typing' text='Elena está escribiendo…' class='hidden text-xs text-muted font-italic mt-2' />
             <ui:Label name='radio-dialogue' text='' class='text-sm text-main wrap mt-2' />
             <ui:VisualElement class='flex-col mt-2'>
-                <ui:Button name='radio-quick-1' text='[1] ¿Está despejado el pasillo?' class='btn-quick mb-1' />
-                <ui:Button name='radio-quick-2' text='[2] Abre la puerta norte' class='btn-quick mb-1' />
-                <ui:Button name='radio-quick-3' text='[3] Tengo miedo, ¿qué tienes en la mano?' class='btn-quick' />
+                <ui:Button name='radio-quick-1' focusable='false' text='[1] ¿Está despejado el pasillo?' class='btn-quick mb-1' />
+                <ui:Button name='radio-quick-2' focusable='false' text='[2] Abre la puerta norte' class='btn-quick mb-1' />
+                <ui:Button name='radio-quick-3' focusable='false' text='[3] Tengo miedo, ¿qué tienes en la mano?' class='btn-quick' />
             </ui:VisualElement>
         </ui:VisualElement>
 
