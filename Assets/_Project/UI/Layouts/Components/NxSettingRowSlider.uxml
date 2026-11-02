@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Fila de ajuste, variante slider (spec §5 SettingRow): etiqueta + pista 160x16 + valor readout.
+         Relleno estático con nx-pct-38/60/85 en la instancia. TODO controller: ancho de setting-row-fill y texto de setting-row-value. -->
+    <ui:VisualElement name="setting-row" class="nx-setting-row">
+        <ui:Label name="setting-row-label" text="Ajuste" class="nx-setting-row__label body" />
+        <ui:VisualElement name="setting-row-track" class="nx-slider">
+            <ui:VisualElement name="setting-row-fill" picking-mode="Ignore" class="nx-slider__fill" />
+        </ui:VisualElement>
+        <ui:Label name="setting-row-value" text="0" class="nx-slider__value readout" />
+        <ui:VisualElement name="setting-row-separator" picking-mode="Ignore" class="nx-setting-row__sep" />
+    </ui:VisualElement>
+</ui:UXML>
