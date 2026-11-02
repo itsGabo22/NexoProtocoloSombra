@@ -7,7 +7,6 @@
     <Style src="../../Styles/tailwind-utilities.uss" />
     <Style src="../../Styles/nexo-menu-screens.uss" />
     <ui:Template name="NxPanel" src="../Components/NxPanel.uxml" />
-    <ui:Template name="NxTabBar" src="../Components/NxTabBar.uxml" />
     <ui:Template name="NxSettingRowChoice" src="../Components/NxSettingRowChoice.uxml" />
     <ui:Template name="NxSettingRowToggle" src="../Components/NxSettingRowToggle.uxml" />
     <ui:Template name="NxSettingRowSlider" src="../Components/NxSettingRowSlider.uxml" />
@@ -16,7 +15,15 @@
     <!-- Pantalla 6: Opciones · Video (spec §6.6). -->
     <ui:VisualElement name="optv-root" class="theme-nexo nx-screen">
         <!-- TODO controller: Q/E cambian de pestaña (AUDIO y CONTROLES aún no tienen pantalla). -->
-        <ui:Instance template="NxTabBar" name="optv-tabbar" class="opt-tabbar nx-tabbar--video" />
+        <!-- Barra de pestañas en línea: solo existen VIDEO y ACCESIBILIDAD (la plantilla NxTabBar trae cuatro). -->
+        <ui:VisualElement name="optv-tabbar" class="opt-tabbar nx-tabbar nx-tabbar--video">
+            <ui:Label name="tabbar-key-prev" text="Q" class="nx-tabbar__key label" />
+            <ui:VisualElement name="tabbar-tabs" class="nx-tabbar__tabs">
+                <ui:Label name="tabbar-tab-video" text="VIDEO" class="nx-tab nx-tab--video tab" />
+                <ui:Label name="tabbar-tab-accessibility" text="ACCESIBILIDAD" class="nx-tab nx-tab--accessibility tab" />
+            </ui:VisualElement>
+            <ui:Label name="tabbar-key-next" text="E" class="nx-tabbar__key label" />
+        </ui:VisualElement>
 
         <!-- TODO controller: ← → cambian el valor de la fila enfocada; actualizar textos, is-on y el ancho del relleno del brillo. -->
         <ui:Instance template="NxPanel" name="optv-list" class="opt-list nx-panel--flush nx-panel--no-label">
