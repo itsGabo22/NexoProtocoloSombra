@@ -17,12 +17,19 @@ namespace Nexo.Narrative
         /// </summary>
         public static bool TwistHasPlayed { get; set; }
 
+        /// <summary>
+        /// FloorProgression terminó de bajar a otro piso (número de piso: 6, 1...; -1 si la escena no sigue el patrón FloorNN_).
+        /// </summary>
+        public static event Action<int> FloorChanged;
+
         public static void RaiseBioScannerHandPlaced() => BioScannerHandPlaced?.Invoke();
+        public static void RaiseFloorChanged(int floorNumber) => FloorChanged?.Invoke(floorNumber);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
         {
             BioScannerHandPlaced = null;
+            FloorChanged = null;
             TwistHasPlayed = false;
         }
     }
