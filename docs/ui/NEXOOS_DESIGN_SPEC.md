@@ -133,21 +133,21 @@ No existen: `gap`, `rem`, CSS Grid, `@keyframes`, `box-shadow`, degradados, `bac
 ### 4. Menú (hub)
 - Velo lateral: mientras no exista el sprite degradado, un rectángulo de left 0 a 1056 de ancho con rgba(5,9,16,0.55). LensFrame al 100% y reglilla.
 - Left 160 / top 128: `NEXO: PROTOCOLO SOMBRA` (`label` `ink-muted`).
-- Regla vertical en left 131 / top 216, 2×396, `line-faint`; segmento de foco en left 130 / top 240, 4×60, `accent`.
-- Lista en left 160 / top 240 / ancho 640: `01 JUGAR` (foco), `02 OPCIONES`, `03 ACCESIBILIDAD`, `04 CRÉDITOS`, `05 SALIR`.
+- Regla vertical en left 131 / top 216, 2×324, `line-faint`; segmento de foco en left 130 / top 240, 4×60, `accent`.
+- Lista en left 160 / top 240 / ancho 640: `01 JUGAR` (foco), `02 OPCIONES`, `03 CRÉDITOS`, `04 SALIR`. La accesibilidad se abre desde la pestaña ACCESIBILIDAD de OPCIONES.
 - Línea del foco: left 160 / top 304, 520×2, `accent` al 60%; marca final en left 678 / top 298, 2×14.
 - Panel biométrico en right 64 / top 64 / ancho 320: `ESTADO BIOMÉTRICO` / `99% SANO` (`readout`) / `NO INFECTADO` (`body-sm` `ink-muted`).
 - Panel de Elena en right 64 / bottom 176 / ancho 420, relleno 24: `ELENA · CANAL SEGURO` (`label` `ink-muted`), `✔ BIO-ID VERIFICADO` (`label` `status-ok`), `En espera` (`body-sm` `ink`).
-- Pistas según el ítem: JUGAR `Inicia el protocolo en el Piso 12.`; OPCIONES `Ajusta audio, video y controles.`; ACCESIBILIDAD `Contraste, escala, daltonismo y movimiento.`; CRÉDITOS `Conoce quién hizo el juego.`; SALIR `Cierra el juego.`. KeyHint: `↑ ↓` Mover, `Enter` Confirmar.
+- Pistas según el ítem: JUGAR `Inicia el protocolo en el Piso 12.`; OPCIONES `Ajusta audio, video y controles.`; CRÉDITOS `Conoce quién hizo el juego.`; SALIR `Cierra el juego.`. KeyHint: `↑ ↓` Mover, `Enter` Confirmar.
 
 ### 6. Opciones: video
-- TabBar en left 160 / right 160 / top 64, con `VIDEO` activa: `AUDIO`, `VIDEO`, `CONTROLES`, `ACCESIBILIDAD`.
+- TabBar en left 160 / right 160 / top 64, con `VIDEO` activa: `VIDEO`, `ACCESIBILIDAD` (solo existen estas dos; Q/E alternan entre ellas).
 - Lista en left 160 / top 200 / ancho 900, contenedor Panel sin relleno interno. Filas: `Resolución` = `1920 × 1080`; `Modo de pantalla` = `Pantalla completa`; `Calidad de imagen` = `‹ Alta ›` (con foco); `Sombras` (interruptor, ACTIVADO); `Suavizado de bordes` = `TAA`; `Brillo` (slider al 60%, valor `60`); `Sincronización vertical` (interruptor, DESACTIVADO).
 - Panel derecho en left 1180 / top 200 / ancho 580: `CALIDAD DE IMAGEN` (`heading`), 12, `Ajusta el detalle de texturas y sombras. Una calidad menor mejora el rendimiento.` (`body` `ink-muted`), 24, caja de 580×300 (`surface`, borde 1px `line`, radio 4) con `[VISTA PREVIA DE LA ESCENA]` centrado (`label` `ink-muted`; en el juego será una cámara o `RenderTexture`), 24, `IMPACTO ESTIMADO` (`label` `ink-muted`), 12, dos filas: nombre `body-sm` ancho 200 + pista (alto 12, borde 2px `line`, radio 2) con relleno `accent` al 60% / 85% + palabra `label` ancho 96 a la derecha: `Procesador` `MEDIO`, `Memoria de video` `ALTO`.
 - KeyHint (bottom 64): `← →` Cambiar valor, `Esc` Atrás.
 
 ### 7. Opciones: accesibilidad
-- Mismo TabBar con `ACCESIBILIDAD` activa. Misma posición de lista. Filas: `Alto contraste` (interruptor, DESACTIVADO); `Escala de la interfaz` = `‹ 125% ›` (con foco); `Modo daltonismo` = `Deuteranopia`; `Reducir movimiento` (interruptor, DESACTIVADO); `Subtítulos` (interruptor, ACTIVADO); `Tamaño de subtítulos` = `Mediano`.
+- Mismo TabBar (`VIDEO`, `ACCESIBILIDAD`) con `ACCESIBILIDAD` activa. Misma posición de lista. Filas: `Alto contraste` (interruptor, DESACTIVADO); `Escala de la interfaz` = `‹ 125% ›` (con foco); `Modo daltonismo` = `Deuteranopia`; `Reducir movimiento` (interruptor, DESACTIVADO); `Subtítulos` (interruptor, ACTIVADO); `Tamaño de subtítulos` = `Mediano`.
 - Panel derecho en left 1180 / top 200 / ancho 580: `ESCALA DE LA INTERFAZ` (`heading`), 12, `Agranda textos y paneles de todo el HUD. Se aplica al instante.` (`body` `ink-muted`), 24.
 - `EJEMPLO · NOTIFICACIÓN REAL` (`label` `ink-muted`, margen 12) y NotificationCard real con `Por el pasillo de la izquierda no hay nadie. Ve agachado, ¿sí?`; margen 20.
 - `EJEMPLO · NOTIFICACIÓN FALSA` y NotificationCard falsa con `Alex, ven al cuarto de servidores. Es seguro.`; margen 20.
