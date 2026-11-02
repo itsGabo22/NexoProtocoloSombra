@@ -27,12 +27,18 @@ namespace Nexo.UI.Menus
         /// </summary>
         public static event Action ShowFloorRestartedRequested;
 
+        /// <summary>
+        /// Pide la pantalla de créditos (tema hive). La emite Nexo.Narrative.PlotTwistManager al final del giro.
+        /// </summary>
+        public static event Action ShowCreditsRequested;
+
         public static void RaisePlayRequested() => PlayRequested?.Invoke();
         public static void RaiseResumeRequested() => ResumeRequested?.Invoke();
         public static void RaiseRestartFloorRequested() => RestartFloorRequested?.Invoke();
         public static void RaiseReturnToMainMenuRequested() => ReturnToMainMenuRequested?.Invoke();
         public static void RaiseQuitRequested() => QuitRequested?.Invoke();
         public static void RaiseShowFloorRestartedRequested() => ShowFloorRestartedRequested?.Invoke();
+        public static void RaiseShowCreditsRequested() => ShowCreditsRequested?.Invoke();
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -43,6 +49,7 @@ namespace Nexo.UI.Menus
             ReturnToMainMenuRequested = null;
             QuitRequested = null;
             ShowFloorRestartedRequested = null;
+            ShowCreditsRequested = null;
         }
     }
 }
