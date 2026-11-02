@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Marco de lente (spec §5): esquinas en L de 40x40 a 28px de los bordes y reglilla superior de 21 marcas.
+         Instancia a pantalla completa con la clase nx-fill. Modificadores BEM de nx-lens: dim (50 %) y ruler (muestra la reglilla). -->
+    <ui:VisualElement name="lens" picking-mode="Ignore" class="nx-lens">
+        <ui:VisualElement name="lens-corner-tl" picking-mode="Ignore" class="nx-lens__corner nx-lens__corner--tl" />
+        <ui:VisualElement name="lens-corner-tr" picking-mode="Ignore" class="nx-lens__corner nx-lens__corner--tr" />
+        <ui:VisualElement name="lens-corner-bl" picking-mode="Ignore" class="nx-lens__corner nx-lens__corner--bl" />
+        <ui:VisualElement name="lens-corner-br" picking-mode="Ignore" class="nx-lens__corner nx-lens__corner--br" />
+        <ui:VisualElement name="lens-ruler" picking-mode="Ignore" class="nx-lens__ruler">
+            <ui:VisualElement name="lens-tick-01" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-02" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-03" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-04" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-05" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-06" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-07" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-08" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-09" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-10" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-11" picking-mode="Ignore" class="nx-lens__tick nx-lens__tick--major" />
+            <ui:VisualElement name="lens-tick-12" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-13" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-14" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-15" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-16" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-17" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-18" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-19" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-20" picking-mode="Ignore" class="nx-lens__tick" />
+            <ui:VisualElement name="lens-tick-21" picking-mode="Ignore" class="nx-lens__tick nx-lens__tick--last" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
