@@ -1,0 +1,178 @@
+/* Assets/_Project/UI/Styles/nexo-menu-components.uss */
+/* Componentes de menú NexoOS (docs/ui/NEXOOS_DESIGN_SPEC.md §2, §3 y §5).
+   Colores solo por variables de tema. Los estados se activan con clases en la instancia del template:
+   .is-focused / :focus (foco), .is-on (interruptor), .is-selected-N (segmento elegido). */
+
+/* ---------- Base de pantalla ---------- */
+.unity-label { margin: 0; padding: 0; }
+.nx-screen { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0); }
+.nx-fill { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.nx-scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: var(--c-scrim); }
+.nx-version { position: absolute; left: 64px; bottom: 64px; }
+.nx-corner-text-br { position: absolute; right: 64px; bottom: 64px; }
+.nx-hint { position: absolute; left: 0; right: 0; bottom: 112px; -unity-text-align: middle-center; }
+.nx-keyhints { position: absolute; left: 0; right: 0; bottom: 64px; flex-direction: row; justify-content: center; }
+.nx-bio-panel { position: absolute; right: 64px; top: 64px; width: 320px; }
+
+/* ---------- Tipografía (§2) ----------
+   Altura de línea con min-height. Pesos 600/700 aproximados con bold hasta que existan los archivos de fuente. */
+.display-xl { font-size: 112px; min-height: 108px; letter-spacing: 2.24px; -unity-font-style: bold; }
+.title { font-size: 64px; min-height: 68px; letter-spacing: 1.28px; -unity-font-style: bold; }
+.menu-item-focus { font-size: 56px; min-height: 60px; letter-spacing: 1.12px; -unity-font-style: bold; }
+.menu-item { font-size: 40px; min-height: 48px; letter-spacing: 0.8px; }
+.heading { font-size: 36px; min-height: 42px; letter-spacing: 0.36px; -unity-font-style: bold; }
+.tab { font-size: 32px; min-height: 40px; letter-spacing: 0.64px; }
+.button { font-size: 28px; min-height: 36px; letter-spacing: 1.12px; -unity-font-style: bold; }
+.body { font-size: 24px; min-height: 34px; }
+.body-sm { font-size: 20px; min-height: 28px; }
+.label { font-size: 18px; min-height: 24px; letter-spacing: 1.44px; }
+.readout { font-size: 28px; min-height: 32px; }
+
+/* Escala de interfaz: ui-scale-lg = 125 %, ui-scale-xl = 150 % */
+.ui-scale-lg .display-xl { font-size: 140px; min-height: 135px; }
+.ui-scale-lg .title { font-size: 80px; min-height: 85px; }
+.ui-scale-lg .menu-item-focus { font-size: 70px; min-height: 75px; }
+.ui-scale-lg .menu-item { font-size: 50px; min-height: 60px; }
+.ui-scale-lg .heading { font-size: 45px; min-height: 53px; }
+.ui-scale-lg .tab { font-size: 40px; min-height: 50px; }
+.ui-scale-lg .button { font-size: 35px; min-height: 45px; }
+.ui-scale-lg .body { font-size: 30px; min-height: 43px; }
+.ui-scale-lg .body-sm { font-size: 25px; min-height: 35px; }
+.ui-scale-lg .label { font-size: 23px; min-height: 30px; }
+.ui-scale-lg .readout { font-size: 35px; min-height: 40px; }
+.ui-scale-xl .display-xl { font-size: 168px; min-height: 162px; }
+.ui-scale-xl .title { font-size: 96px; min-height: 102px; }
+.ui-scale-xl .menu-item-focus { font-size: 84px; min-height: 90px; }
+.ui-scale-xl .menu-item { font-size: 60px; min-height: 72px; }
+.ui-scale-xl .heading { font-size: 54px; min-height: 63px; }
+.ui-scale-xl .tab { font-size: 48px; min-height: 60px; }
+.ui-scale-xl .button { font-size: 42px; min-height: 54px; }
+.ui-scale-xl .body { font-size: 36px; min-height: 51px; }
+.ui-scale-xl .body-sm { font-size: 30px; min-height: 42px; }
+.ui-scale-xl .label { font-size: 27px; min-height: 36px; }
+.ui-scale-xl .readout { font-size: 42px; min-height: 48px; }
+
+/* ---------- Espaciado (§3) ---------- */
+.nx-mt-6 { margin-top: 6px; } .nx-mt-12 { margin-top: 12px; } .nx-mt-16 { margin-top: 16px; } .nx-mt-24 { margin-top: 24px; } .nx-mt-32 { margin-top: 32px; }
+.nx-mb-4 { margin-bottom: 4px; } .nx-mb-12 { margin-bottom: 12px; } .nx-mb-16 { margin-bottom: 16px; } .nx-mb-20 { margin-bottom: 20px; } .nx-mb-24 { margin-bottom: 24px; } .nx-mb-32 { margin-bottom: 32px; } .nx-mb-48 { margin-bottom: 48px; }
+.nx-ml-6 { margin-left: 6px; } .nx-ml-12 { margin-left: 12px; } .nx-ml-16 { margin-left: 16px; }
+
+/* Anchos y altos estáticos de vista previa (el controlador los sustituye por valores calculados) */
+.nx-w-38 { width: 38%; } .nx-w-60 { width: 60%; } .nx-w-85 { width: 85%; }
+.nx-h-10 { height: 10%; } .nx-h-20 { height: 20%; } .nx-h-30 { height: 30%; } .nx-h-40 { height: 40%; } .nx-h-50 { height: 50%; }
+.nx-h-60 { height: 60%; } .nx-h-70 { height: 70%; } .nx-h-80 { height: 80%; } .nx-h-90 { height: 90%; } .nx-h-100 { height: 100%; }
+
+/* ---------- Anillo de foco ----------
+   Contenedor con borde de 2px y 3px de relleno alrededor del control. */
+.focus-ring { border-width: 2px; border-color: rgba(0, 0, 0, 0); padding: 3px; border-radius: 6px; transition-property: border-color; transition-duration: 0.12s; transition-timing-function: ease-out; }
+.focus-ring.is-focused, .focus-ring:focus { border-color: var(--c-focus); }
+
+/* ---------- Panel ---------- */
+.nx-panel { background-color: var(--c-surface); border-width: 1px; border-color: var(--c-line); border-radius: 4px; padding: 24px; }
+.a11y-hc .nx-panel { border-width: 2px; }
+.nx-panel__label { margin-bottom: 12px; }
+.nx-panel__content { flex-direction: column; }
+.nx-panel__corner { position: absolute; width: 16px; height: 16px; border-color: var(--c-accent); }
+.nx-panel__corner--tl { left: -2px; top: -2px; border-left-width: 2px; border-top-width: 2px; }
+.nx-panel__corner--tr { right: -2px; top: -2px; border-right-width: 2px; border-top-width: 2px; }
+.nx-panel__corner--bl { left: -2px; bottom: -2px; border-left-width: 2px; border-bottom-width: 2px; }
+.nx-panel__corner--br { right: -2px; bottom: -2px; border-right-width: 2px; border-bottom-width: 2px; }
+.nx-panel--flush > .nx-panel { padding: 0; }
+.nx-panel--pad-40 > .nx-panel { padding: 40px; }
+.nx-panel--no-label > .nx-panel > .nx-panel__label { display: none; }
+
+/* ---------- Marco de lente ---------- */
+.nx-lens { position: absolute; left: 0; top: 0; right: 0; bottom: 0; }
+.nx-lens--dim { opacity: 0.5; }
+.nx-lens__corner { position: absolute; width: 40px; height: 40px; border-color: var(--c-accent); }
+.nx-lens__corner--tl { left: 28px; top: 28px; border-left-width: 2px; border-top-width: 2px; }
+.nx-lens__corner--tr { right: 28px; top: 28px; border-right-width: 2px; border-top-width: 2px; }
+.nx-lens__corner--bl { left: 28px; bottom: 28px; border-left-width: 2px; border-bottom-width: 2px; }
+.nx-lens__corner--br { right: 28px; bottom: 28px; border-right-width: 2px; border-bottom-width: 2px; }
+.nx-lens__ruler { display: none; position: absolute; left: 760px; top: 28px; width: 402px; height: 16px; flex-direction: row; align-items: flex-end; }
+.nx-lens--ruler .nx-lens__ruler { display: flex; }
+.nx-lens__tick { width: 2px; height: 8px; margin-right: 18px; background-color: var(--c-accent); opacity: 0.6; }
+.nx-lens__tick--major { height: 16px; }
+.nx-lens__tick--last { margin-right: 0; }
+
+/* ---------- Lista de menú ---------- */
+.nx-menu-item { flex-direction: row; align-items: center; margin-bottom: 12px; }
+.nx-menu-item__marker { display: none; width: 12px; height: 12px; margin-right: 16px; background-color: var(--c-accent); }
+.nx-menu-item__number { width: 56px; color: var(--c-muted); }
+.nx-menu-item__text { flex-grow: 1; color: var(--c-muted); transition-property: font-size, color; transition-duration: 0.12s; transition-timing-function: ease-out; }
+.nx-menu-item__status { display: none; color: var(--c-ok); }
+.is-focused .nx-menu-item__text, .nx-focusable:focus .nx-menu-item__text { font-size: 56px; min-height: 60px; letter-spacing: 1.12px; -unity-font-style: bold; color: var(--c-text); }
+.ui-scale-lg .is-focused .nx-menu-item__text, .ui-scale-lg .nx-focusable:focus .nx-menu-item__text { font-size: 70px; min-height: 75px; }
+.ui-scale-xl .is-focused .nx-menu-item__text, .ui-scale-xl .nx-focusable:focus .nx-menu-item__text { font-size: 84px; min-height: 90px; }
+.nx-menu-item--marker.is-focused .nx-menu-item__marker, .nx-menu-item--marker:focus .nx-menu-item__marker { display: flex; }
+.nx-menu-item--no-number .nx-menu-item__number { display: none; }
+.nx-menu-item--done .nx-menu-item__status { display: flex; }
+
+/* ---------- Barra de pestañas ---------- */
+.nx-tabbar { flex-direction: row; align-items: center; border-bottom-width: 1px; border-color: var(--c-line-faint); }
+.nx-tabbar__tabs { flex-grow: 1; flex-direction: row; justify-content: center; }
+.nx-tabbar__key { width: 32px; height: 32px; min-height: 32px; border-width: 2px; border-color: var(--c-line); border-radius: 2px; color: var(--c-text); -unity-text-align: middle-center; }
+.nx-tab { margin-left: 24px; margin-right: 24px; padding-top: 12px; padding-bottom: 8px; min-height: 48px; color: var(--c-muted); border-bottom-width: 2px; border-color: rgba(0, 0, 0, 0); -unity-text-align: middle-center; }
+.nx-tabbar--audio .nx-tab--audio, .nx-tabbar--video .nx-tab--video, .nx-tabbar--controls .nx-tab--controls, .nx-tabbar--accessibility .nx-tab--accessibility { color: var(--c-text); -unity-font-style: bold; border-color: var(--c-accent); }
+
+/* ---------- Fila de ajuste ---------- */
+.nx-setting-row { flex-direction: row; align-items: center; height: 64px; padding-left: 24px; padding-right: 24px; border-width: 2px; border-color: rgba(0, 0, 0, 0); transition-property: background-color, border-color; transition-duration: 0.12s; transition-timing-function: ease-out; }
+.nx-setting-row__sep { position: absolute; left: -2px; right: -2px; bottom: -2px; height: 1px; background-color: var(--c-line-faint); }
+.nx-setting-row__label { flex-grow: 1; color: var(--c-muted); }
+.nx-setting-row__value { color: var(--c-text); -unity-text-align: middle-center; }
+.nx-setting-row__arrow { width: 24px; color: var(--c-text); -unity-text-align: middle-center; visibility: hidden; }
+.nx-setting-row__state { color: var(--c-text); }
+.is-focused > .nx-setting-row, .nx-focusable:focus > .nx-setting-row { background-color: var(--c-surface-raised); border-color: var(--c-focus); border-radius: 4px; }
+.is-focused .nx-setting-row__label, .nx-focusable:focus .nx-setting-row__label { color: var(--c-text); }
+.is-focused .nx-setting-row__arrow, .nx-focusable:focus .nx-setting-row__arrow { visibility: visible; }
+.is-focused .nx-setting-row__sep, .nx-focusable:focus .nx-setting-row__sep { display: none; }
+
+/* Interruptor */
+.nx-switch { width: 56px; height: 28px; margin-left: 12px; border-width: 2px; border-radius: 14px; border-color: var(--c-line); background-color: var(--c-bg); }
+.nx-switch__knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 10px; background-color: var(--c-muted); transition-property: left, background-color; transition-duration: 0.12s; transition-timing-function: ease-out; }
+.is-on .nx-switch { border-color: var(--c-accent); background-color: var(--c-accent); }
+.is-on .nx-switch__knob { left: 30px; background-color: var(--c-on-accent); }
+
+/* Deslizador */
+.nx-slider { width: 160px; height: 16px; border-width: 2px; border-color: var(--c-line); border-radius: 2px; background-color: var(--c-bg); }
+.nx-slider__fill { height: 100%; width: 0; background-color: var(--c-accent); }
+.nx-slider__value { width: 64px; margin-left: 12px; color: var(--c-text); -unity-text-align: middle-right; }
+.nx-pct-38 .nx-slider__fill { width: 38%; } .nx-pct-60 .nx-slider__fill { width: 60%; } .nx-pct-85 .nx-slider__fill { width: 85%; }
+
+/* ---------- Botón ---------- */
+.nx-button { flex-direction: row; align-items: center; justify-content: center; min-height: 48px; padding-left: 24px; padding-right: 24px; border-width: 2px; border-radius: 4px; border-color: var(--c-line); background-color: var(--c-surface-raised); }
+.nx-button__text { color: var(--c-text); -unity-text-align: middle-center; }
+.nx-button__icon { display: none; margin-right: 8px; color: var(--c-danger); }
+.nx-button--primary > .nx-button { background-color: var(--c-accent); border-color: var(--c-accent); }
+.nx-button--primary .nx-button__text { color: var(--c-on-accent); }
+.nx-button--danger > .nx-button { border-color: var(--c-danger); }
+.nx-button--danger .nx-button__text { color: var(--c-danger); }
+.nx-button--danger .nx-button__icon { display: flex; }
+.nx-button--disabled > .nx-button { border-color: var(--c-line); }
+.nx-button--disabled .nx-button__text { color: var(--c-line); }
+
+/* ---------- Control segmentado ----------
+   El anillo de cada segmento usa margen negativo para no alterar la separación de 16px. */
+.nx-segmented { flex-direction: row; }
+.nx-segment-ring { margin: -5px 11px -5px -5px; border-width: 2px; border-color: rgba(0, 0, 0, 0); padding: 3px; border-radius: 6px; transition-property: border-color; transition-duration: 0.12s; transition-timing-function: ease-out; }
+.nx-segment-ring--3 { margin-right: -5px; }
+.nx-segment { flex-direction: row; align-items: center; justify-content: center; width: 200px; height: 64px; border-width: 2px; border-radius: 4px; border-color: var(--c-line); background-color: var(--c-surface-raised); }
+.nx-segment__check { display: none; width: 20px; min-height: 20px; margin-right: 8px; font-size: 20px; color: var(--c-on-accent); }
+.nx-segment__text { color: var(--c-text); }
+.is-selected-1 .nx-segment--1, .is-selected-2 .nx-segment--2, .is-selected-3 .nx-segment--3 { background-color: var(--c-accent); border-color: var(--c-accent); }
+.is-selected-1 .nx-segment--1 .nx-segment__text, .is-selected-2 .nx-segment--2 .nx-segment__text, .is-selected-3 .nx-segment--3 .nx-segment__text { color: var(--c-on-accent); -unity-font-style: bold; }
+.is-selected-1 .nx-segment--1 .nx-segment__check, .is-selected-2 .nx-segment--2 .nx-segment__check, .is-selected-3 .nx-segment--3 .nx-segment__check { display: flex; }
+.is-selected-1.is-focused .nx-segment-ring--1, .is-selected-2.is-focused .nx-segment-ring--2, .is-selected-3.is-focused .nx-segment-ring--3 { border-color: var(--c-focus); }
+.is-selected-1:focus .nx-segment-ring--1, .is-selected-2:focus .nx-segment-ring--2, .is-selected-3:focus .nx-segment-ring--3 { border-color: var(--c-focus); }
+
+/* ---------- Leyenda de tecla ---------- */
+.nx-keyhint { flex-direction: row; align-items: center; margin-left: 16px; margin-right: 16px; }
+.nx-keyhint__key { min-width: 36px; height: 36px; min-height: 36px; padding-left: 8px; padding-right: 8px; border-width: 2px; border-color: var(--c-line); border-radius: 2px; color: var(--c-text); -unity-text-align: middle-center; }
+.nx-keyhint__action { margin-left: 8px; color: var(--c-muted); }
+.nx-keyhint--pad .nx-keyhint__key { width: 36px; padding-left: 0; padding-right: 0; border-radius: 18px; }
+
+/* ---------- Notificación (extiende .hud-notification del HUD sin cambiar sus valores) ---------- */
+.nx-notification { width: 580px; margin-bottom: 0; padding: 16px 20px; border-color: var(--c-line); }
+.nx-notification.hud-notification--fake { border-color: var(--c-fake); }
+.nx-notification__seal { margin-left: 12px; }
+.nx-notification__wave { height: 16px; }
