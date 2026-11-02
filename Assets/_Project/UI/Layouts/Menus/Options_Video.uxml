@@ -1,0 +1,98 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxPanel" src="../Components/NxPanel.uxml" />
+    <ui:Template name="NxSettingRowChoice" src="../Components/NxSettingRowChoice.uxml" />
+    <ui:Template name="NxSettingRowToggle" src="../Components/NxSettingRowToggle.uxml" />
+    <ui:Template name="NxSettingRowSlider" src="../Components/NxSettingRowSlider.uxml" />
+    <ui:Template name="NxKeyHint" src="../Components/NxKeyHint.uxml" />
+
+    <!-- Pantalla 6: Opciones · Video (spec §6.6). -->
+    <ui:VisualElement name="optv-root" class="theme-nexo nx-screen">
+        <!-- TODO controller: Q/E cambian de pestaña (AUDIO y CONTROLES aún no tienen pantalla). -->
+        <!-- Barra de pestañas en línea: solo existen VIDEO y ACCESIBILIDAD (la plantilla NxTabBar trae cuatro). -->
+        <ui:VisualElement name="optv-tabbar" class="opt-tabbar nx-tabbar nx-tabbar--video">
+            <ui:Label name="tabbar-key-prev" text="Q" class="nx-tabbar__key label" />
+            <ui:VisualElement name="tabbar-tabs" class="nx-tabbar__tabs">
+                <ui:Label name="tabbar-tab-video" text="VIDEO" class="nx-tab nx-tab--video tab" />
+                <ui:Label name="tabbar-tab-accessibility" text="ACCESIBILIDAD" class="nx-tab nx-tab--accessibility tab" />
+            </ui:VisualElement>
+            <ui:Label name="tabbar-key-next" text="E" class="nx-tabbar__key label" />
+        </ui:VisualElement>
+
+        <!-- TODO controller: ← → cambian el valor de la fila enfocada; actualizar textos, is-on y el ancho del relleno del brillo. -->
+        <ui:Instance template="NxPanel" name="optv-list" class="opt-list nx-panel--flush nx-panel--no-label">
+            <ui:Instance template="NxSettingRowChoice" name="optv-row-resolution" focusable="true" tabindex="0" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Resolución" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="1920 × 1080" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowChoice" name="optv-row-display-mode" focusable="true" tabindex="1" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Modo de pantalla" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="Pantalla completa" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowChoice" name="optv-row-quality" focusable="true" tabindex="2" class="nx-focusable is-focused">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Calidad de imagen" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="Alta" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowToggle" name="optv-row-shadows" focusable="true" tabindex="3" class="nx-focusable is-on">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Sombras" />
+                <ui:AttributeOverrides element-name="setting-row-state" text="ACTIVADO" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowChoice" name="optv-row-antialiasing" focusable="true" tabindex="4" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Suavizado de bordes" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="TAA" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowSlider" name="optv-row-brightness" focusable="true" tabindex="5" class="nx-focusable nx-pct-60">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Brillo" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="60" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowToggle" name="optv-row-vsync" focusable="true" tabindex="6" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Sincronización vertical" />
+                <ui:AttributeOverrides element-name="setting-row-state" text="DESACTIVADO" />
+            </ui:Instance>
+        </ui:Instance>
+
+        <!-- TODO controller: el panel derecho describe la fila enfocada. -->
+        <ui:VisualElement name="optv-aside" class="opt-aside">
+            <ui:Label name="optv-aside-heading" text="CALIDAD DE IMAGEN" class="heading text-main nx-mb-12" />
+            <ui:Label name="optv-aside-body" text="Ajusta el detalle de texturas y sombras. Una calidad menor mejora el rendimiento." class="body text-muted wrap nx-mb-24" />
+            <!-- TODO controller: sustituir por una cámara o RenderTexture de la escena. -->
+            <ui:VisualElement name="optv-preview" class="opt-preview nx-mb-24">
+                <ui:Label name="optv-preview-label" text="[VISTA PREVIA DE LA ESCENA]" class="label text-muted" />
+            </ui:VisualElement>
+            <ui:Label name="optv-impact-title" text="IMPACTO ESTIMADO" class="label text-muted nx-mb-12" />
+            <ui:VisualElement name="optv-impact-cpu" class="opt-impact">
+                <ui:Label name="optv-impact-cpu-name" text="Procesador" class="opt-impact__name body-sm" />
+                <ui:VisualElement name="optv-impact-cpu-track" class="opt-impact__track">
+                    <ui:VisualElement name="optv-impact-cpu-fill" class="opt-impact__fill nx-w-60" />
+                </ui:VisualElement>
+                <ui:Label name="optv-impact-cpu-word" text="MEDIO" class="opt-impact__word label" />
+            </ui:VisualElement>
+            <ui:VisualElement name="optv-impact-vram" class="opt-impact">
+                <ui:Label name="optv-impact-vram-name" text="Memoria de video" class="opt-impact__name body-sm" />
+                <ui:VisualElement name="optv-impact-vram-track" class="opt-impact__track">
+                    <ui:VisualElement name="optv-impact-vram-fill" class="opt-impact__fill nx-w-85" />
+                </ui:VisualElement>
+                <ui:Label name="optv-impact-vram-word" text="ALTO" class="opt-impact__word label" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="optv-keyhints" picking-mode="Ignore" class="nx-keyhints">
+            <ui:Instance template="NxKeyHint" name="optv-key-change">
+                <ui:AttributeOverrides element-name="keyhint-key" text="← →" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Cambiar valor" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="optv-key-back">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Esc" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Atrás" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Label name="optv-version" text="NEXOOS V4.2" class="nx-version label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>

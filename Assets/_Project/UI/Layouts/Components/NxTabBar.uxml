@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Barra de pestañas de Opciones (spec §5 TabBar): tecla Q, pestañas centradas, tecla E.
+         La pestaña activa se elige con un modificador BEM de nx-tabbar en la instancia: audio, video, controls o accessibility.
+         TODO controller: Q/E cambian de pestaña; clic en una pestaña la activa. -->
+    <ui:VisualElement name="tabbar" class="nx-tabbar">
+        <ui:Label name="tabbar-key-prev" text="Q" class="nx-tabbar__key label" />
+        <ui:VisualElement name="tabbar-tabs" class="nx-tabbar__tabs">
+            <ui:Label name="tabbar-tab-audio" text="AUDIO" class="nx-tab nx-tab--audio tab" />
+            <ui:Label name="tabbar-tab-video" text="VIDEO" class="nx-tab nx-tab--video tab" />
+            <ui:Label name="tabbar-tab-controls" text="CONTROLES" class="nx-tab nx-tab--controls tab" />
+            <ui:Label name="tabbar-tab-accessibility" text="ACCESIBILIDAD" class="nx-tab nx-tab--accessibility tab" />
+        </ui:VisualElement>
+        <ui:Label name="tabbar-key-next" text="E" class="nx-tabbar__key label" />
+    </ui:VisualElement>
+</ui:UXML>

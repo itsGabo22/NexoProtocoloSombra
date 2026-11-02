@@ -1,0 +1,105 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxPanel" src="../Components/NxPanel.uxml" />
+    <ui:Template name="NxSettingRowChoice" src="../Components/NxSettingRowChoice.uxml" />
+    <ui:Template name="NxSettingRowToggle" src="../Components/NxSettingRowToggle.uxml" />
+    <ui:Template name="NxNotificationCard" src="../Components/NxNotificationCard.uxml" />
+    <ui:Template name="NxNotificationCardFake" src="../Components/NxNotificationCardFake.uxml" />
+    <ui:Template name="NxKeyHint" src="../Components/NxKeyHint.uxml" />
+
+    <!-- Pantalla 7: Opciones · Accesibilidad (spec §6.7). -->
+    <ui:VisualElement name="opta-root" class="theme-nexo nx-screen">
+        <!-- TODO controller: Q/E cambian de pestaña. -->
+        <!-- Barra de pestañas en línea: solo existen VIDEO y ACCESIBILIDAD (la plantilla NxTabBar trae cuatro). -->
+        <ui:VisualElement name="opta-tabbar" class="opt-tabbar nx-tabbar nx-tabbar--accessibility">
+            <ui:Label name="tabbar-key-prev" text="Q" class="nx-tabbar__key label" />
+            <ui:VisualElement name="tabbar-tabs" class="nx-tabbar__tabs">
+                <ui:Label name="tabbar-tab-video" text="VIDEO" class="nx-tab nx-tab--video tab" />
+                <ui:Label name="tabbar-tab-accessibility" text="ACCESIBILIDAD" class="nx-tab nx-tab--accessibility tab" />
+            </ui:VisualElement>
+            <ui:Label name="tabbar-key-next" text="E" class="nx-tabbar__key label" />
+        </ui:VisualElement>
+
+        <!-- TODO controller: cada fila escribe en AccessibilitySettings y aplica a la raíz a11y-hc, ui-scale-lg/xl, cb-deutan/protan/tritan y reduce-motion. -->
+        <ui:Instance template="NxPanel" name="opta-list" class="opt-list nx-panel--flush nx-panel--no-label">
+            <ui:Instance template="NxSettingRowToggle" name="opta-row-high-contrast" focusable="true" tabindex="0" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Alto contraste" />
+                <ui:AttributeOverrides element-name="setting-row-state" text="DESACTIVADO" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowChoice" name="opta-row-ui-scale" focusable="true" tabindex="1" class="nx-focusable is-focused">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Escala de la interfaz" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="125%" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowChoice" name="opta-row-colorblind" focusable="true" tabindex="2" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Modo daltonismo" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="Deuteranopia" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowToggle" name="opta-row-reduce-motion" focusable="true" tabindex="3" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Reducir movimiento" />
+                <ui:AttributeOverrides element-name="setting-row-state" text="DESACTIVADO" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowToggle" name="opta-row-subtitles" focusable="true" tabindex="4" class="nx-focusable is-on">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Subtítulos" />
+                <ui:AttributeOverrides element-name="setting-row-state" text="ACTIVADO" />
+            </ui:Instance>
+            <ui:Instance template="NxSettingRowChoice" name="opta-row-subtitle-size" focusable="true" tabindex="5" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Tamaño de subtítulos" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="Mediano" />
+            </ui:Instance>
+        </ui:Instance>
+
+        <ui:VisualElement name="opta-aside" class="opt-aside">
+            <ui:Label name="opta-aside-heading" text="ESCALA DE LA INTERFAZ" class="heading text-main nx-mb-12" />
+            <ui:Label name="opta-aside-body" text="Agranda textos y paneles de todo el HUD. Se aplica al instante." class="body text-muted wrap nx-mb-24" />
+
+            <ui:Label name="opta-example-real-label" text="EJEMPLO · NOTIFICACIÓN REAL" class="label text-muted nx-mb-12" />
+            <ui:Instance template="NxNotificationCard" name="opta-example-real" class="nx-mb-20">
+                <ui:AttributeOverrides element-name="notification-body" text="Por el pasillo de la izquierda no hay nadie. Ve agachado, ¿sí?" />
+            </ui:Instance>
+
+            <ui:Label name="opta-example-fake-label" text="EJEMPLO · NOTIFICACIÓN FALSA" class="label text-muted nx-mb-12" />
+            <ui:Instance template="NxNotificationCardFake" name="opta-example-fake" class="nx-mb-20">
+                <ui:AttributeOverrides element-name="notification-body" text="Alex, ven al cuarto de servidores. Es seguro." />
+            </ui:Instance>
+
+            <ui:VisualElement name="opta-legend" class="nx-mb-12">
+                <ui:VisualElement name="opta-legend-1" class="opt-legend">
+                    <ui:Label name="opta-legend-1-num" text="1" class="opt-legend__num label" />
+                    <ui:Label name="opta-legend-1-text" text="Remitente y borde naranja." class="opt-legend__text body-sm" />
+                </ui:VisualElement>
+                <ui:VisualElement name="opta-legend-2" class="opt-legend">
+                    <ui:Label name="opta-legend-2-num" text="2" class="opt-legend__num label" />
+                    <ui:Label name="opta-legend-2-text" text="Falta el sello ✔ BIO-ID." class="opt-legend__text body-sm" />
+                </ui:VisualElement>
+                <ui:VisualElement name="opta-legend-3" class="opt-legend">
+                    <ui:Label name="opta-legend-3-num" text="3" class="opt-legend__num label" />
+                    <ui:Label name="opta-legend-3-text" text="Texto en cursiva y ligeramente inclinado." class="opt-legend__text body-sm" />
+                </ui:VisualElement>
+                <ui:VisualElement name="opta-legend-4" class="opt-legend">
+                    <ui:Label name="opta-legend-4-num" text="4" class="opt-legend__num label" />
+                    <ui:Label name="opta-legend-4-text" text="Onda de audio irregular." class="opt-legend__text body-sm" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label name="opta-legend-note" text="Con cualquier modo de daltonismo siguen visibles las otras tres pistas." class="body-sm text-muted wrap" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="opta-keyhints" picking-mode="Ignore" class="nx-keyhints">
+            <ui:Instance template="NxKeyHint" name="opta-key-change">
+                <ui:AttributeOverrides element-name="keyhint-key" text="← →" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Cambiar valor" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="opta-key-back">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Esc" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Atrás" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Label name="opta-version" text="NEXOOS V4.2" class="nx-version label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,52 @@
+{
+  "entries": [
+    {
+      "floor": 1,
+      "key": "SAFE_PATH",
+      "response": {
+        "dialogue": "El vestíbulo está vacío. El escáner maestro está al fondo, junto a la esclusa de evacuación.",
+        "emotion": "WHISPER",
+        "ui_action": "HIGHLIGHT_SAFE_ROUTE",
+        "target_id": "F01_BioScanner",
+        "trust_level": 75,
+        "glitch_intensity": 0.2
+      }
+    },
+    {
+      "floor": 1,
+      "key": "OPEN_DOOR",
+      "response": {
+        "dialogue": "Esa puerta no la puedo abrir yo. La esclusa solo se abre si un humano limpio pone la mano en el escáner maestro.",
+        "emotion": "URGENT",
+        "ui_action": "NONE",
+        "target_id": "",
+        "trust_level": 78,
+        "glitch_intensity": 0.25
+      }
+    },
+    {
+      "floor": 1,
+      "key": "FEAR",
+      "response": {
+        "dialogue": "Ya casi salimos, Alex. El escáner solo deja pasar a alguien limpio... y tú estás bien, ¿verdad?",
+        "emotion": "SAD",
+        "ui_action": "NONE",
+        "target_id": "",
+        "trust_level": 80,
+        "glitch_intensity": 0.3
+      }
+    },
+    {
+      "floor": 1,
+      "key": "GENERIC",
+      "response": {
+        "dialogue": "Pon la mano en el escáner y se abrirá la esclusa. Luego nos vamos a casa, te lo prometo.",
+        "emotion": "WHISPER",
+        "ui_action": "NONE",
+        "target_id": "",
+        "trust_level": 82,
+        "glitch_intensity": 0.3
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxButton" src="../Components/NxButton.uxml" />
+    <ui:Template name="NxKeyHint" src="../Components/NxKeyHint.uxml" />
+
+    <!-- Pantalla 9: Piso reiniciado, tema hive (spec §6.9). -->
+    <ui:VisualElement name="fr-root" class="theme-hive nx-screen bg-base">
+        <ui:VisualElement name="fr-heading" picking-mode="Ignore" class="fr-heading">
+            <ui:Label name="fr-title" text="SEÑAL PERDIDA" class="display-xl text-accent" />
+            <ui:Label name="fr-subtitle" text="PISO REINICIADO" class="title text-muted nx-mt-16" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="fr-actions" class="fr-actions">
+            <ui:Instance template="NxButton" name="fr-retry" focusable="true" tabindex="0" class="fr-action focus-ring nx-focusable nx-button--primary is-focused">
+                <ui:AttributeOverrides element-name="button-text" text="REINTENTAR" />
+            </ui:Instance>
+            <ui:Instance template="NxButton" name="fr-main-menu" focusable="true" tabindex="1" class="fr-action focus-ring nx-focusable nx-mt-6">
+                <ui:AttributeOverrides element-name="button-text" text="MENÚ PRINCIPAL" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Label name="fr-hint" text="Reintenta desde el inicio del piso." class="nx-hint body text-muted" />
+
+        <ui:VisualElement name="fr-keyhints" picking-mode="Ignore" class="nx-keyhints">
+            <ui:Instance template="NxKeyHint" name="fr-key-move">
+                <ui:AttributeOverrides element-name="keyhint-key" text="↑ ↓" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Mover" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="fr-key-confirm">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Enter" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Confirmar" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Label name="fr-version" text="NEXOOS V4.2" class="nx-version label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>

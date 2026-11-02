@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Control segmentado de 3 opciones (spec §5 SegmentedControl): 200x64, margen 16.
+         Opción elegida con is-selected-1/2/3 en la instancia; el anillo de foco rodea a la opción elegida cuando la instancia tiene foco.
+         TODO controller: ← → cambian is-selected-N. -->
+    <ui:VisualElement name="segmented" class="nx-segmented">
+        <ui:VisualElement name="segmented-ring-1" class="nx-segment-ring nx-segment-ring--1">
+            <ui:VisualElement name="segmented-option-1" class="nx-segment nx-segment--1">
+                <ui:Label name="segmented-check-1" text="✔" class="nx-segment__check" />
+                <ui:Label name="segmented-text-1" text="OPCIÓN 1" class="nx-segment__text button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="segmented-ring-2" class="nx-segment-ring nx-segment-ring--2">
+            <ui:VisualElement name="segmented-option-2" class="nx-segment nx-segment--2">
+                <ui:Label name="segmented-check-2" text="✔" class="nx-segment__check" />
+                <ui:Label name="segmented-text-2" text="OPCIÓN 2" class="nx-segment__text button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="segmented-ring-3" class="nx-segment-ring nx-segment-ring--3">
+            <ui:VisualElement name="segmented-option-3" class="nx-segment nx-segment--3">
+                <ui:Label name="segmented-check-3" text="✔" class="nx-segment__check" />
+                <ui:Label name="segmented-text-3" text="OPCIÓN 3" class="nx-segment__text button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

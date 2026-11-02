@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Notificación REAL (spec §5 NotificationCard). Reutiliza las clases del HUD (hud-notification, hud-seal, wave-bar)
+         que HUDController.BuildCard crea en juego, para que el ejemplo sea idéntico al aviso real.
+         Mensaje con AttributeOverrides element-name="notification-body".
+         TODO controller: la onda senoidal la genera el código (aquí, alturas estáticas aproximadas de 0.3 + 0.6·|sin(i·0.45)|). -->
+    <ui:VisualElement name="notification" class="hud-notification hud-notification--visible nx-notification flex-col">
+        <ui:VisualElement name="notification-header" class="flex-row items-center">
+            <ui:Label name="notification-sender" text="ELENA" class="hud-notification__sender label text-main" />
+            <ui:Label name="notification-seal" text="✔ BIO-ID" class="hud-seal nx-notification__seal label" />
+        </ui:VisualElement>
+        <ui:Label name="notification-body" text="Mensaje" class="body-sm text-main wrap mt-1" />
+        <ui:VisualElement name="notification-wave" class="nx-notification__wave flex-row items-end mt-1">
+            <ui:VisualElement name="notification-wave-01" class="wave-bar nx-h-30" />
+            <ui:VisualElement name="notification-wave-02" class="wave-bar nx-h-60" />
+            <ui:VisualElement name="notification-wave-03" class="wave-bar nx-h-80" />
+            <ui:VisualElement name="notification-wave-04" class="wave-bar nx-h-90" />
+            <ui:VisualElement name="notification-wave-05" class="wave-bar nx-h-90" />
+            <ui:VisualElement name="notification-wave-06" class="wave-bar nx-h-80" />
+            <ui:VisualElement name="notification-wave-07" class="wave-bar nx-h-60" />
+            <ui:VisualElement name="notification-wave-08" class="wave-bar nx-h-30" />
+            <ui:VisualElement name="notification-wave-09" class="wave-bar nx-h-60" />
+            <ui:VisualElement name="notification-wave-10" class="wave-bar nx-h-80" />
+            <ui:VisualElement name="notification-wave-11" class="wave-bar nx-h-90" />
+            <ui:VisualElement name="notification-wave-12" class="wave-bar nx-h-90" />
+            <ui:VisualElement name="notification-wave-13" class="wave-bar nx-h-80" />
+            <ui:VisualElement name="notification-wave-14" class="wave-bar nx-h-60" />
+            <ui:VisualElement name="notification-wave-15" class="wave-bar nx-h-30" />
+            <ui:VisualElement name="notification-wave-16" class="wave-bar nx-h-60" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <!-- Panel NexoOS (spec §5): fondo surface, borde 1px line, radio 4, relleno 24 y cuatro marcas de esquina.
+         Instancia: los hijos van a panel-content; la etiqueta se cambia con AttributeOverrides element-name="panel-label".
+         Modificadores BEM de nx-panel en la instancia: flush (sin relleno), pad-40 y no-label (ver nexo-menu-components.uss). -->
+    <ui:VisualElement name="panel" class="nx-panel">
+        <ui:Label name="panel-label" text="ETIQUETA" class="nx-panel__label label text-muted" />
+        <ui:VisualElement name="panel-content" content-container="panel-content" class="nx-panel__content" />
+        <ui:VisualElement name="panel-corner-tl" picking-mode="Ignore" class="nx-panel__corner nx-panel__corner--tl" />
+        <ui:VisualElement name="panel-corner-tr" picking-mode="Ignore" class="nx-panel__corner nx-panel__corner--tr" />
+        <ui:VisualElement name="panel-corner-bl" picking-mode="Ignore" class="nx-panel__corner nx-panel__corner--bl" />
+        <ui:VisualElement name="panel-corner-br" picking-mode="Ignore" class="nx-panel__corner nx-panel__corner--br" />
+    </ui:VisualElement>
+</ui:UXML>

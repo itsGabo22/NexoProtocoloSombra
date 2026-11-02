@@ -1,0 +1,79 @@
+/* Assets/_Project/UI/Styles/nexo-menu-screens.uss */
+/* Posiciones por pantalla a 1920x1080 (docs/ui/NEXOOS_DESIGN_SPEC.md §6). Colores por variables salvo los valores fijos que da la spec. */
+
+/* ---------- 1. Despertar ---------- */
+.boot-lid { position: absolute; left: 0; right: 0; height: 400px; background-color: rgb(2, 5, 11); transition-property: height; transition-duration: 1.2s; transition-timing-function: ease-out; }
+.boot-lid--top { top: 0; }
+.boot-lid--bottom { bottom: 0; }
+.boot-lid--open { height: 0; }
+.boot-progress { position: absolute; left: 0; right: 0; top: 760px; align-items: center; }
+.boot-progress__row { flex-direction: row; align-items: center; }
+.boot-progress__track { width: 360px; height: 4px; background-color: var(--c-line-faint); }
+.boot-progress__fill { height: 100%; background-color: var(--c-accent); }
+.boot-progress__value { width: 72px; margin-left: 16px; }
+
+/* ---------- 2. Escaneo biométrico ---------- */
+.scan-scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(5, 9, 16, 0.62); }
+.scan-title { position: absolute; left: 0; right: 0; top: 196px; -unity-text-align: middle-center; }
+.scan-ring { position: absolute; left: 740px; top: 252px; width: 440px; height: 440px; }
+.scan-ring__circle { position: absolute; left: 20px; top: 20px; width: 400px; height: 400px; border-radius: 200px; }
+.scan-ring__track { border-width: 2px; border-color: var(--c-line-faint); }
+.scan-ring__arc { border-width: 6px; border-color: var(--c-accent); }
+.scan-ring__center { position: absolute; left: 0; top: 0; right: 0; bottom: 0; align-items: center; justify-content: center; }
+.scan-ring__status { font-size: 36px; min-height: 42px; letter-spacing: 2.16px; -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf"); color: var(--c-muted); }
+.scan-verdict { position: absolute; left: 0; right: 0; top: 728px; align-items: center; }
+.scan-col { position: absolute; top: 420px; width: 380px; }
+.scan-col--left { left: 160px; }
+.scan-col--right { right: 160px; align-items: flex-end; }
+
+/* ---------- 3. Calibración óptica ---------- */
+.calib-scrim { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgba(5, 9, 16, 0.74); }
+.calib-step { position: absolute; left: 160px; top: 96px; }
+.calib-title { position: absolute; left: 160px; top: 136px; }
+.calib-steps { position: absolute; left: 160px; top: 300px; width: 560px; }
+.calib-card { position: absolute; left: 800px; top: 192px; width: 960px; }
+.calib-preview { padding: 24px; background-color: var(--c-bg); border-width: 1px; border-color: var(--c-line-faint); border-radius: 4px; }
+.calib-preview-panel { width: 420px; margin-top: 12px; }
+.calib-preview-panel > .nx-panel > .nx-panel__label { font-size: 22px; min-height: 28px; }
+.calib-preview__value { font-size: 35px; min-height: 40px; color: var(--c-text); -unity-font-definition: url("../Fonts/IBMPlexMono-Medium.ttf"); }
+.calib-preview__status { font-size: 25px; min-height: 35px; color: var(--c-muted); -unity-font-definition: url("../Fonts/IBMPlexSans-Regular.ttf"); }
+.calib-actions { flex-direction: row; align-items: center; }
+
+/* ---------- 4. Menú principal ---------- */
+.mm-scrim { position: absolute; left: 0; top: 0; bottom: 0; width: 1056px; background-color: rgba(5, 9, 16, 0.55); }
+.mm-brand { position: absolute; left: 160px; top: 128px; }
+.mm-rule { position: absolute; left: 131px; top: 216px; width: 2px; height: 324px; background-color: var(--c-line-faint); }
+.mm-rule-focus { position: absolute; left: 130px; top: 240px; width: 4px; height: 60px; background-color: var(--c-accent); }
+.mm-list { position: absolute; left: 160px; top: 240px; width: 640px; }
+.mm-focus-line { position: absolute; left: 160px; top: 304px; width: 520px; height: 2px; background-color: var(--c-accent); opacity: 0.6; }
+.mm-focus-end { position: absolute; left: 678px; top: 298px; width: 2px; height: 14px; background-color: var(--c-accent); }
+.mm-elena { position: absolute; right: 64px; bottom: 176px; width: 420px; }
+
+/* ---------- 6 y 7. Opciones ---------- */
+.opt-tabbar { position: absolute; left: 160px; right: 160px; top: 64px; }
+.opt-list { position: absolute; left: 160px; top: 200px; width: 900px; }
+.opt-aside { position: absolute; left: 1180px; top: 200px; width: 580px; }
+.opt-preview { width: 580px; height: 300px; align-items: center; justify-content: center; background-color: var(--c-surface); border-width: 1px; border-color: var(--c-line); border-radius: 4px; }
+.opt-impact { flex-direction: row; align-items: center; margin-bottom: 12px; }
+.opt-impact__name { width: 200px; color: var(--c-text); }
+.opt-impact__track { flex-grow: 1; height: 12px; border-width: 2px; border-color: var(--c-line); border-radius: 2px; }
+.opt-impact__fill { height: 100%; background-color: var(--c-accent); }
+.opt-impact__word { width: 96px; color: var(--c-text); -unity-text-align: middle-right; }
+.opt-legend { flex-direction: row; margin-bottom: 4px; }
+.opt-legend__num { width: 24px; color: var(--c-text); }
+.opt-legend__text { flex-grow: 1; flex-shrink: 1; color: var(--c-text); white-space: normal; }
+
+/* ---------- 8. Pausa ---------- */
+.pause-location { position: absolute; left: 64px; top: 64px; }
+.pause-column { position: absolute; left: 0; right: 0; top: 232px; align-items: center; }
+
+/* ---------- 9. Piso reiniciado ---------- */
+.fr-heading { position: absolute; left: 0; right: 0; top: 232px; align-items: center; }
+.fr-actions { position: absolute; left: 0; right: 0; top: 560px; align-items: center; }
+/* 360px de botón + 2·(2px borde + 3px relleno) del anillo de foco */
+.fr-action { width: 370px; }
+
+/* ---------- 10. Créditos ---------- */
+.cr-mode { position: absolute; left: 160px; top: 112px; }
+.cr-title { position: absolute; left: 160px; top: 152px; }
+.cr-block { position: absolute; left: 160px; top: 288px; width: 1000px; }

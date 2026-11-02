@@ -1,0 +1,62 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxPanel" src="../Components/NxPanel.uxml" />
+    <ui:Template name="NxMenuItem" src="../Components/NxMenuItem.uxml" />
+    <ui:Template name="NxKeyHint" src="../Components/NxKeyHint.uxml" />
+
+    <!-- Pantalla 8: Pausa (spec §6.8). -->
+    <ui:VisualElement name="pause-root" class="theme-nexo nx-screen">
+        <ui:VisualElement name="pause-scrim" picking-mode="Ignore" class="nx-scrim" />
+
+        <!-- TODO controller: piso actual. -->
+        <ui:Label name="pause-location" text="PISO 12 · OFICINAS" class="pause-location label text-muted" />
+
+        <ui:Instance template="NxPanel" name="pause-bio-panel" class="nx-bio-panel">
+            <ui:AttributeOverrides element-name="panel-label" text="ESTADO BIOMÉTRICO" />
+            <ui:Label name="pause-bio-value" text="99% SANO" class="readout text-main" />
+            <ui:Label name="pause-bio-status" text="NO INFECTADO" class="body-sm text-muted" />
+        </ui:Instance>
+
+        <ui:VisualElement name="pause-column" class="pause-column">
+            <ui:Label name="pause-title" text="PAUSA" class="title text-main nx-mb-48" />
+            <ui:Instance template="NxMenuItem" name="pause-item-continue" focusable="true" tabindex="0" class="nx-focusable nx-menu-item--no-number nx-menu-item--marker is-focused">
+                <ui:AttributeOverrides element-name="menu-item-text" text="CONTINUAR" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="pause-item-options" focusable="true" tabindex="1" class="nx-focusable nx-menu-item--no-number nx-menu-item--marker">
+                <ui:AttributeOverrides element-name="menu-item-text" text="OPCIONES" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="pause-item-restart" focusable="true" tabindex="2" class="nx-focusable nx-menu-item--no-number nx-menu-item--marker">
+                <ui:AttributeOverrides element-name="menu-item-text" text="REINICIAR PISO" />
+            </ui:Instance>
+            <ui:Instance template="NxMenuItem" name="pause-item-main-menu" focusable="true" tabindex="3" class="nx-focusable nx-menu-item--no-number nx-menu-item--marker">
+                <ui:AttributeOverrides element-name="menu-item-text" text="MENÚ PRINCIPAL" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <!-- TODO controller: la pista cambia según el ítem enfocado (la spec solo da la de CONTINUAR). -->
+        <ui:Label name="pause-hint" text="Vuelve a la partida." class="nx-hint body text-muted" />
+
+        <ui:VisualElement name="pause-keyhints" picking-mode="Ignore" class="nx-keyhints">
+            <ui:Instance template="NxKeyHint" name="pause-key-move">
+                <ui:AttributeOverrides element-name="keyhint-key" text="↑ ↓" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Mover" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="pause-key-confirm">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Enter" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Confirmar" />
+            </ui:Instance>
+            <ui:Instance template="NxKeyHint" name="pause-key-resume">
+                <ui:AttributeOverrides element-name="keyhint-key" text="Esc" />
+                <ui:AttributeOverrides element-name="keyhint-action" text="Continuar" />
+            </ui:Instance>
+        </ui:VisualElement>
+
+        <ui:Label name="pause-version" text="NEXOOS V4.2" class="nx-version label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>
