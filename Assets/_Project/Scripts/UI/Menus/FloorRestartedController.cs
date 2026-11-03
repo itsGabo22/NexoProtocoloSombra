@@ -3,11 +3,12 @@ using UnityEngine.UIElements;
 namespace Nexo.UI.Menus
 {
     /// <summary>
-    /// "Piso reiniciado" (tema hive): REINTENTAR pide reiniciar el piso y MENÚ PRINCIPAL vuelve al hub.
-    /// Se muestra con MenuEvents.RaiseShowFloorRestartedRequested() (ver el comentario en MenuEvents).
+    /// "Piso reiniciado" (tema hive): REINTENTAR reanuda desde el checkpoint ya restaurado y MENÚ PRINCIPAL vuelve al hub.
+    /// La abre MenuGameFlowBridge tras una captura, cuando PlayerCaptureHandler ya recargó el piso.
     /// </summary>
     public sealed class FloorRestartedController : IMenuScreen, IMenuNavigationHandler
     {
+        private MenuFlowController _flow;
         private const int Retry = 0;
         private const int MainMenu = 1;
 
@@ -21,6 +22,7 @@ namespace Nexo.UI.Menus
 
         public void Bind(MenuFlowController flow, VisualElement root, ScreenId screen)
         {
+            _flow = flow;
             Label subtitle = root.Q<Label>("fr-subtitle");
             if (subtitle != null) subtitle.text = FloorLabels.Restarted(flow.CurrentFloor);
 
@@ -40,7 +42,12 @@ namespace Nexo.UI.Menus
 
         public void OnItemSubmitted(int index)
         {
-            if (index == Retry) MenuEvents.RaiseRestartFloorRequested();
+            if (index == Retry)
+            {
+                // MenuGameFlowBridge abre esta pantalla cuando el piso ya se reinició tras la captura: solo se reanuda
+                UnityEngine.Time.timeScale = 1f;
+                _flow?.ShowScreen(ScreenId.None);
+            }
             else if (index == MainMenu) MenuEvents.RaiseReturnToMainMenuRequested();
         }
 
