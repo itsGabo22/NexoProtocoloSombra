@@ -44,7 +44,26 @@ namespace Nexo.Player
 
         private void OnEnable()
         {
-            if (!_enabledByDefault) return;
+            if (_enabledByDefault) StartListening();
+        }
+
+        private void OnDisable()
+        {
+            StopListening();
+        }
+
+        /// <summary>Libera el micrófono temporalmente (p. ej. mientras el jugador graba un mensaje para Elena).</summary>
+        public void Pause() => StopListening();
+
+        /// <summary>Vuelve a escuchar tras <see cref="Pause"/>.</summary>
+        public void Resume()
+        {
+            if (_enabledByDefault && isActiveAndEnabled) StartListening();
+        }
+
+        private void StartListening()
+        {
+            if (_routine != null) return;
 
             if (Microphone.devices.Length == 0)
             {
@@ -57,7 +76,7 @@ namespace Nexo.Player
             _routine = StartCoroutine(ListenRoutine());
         }
 
-        private void OnDisable()
+        private void StopListening()
         {
             if (_routine != null)
             {
