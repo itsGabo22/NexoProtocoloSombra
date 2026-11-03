@@ -91,6 +91,7 @@ namespace Nexo.UI.Menus
             // Current == None solo ocurre en juego (tras JUGAR). No se exige FloorMetadata: Floor12_Offices aún no lo tiene.
             if (_terminal != null && _terminal.IsOpen) return;                 // Esc / P cierran la terminal
             if (_captureHandler != null && _captureHandler.IsCapturing) return; // el piso se está reiniciando
+            if (Nexo.Narrative.NarrativeEvents.TwistHasPlayed) return;          // el giro final no se pausa ni se reinicia
 
             _lastToggleFrame = Time.frameCount;
             Time.timeScale = 0f;
