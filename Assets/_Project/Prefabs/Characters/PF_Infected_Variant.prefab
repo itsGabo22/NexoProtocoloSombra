@@ -906,7 +906,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 617419628642357680, guid: 2f6b5402acaac7e45a0b798395dd250b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7837860924130253277}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1993608188771188032, guid: 2f6b5402acaac7e45a0b798395dd250b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2232668690932661920}
+    - targetCorrespondingSourceObject: {fileID: 1993608188771188032, guid: 2f6b5402acaac7e45a0b798395dd250b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4754136981004357031}
   m_SourcePrefab: {fileID: 100100000, guid: 2f6b5402acaac7e45a0b798395dd250b, type: 3}
 --- !u!95 &2346478513495332631 stripped
 Animator:
@@ -923,3 +929,127 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1216368519549315066, guid: 2f6b5402acaac7e45a0b798395dd250b, type: 3}
   m_PrefabInstance: {fileID: 7390716686983260823}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &9023984117967247319 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1993608188771188032, guid: 2f6b5402acaac7e45a0b798395dd250b, type: 3}
+  m_PrefabInstance: {fileID: 7390716686983260823}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &2232668690932661920
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9023984117967247319}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 0
+  MinDistance: 1.5
+  MaxDistance: 18
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &4754136981004357031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9023984117967247319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dccef7cef88d64f40922586f0bdfe58b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.AI.Infected.InfectedAnimationEvents
+  _footstepSource: {fileID: 2232668690932661920}
+  _footstepClips:
+  - {fileID: 8300000, guid: 39658d5446831c24cac2882c0443aa39, type: 3}
+  - {fileID: 8300000, guid: 117a1d40d0b02ce428651c3d0d9f0fbf, type: 3}
+  - {fileID: 8300000, guid: 5fbd4bd0527c1274da891352b20a353d, type: 3}
+  _walkVolume: 0.45
+  _runVolume: 0.8
+  _pitchRange: {x: 0.88, y: 1.05}
+  _minStepInterval: 0.18
+  _runSpeedThreshold: 3
