@@ -118,3 +118,23 @@ MonoBehaviour:
     FieldOfView: 65
     ArchiveFrame: {fileID: 2800000, guid: 7d8986678fe850a48a8a41f0c6f29f8e, type: 3}
     ArchiveTimestamp: 03:35:57
+  - Id: F01-03
+    Label: SALA DE SEGURIDAD
+    Floor: 1
+    RoomId: 
+    SceneCameraName: 
+    Position: {x: 29.5, y: 3, z: 13.5}
+    EulerAngles: {x: 10.37126, y: 225, z: 0}
+    FieldOfView: 75
+    ArchiveFrame: {fileID: 2800000, guid: addfbc260ec766342a5029e8061a0bcf, type: 3}
+    ArchiveTimestamp: 01:39:23
+  - Id: F01-04
+    Label: PASILLO DE SERVICIO
+    Floor: 1
+    RoomId: 
+    SceneCameraName: 
+    Position: {x: 29.6, y: 3, z: 17.6}
+    EulerAngles: {x: 6.703383, y: 263.5584, z: 0.0000008596504}
+    FieldOfView: 70
+    ArchiveFrame: {fileID: 2800000, guid: 6e8bff94cbe69874989a8dee9e8f91db, type: 3}
+    ArchiveTimestamp: 01:20:17
