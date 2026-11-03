@@ -73,6 +73,13 @@ namespace Nexo.Player
         public int Magazine => _magazine;
         public int Reserve => _reserve;
 
+        /// <summary>Restaura la munición (checkpoint de GameSession al recargar o cambiar de piso).</summary>
+        public void SetAmmo(int magazine, int reserve)
+        {
+            _magazine = Mathf.Clamp(magazine, 0, _magazineSize);
+            _reserve = Mathf.Clamp(reserve, 0, _maxReserve);
+        }
+
         private void Awake()
         {
             _magazine = Mathf.Clamp(_startingMagazine, 0, _magazineSize);
