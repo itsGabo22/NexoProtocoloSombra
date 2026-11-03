@@ -51,6 +51,12 @@ namespace Nexo.Interaction
 
         private bool _started;
 
+        /// <summary>Último objetivo anunciado en el piso (lo muestra ObjectiveReminder con [Tab]).</summary>
+        public static string CurrentObjective { get; private set; } = "";
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => CurrentObjective = "";
+
         public bool HasStarted => _started;
         public bool HasFinished { get; private set; }
 
@@ -127,6 +133,7 @@ namespace Nexo.Interaction
                     GameEvents.RaiseSubtitle("¿ELENA?: " + line.Text);
                     break;
                 case Speaker.Objective:
+                    CurrentObjective = line.Text;
                     GameEvents.RaiseNotification(new HudNotification("OBJETIVO", line.Text, false));
                     break;
                 case Speaker.SystemError:
