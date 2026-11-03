@@ -68,6 +68,7 @@ namespace Nexo.Core
         public static event Action<int> OnInfectedNearbyChanged;
         public static event Action<int> OnAmmoPicked;
         public static event Action<string> OnPlayerSpoke;
+        public static event Action<Transform> OnPlayerAttacked;
 
         public static void RaiseNoiseChanged(float noise) => OnNoiseChanged?.Invoke(noise);
         public static void RaiseBatteryChanged(float battery) => OnBatteryChanged?.Invoke(battery);
@@ -91,6 +92,7 @@ namespace Nexo.Core
         public static void RaiseInfectedNearbyChanged(int count) => OnInfectedNearbyChanged?.Invoke(count);
         public static void RaiseAmmoPicked(int rounds) => OnAmmoPicked?.Invoke(rounds);
         public static void RaisePlayerSpoke(string text) => OnPlayerSpoke?.Invoke(text);
+        public static void RaisePlayerAttacked(Transform attacker) => OnPlayerAttacked?.Invoke(attacker);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -117,6 +119,7 @@ namespace Nexo.Core
             OnInfectedNearbyChanged = null;
             OnAmmoPicked = null;
             OnPlayerSpoke = null;
+            OnPlayerAttacked = null;
         }
     }
 }
