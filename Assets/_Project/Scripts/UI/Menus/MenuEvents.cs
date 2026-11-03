@@ -22,8 +22,8 @@ namespace Nexo.UI.Menus
         /// private void OnDisable() { GameEvents.OnPlayerCaught -= HandlePlayerCaught; }
         /// private void HandlePlayerCaught() { MenuEvents.RaiseShowFloorRestartedRequested(); }
         /// </code>
-        /// Nota: PlayerCaptureHandler sigue reiniciando el piso solo a los 3 s; si se usa esta pantalla,
-        /// ese reinicio automático debe desactivarse para que Reintentar / Menú principal decidan.
+        /// Hoy la abre MenuGameFlowBridge cuando PlayerCaptureHandler ya recargó el piso tras la captura:
+        /// REINTENTAR solo reanuda (el checkpoint ya está restaurado) y MENÚ PRINCIPAL vuelve al hub.
         /// </summary>
         public static event Action ShowFloorRestartedRequested;
 

@@ -1,3 +1,4 @@
+using System.Collections;
 using Nexo.Core;
 using Nexo.Narrative;
 using UnityEngine;
@@ -17,10 +18,15 @@ namespace Nexo.UI.Menus
         [Header("Referencias (Systems_Persistent)")]
         [SerializeField] private SceneLoader _sceneLoader;
         [SerializeField] private MenuFlowController _menuFlow;
+        [Tooltip("Opcional: si se asigna, tras una captura se muestra la pantalla Piso reiniciado cuando el piso ya se recargó.")]
+        [SerializeField] private PlayerCaptureHandler _captureHandler;
 
         [Header("Piso inicial")]
         [Tooltip("Escena que carga JUGAR (debe estar en Build Profiles).")]
         [SerializeField] private string _firstFloorScene = "Floor12_Offices";
+
+        private bool _restartedScreenPending;
+        private Coroutine _restartedRoutine;
 
         private void Awake()
         {
@@ -34,6 +40,8 @@ namespace Nexo.UI.Menus
             MenuEvents.RestartFloorRequested += HandleRestartFloorRequested;
             MenuEvents.ReturnToMainMenuRequested += HandleReturnToMainMenuRequested;
             MenuEvents.QuitRequested += HandleQuitRequested;
+            GameEvents.OnPlayerCaught += HandlePlayerCaught;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
         }
 
         private void OnDisable()
@@ -42,6 +50,11 @@ namespace Nexo.UI.Menus
             MenuEvents.RestartFloorRequested -= HandleRestartFloorRequested;
             MenuEvents.ReturnToMainMenuRequested -= HandleReturnToMainMenuRequested;
             MenuEvents.QuitRequested -= HandleQuitRequested;
+            GameEvents.OnPlayerCaught -= HandlePlayerCaught;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
+            if (_restartedRoutine != null) StopCoroutine(_restartedRoutine);
+            _restartedRoutine = null;
+            _restartedScreenPending = false;
         }
 
         private void HandlePlayRequested()
@@ -94,6 +107,35 @@ namespace Nexo.UI.Menus
             }
 
             _menuFlow.ShowScreen(ScreenId.MainMenu);
+        }
+
+        private void HandlePlayerCaught()
+        {
+            // PlayerCaptureHandler reinicia el piso solo; la pantalla se muestra cuando ese reinicio termina
+            if (_captureHandler != null && !NarrativeEvents.TwistHasPlayed) _restartedScreenPending = true;
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            if (!_restartedScreenPending || _menuFlow == null) return;
+
+            _restartedScreenPending = false;
+            if (_restartedRoutine != null) StopCoroutine(_restartedRoutine);
+            _restartedRoutine = StartCoroutine(ShowRestartedWhenReady());
+        }
+
+        /// <summary>
+        /// Espera a que PlayerCaptureHandler libere al jugador (lo hace justo después de la recarga) y abre
+        /// «Piso reiniciado» en pausa: REINTENTAR continúa desde el checkpoint ya restaurado, MENÚ vuelve al hub.
+        /// </summary>
+        private IEnumerator ShowRestartedWhenReady()
+        {
+            while (_captureHandler.IsCapturing) yield return null;
+            _restartedRoutine = null;
+
+            if (_menuFlow.Current != ScreenId.None || NarrativeEvents.TwistHasPlayed) yield break;
+            Time.timeScale = 0f;
+            _menuFlow.ShowScreen(ScreenId.FloorRestarted);
         }
 
         private void HandleQuitRequested()

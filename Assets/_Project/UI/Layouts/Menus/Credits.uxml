@@ -11,6 +11,8 @@
 
     <!-- Pantalla 10: Créditos, tema hive (spec §6.10). Sin elementos enfocables: Esc vuelve al menú. -->
     <ui:VisualElement name="cr-root" class="theme-hive nx-screen">
+        <!-- Velo del tema: el vestíbulo rojo sigue visible detrás, pero el texto se lee y el arma no compite con él -->
+        <ui:VisualElement name="cr-scrim" picking-mode="Ignore" class="nx-scrim" />
         <ui:Label name="cr-mode" text="MODO DEPURACIÓN ROOT" class="cr-mode label text-accent" />
         <ui:Label name="cr-title" text="CRÉDITOS" class="cr-title title text-main" />
 
@@ -20,19 +22,30 @@
             <ui:Label name="cr-bio-status" text="FASE TERMINAL" class="body-sm text-muted" />
         </ui:Instance>
 
+        <!-- Dos columnas para que todos los créditos verificados quepan en 1080 px sin desplazamiento -->
         <ui:VisualElement name="cr-block" class="cr-block">
-            <ui:Label name="cr-design-label" text="DISEÑO Y DESARROLLO" class="label text-muted nx-mb-4" />
-            <ui:Label name="cr-design-value" text="Gabriel Esteban Paz Guerrero · Carlos Julian Benavides Burbano" class="body text-main wrap nx-mb-24" />
-            <ui:Label name="cr-course-label" text="MATERIA" class="label text-muted nx-mb-4" />
-            <ui:Label name="cr-course-value" text="Diseño de Interfaces · Ingeniería de Software, 5.º semestre" class="body text-main wrap nx-mb-24" />
-            <ui:Label name="cr-dialogue-label" text="DIÁLOGOS DE ELENA" class="label text-muted nx-mb-4" />
-            <ui:Label name="cr-dialogue-value" text="Gemini 2.5 Flash" class="body text-main wrap nx-mb-24" />
-            <ui:Label name="cr-weapon-label" text="ARMA M1911" class="label text-muted nx-mb-4" />
-            <ui:Label name="cr-weapon-value" text="Nokobot, Modern Guns · Handgun v1.2 (Unity Asset Store) · Standard Unity Asset Store EULA" class="body text-main wrap nx-mb-24" />
-            <ui:Label name="cr-character-label" text="PERSONAJE Y ANIMACIONES" class="label text-muted nx-mb-4" />
-            <ui:Label name="cr-character-value" text="Mixamo (Adobe)" class="body text-main wrap nx-mb-24" />
-            <ui:Label name="cr-building-label" text="EDIFICIO DE OFICINAS Y ENTORNO" class="label text-muted nx-mb-4" />
-            <ui:Label name="cr-building-value" text="[Autor del pack y licencia]" class="body text-main wrap nx-mb-24" />
+            <ui:VisualElement name="cr-col-left" class="cr-col">
+                <ui:Label name="cr-design-label" text="DISEÑO Y DESARROLLO" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-design-value" text="Gabriel Esteban Paz Guerrero · Carlos Julian Benavides Burbano" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-course-label" text="MATERIA" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-course-value" text="Diseño de Interfaces · Ingeniería de Software, 5.º semestre" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-dialogue-label" text="DIÁLOGOS DE ELENA" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-dialogue-value" text="Gemini 2.5 Flash (Google)" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-fonts-label" text="TIPOGRAFÍAS" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-fonts-value" text="Barlow Condensed (The Barlow Project Authors) · IBM Plex Sans e IBM Plex Mono (IBM Corp.) · SIL Open Font License 1.1" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-audio-label" text="EFECTOS DE SONIDO" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-audio-value" text="Sonido procedural creado para el proyecto" class="body text-main wrap nx-mb-24" />
+            </ui:VisualElement>
+            <ui:VisualElement name="cr-col-right" class="cr-col">
+                <ui:Label name="cr-weapon-label" text="ARMA M1911" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-weapon-value" text="Nokobot, Modern Guns · Handgun v1.2 (Unity Asset Store) · Standard Unity Asset Store EULA" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-character-label" text="PERSONAJE Y ANIMACIONES" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-character-value" text="Mixamo (Adobe)" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-locomotion-label" text="ANIMACIONES DE LOCOMOCIÓN" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-locomotion-value" text="Starter Assets, plantilla de Unity Learn (Unity Technologies) · Unity Companion License" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-building-label" text="EDIFICIO DE OFICINAS Y ENTORNO" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-building-value" text="Polygon Office Building (Unity Asset Store) · Standard Unity Asset Store EULA" class="body text-main wrap nx-mb-24" />
+            </ui:VisualElement>
         </ui:VisualElement>
 
         <ui:Label name="cr-hint" text="Vuelve al menú principal." class="nx-hint body text-muted" />

@@ -7,6 +7,9 @@
 
     <ui:VisualElement picking-mode='Ignore' name='hud-root' class='theme-nexo absolute inset-0 pointer-none'>
 
+        <!-- Visión térmica en Built-in (sin Volume URP): primer hijo, los paneles se dibujan encima. La activa ThermalOverlayController -->
+        <ui:VisualElement picking-mode='Ignore' name='hud-thermal-overlay' class='thermal-overlay pointer-none' />
+
         <!-- Columna izquierda: vitales y, 16px debajo, las notificaciones (el flujo flex evita que se solapen a cualquier escala) -->
         <ui:VisualElement picking-mode='Ignore' name='hud-left-column' class='absolute top-4 left-4 flex-col items-start pointer-none'>
             <!-- Vitales (arriba izquierda) -->

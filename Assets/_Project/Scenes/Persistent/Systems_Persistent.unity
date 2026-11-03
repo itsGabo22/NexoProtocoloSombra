@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &190340489 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1691350910166402329, guid: 65ed617a9a6d1524c808fc4d352b68d4, type: 3}
+  m_PrefabInstance: {fileID: 1155577058288626061}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &837361982
 GameObject:
   m_ObjectHideFlags: 0
@@ -325,15 +330,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4213711620244162979, guid: 87e308cb23eea97419b3c2623d8bb3fa, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.12
+      value: 0.13
       objectReference: {fileID: 0}
     - target: {fileID: 4213711620244162979, guid: 87e308cb23eea97419b3c2623d8bb3fa, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.15
+      value: -0.13
       objectReference: {fileID: 0}
     - target: {fileID: 4213711620244162979, guid: 87e308cb23eea97419b3c2623d8bb3fa, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.08
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4213711620244162979, guid: 87e308cb23eea97419b3c2623d8bb3fa, type: 3}
       propertyPath: m_LocalRotation.w
@@ -481,6 +486,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Nexo::Nexo.UI.Menus.MenuGameFlowBridge
   _sceneLoader: {fileID: 1563130889}
   _menuFlow: {fileID: 2115894383}
+  _captureHandler: {fileID: 1563130888}
   _firstFloorScene: Floor12_Offices
 --- !u!114 &2115894382
 MonoBehaviour:
@@ -659,14 +665,17 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1691350910166402329, guid: 65ed617a9a6d1524c808fc4d352b68d4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1155577058288626069}
   m_SourcePrefab: {fileID: 100100000, guid: 65ed617a9a6d1524c808fc4d352b68d4, type: 3}
 --- !u!114 &1155577058288626062 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4621940686596210400, guid: 65ed617a9a6d1524c808fc4d352b68d4, type: 3}
   m_PrefabInstance: {fileID: 1155577058288626061}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 190340489}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0848d3101f68ea42be04b5d6e970161, type: 3}
@@ -677,7 +686,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5528494355722683536, guid: 65ed617a9a6d1524c808fc4d352b68d4, type: 3}
   m_PrefabInstance: {fileID: 1155577058288626061}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 190340489}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
@@ -694,6 +703,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a8c5d074fb3441d8e989bab8a5358b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Nexo::Nexo.UI.TerminalController
+--- !u!114 &1155577058288626069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190340489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49943cf264d04648b45ea89c2e5bf9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.UI.ThermalOverlayController
+  _flashlight: {fileID: 1329050158555691020}
 --- !u!1001 &1329050158555691007
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -783,6 +805,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8560338418566997380, guid: 81a2d9de50a6e1f4b83e6902ee6edfb9, type: 3}
   m_PrefabInstance: {fileID: 1329050158555691007}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1329050158555691020 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1121498939564317536, guid: 81a2d9de50a6e1f4b83e6902ee6edfb9, type: 3}
+  m_PrefabInstance: {fileID: 1329050158555691007}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7c65d13778a82347ad169c9b884f911, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Player.FlashlightSystem
 --- !u!1001 &1687571042882188278
 PrefabInstance:
   m_ObjectHideFlags: 0

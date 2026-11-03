@@ -107,3 +107,22 @@
 
 /* ---------- Interferencia de transmisión (glitch_intensity) ---------- */
 .glitch-overlay.hud-glitch-pulse { background-color: rgba(34, 211, 238, 0.16); }
+
+/* Visión térmica sin URP (pipeline Built-in): tinte cian + viñeta a pantalla completa bajo los paneles del HUD */
+.thermal-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(34, 211, 238, 0.14);
+    background-image: url("../Textures/T_ThermalVignette.png");
+    -unity-background-image-tint-color: rgba(2, 24, 36, 0.9);
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 250ms;
+}
+
+.thermal-overlay.thermal-on { opacity: 1; }
+.a11y-hc .thermal-overlay { background-color: rgba(34, 211, 238, 0.08); }

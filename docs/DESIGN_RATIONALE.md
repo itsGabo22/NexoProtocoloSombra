@@ -1,4 +1,4 @@
-# Justificación de diseño — NEXO: PROTOCOLO SOMBRA
+| Ayuda | Pistas contextuales, objetivo actual con Tab (`ObjectiveReminder`, `StorySequence.SetObjective`) y la narración guiada del Piso 12 (`StorySequence`). |# Justificación de diseño — NEXO: PROTOCOLO SOMBRA
 
 Entregable de la materia **Diseño de Interfaces** (Ingeniería de Software, 5.º semestre).
 Todo lo que se afirma aquí se apoya en archivos del repositorio, citados al final de cada sección. Lo que no se pudo comprobar en el código queda marcado como **[verificar]**.
@@ -83,7 +83,7 @@ USS no tiene `outline`, así que el anillo se construye como contenedor `.focus-
 - **Reducir movimiento:** `.reduce-motion * { transition-duration: 0s; }` y, en el HUD, `HUDController.SetReduceMotion` suprime los destellos del glitch; durante el giro las luces cambian al instante en vez de en rampa.
 - **Destellos acotados:** la secuencia de corrupción limita el glitch a **3 destellos** de 120 ms separados 380 ms, y 0 con reducir movimiento (comentario en el código: WCAG 2.3.1). WCAG se usa por analogía, no como certificación.
 - **Notificación falsa sin depender del color:** borde y remitente naranja (`fake`), **ausencia** del sello `✔ BIO-ID`, texto en cursiva inclinado −0.6° con espaciado alterado, y **onda de audio irregular**. Con cualquier modo de daltonismo quedan tres pistas no cromáticas. La pantalla de accesibilidad enseña ambas tarjetas lado a lado con esta leyenda.
-- Paleta Okabe-Ito para daltonismo: los selectores `.cb-*` existen en `theme-nexo-blue.uss`; que los valores correspondan exactamente a Okabe-Ito **[verificar]**.
+- Paleta Okabe-Ito para daltonismo: los selectores `.cb-*` existen en `theme-nexo-blue.uss`; y sus colores son exactamente los de Okabe-Ito (`rgb(230,159,0)`, `rgb(86,180,233)`, `rgb(0,158,115)`, `rgb(240,228,66)`, `rgb(213,94,0)`, `rgb(204,121,167)`).
 
 Referencias: `Assets/_Project/Scripts/UI/Menus/MenuNavigator.cs`, `MenuFlowController.cs`, `AccessibilityPrefs.cs`, `BootSequenceController.cs`, `MenuStartState.cs`, `OptionsController.cs`, `Assets/_Project/UI/Layouts/Menus/*.uxml`, `Assets/_Project/UI/Styles/components.uss` (`.hud-notification--fake`), `Assets/_Project/Input/NexoControls.inputactions`.
 
@@ -139,7 +139,7 @@ USS no ofrece `gap`, `rem`, CSS Grid, `@keyframes`, `box-shadow`, degradados, `o
 | Sin `z-index` | Orden de apilado por jerarquía (p. ej. `fix(ui): draw hud subtitles above the root debug panel`). |
 | Sin degradados | Velos de color plano con alfa (`scrim`). |
 | Sin pesos tipográficos | Un archivo de fuente por peso. |
-| Arcos y ondas | Barras de `VisualElement` (espectrograma, ondas de 16 barras); arco del escaneo estático marcado como TODO **[verificar estado]**. |
+| Arcos y ondas | Barras de `VisualElement` (espectrograma, ondas de 16 barras); el arco del escaneo biométrico sigue siendo un círculo estático (TODO en `Boot_BiometricScan.uxml`, pendiente de `generateVisualContent`). |
 | Foco por defecto de Unity | El foco real en la raíz y el visual con `is-focused` (`MenuNavigator`). |
 
 Referencias: `docs/ui/NEXOOS_DESIGN_SPEC.md` §4, `Assets/_Project/UI/Styles/*.uss`, `Assets/_Project/Scripts/UI/Menus/MenuNavigator.cs`.
@@ -158,7 +158,7 @@ Referencias: `docs/ui/NEXOOS_DESIGN_SPEC.md` §4, `Assets/_Project/UI/Styles/*.u
 | `PlotTwistTimelineTests.cs` | 5 | Orden y tiempos de la línea del giro; rechazo de offsets negativos. |
 | `ElenaFallbackFilesTests.cs` | 3 | Que cada fallback de piso exista y cumpla el contrato. |
 
-Además se hizo una prueba de humo en Play: menú → JUGAR → Piso 12 → Piso 6 (Elena abre `F06_Door_Stairs` con la pregunta [2] en modo fallback) → Piso 1 → BioScanner → giro → créditos, sin errores ni excepciones.
+Además, el 2026-11-03 se recorrió el juego completo en Play (ver `docs/handoffs/2026-11-03_final-integration.md`): menú → JUGAR → Piso 12 (combate, salida) → Piso 6 (Elena abre `F06_Door_Stairs` con la pregunta [2]) → Piso 1 → BioScanner → giro → créditos → menú → JUGAR desde cero, con persistencia de vida y munición entre pisos y REINICIAR en cada piso.
 
 Referencias: `Assets/_Project/Scripts/Tests/EditMode/`, `docs/playtest/`.
 
@@ -171,15 +171,15 @@ Referencias: `Assets/_Project/Scripts/Tests/EditMode/`, `docs/playtest/`.
 - **Sin `Update()` en la UI:** todo con `schedule` de UI Toolkit y eventos de navegación. Costo: la lógica temporal queda repartida en callbacks.
 - **Fallback local obligatorio:** el juego es completable sin internet ni API key; la IA generativa es un plus, no un requisito.
 - **Alcance de menús reducido** (4 ítems, 2 pestañas, sin calibración) para entregar un vertical slice completo.
-- **Pipeline Built-in en lugar de URP:** los pisos 6 y 1 usan materiales `Standard`. Algunos assets (materiales originales del pack Nokobot, `MAT_Glass_Armored`) siguen con shader URP y dependen de overrides **[verificar en Piso 12]**. `BioScanner` tiñe con `_BaseColor`/`_EmissionColor` (nombres URP); en el shader Standard el color base es `_Color`, así que el cambio cian → rojo del renderer puede no verse **[verificar]**.
-- **Créditos:** solo se completan con datos verificables en el repo; las atribuciones sin evidencia (Mixamo, autor del pack de oficinas) siguen como pendientes.
+- **Pipeline Built-in en lugar de URP:** ver §13.
+- **Créditos:** solo con datos verificables (packs, `README`/`Read me` de cada pack, licencias OFL de las fuentes, historial de commits). Lo que no tiene evidencia (autor del pack de oficinas, origen del modelo del infectado) no aparece en pantalla y queda listado en `docs/ASSETS.md`.
 
 ---
 
 ## 9. Taxonomía de interfaz
 
 - **Diegética:** HUD de las gafas, videollamada de Elena, terminales.
-- **Espacial:** prompts de interacción y resaltado de rutas **[verificar]**.
+- **Espacial:** flechas de salida en el suelo del Piso 12 (material de Carlos en `Materials/Floor12/`) y luces/puertas que Elena manipula en el mundo (`HIGHLIGHT_SAFE_ROUTE`, `UNLOCK_DOOR`, `TOGGLE_HALLWAY_LIGHTS`).
 - **Meta:** glitch, viñeta térmica y corrupción del HUD.
 - **No diegética:** menú principal, opciones, pausa, créditos (con el marco de lente para mantener la ficción).
 
@@ -196,4 +196,28 @@ Referencias: `Assets/_Project/Scripts/Tests/EditMode/`, `docs/playtest/`.
 | Flexibilidad y eficiencia | Atajos 1–2–3, Q/E entre pestañas, P como pausa alternativa. |
 | Minimalismo | Centro de pantalla libre; cuatro paneles periféricos. |
 | Recuperación de errores | Fallo de Gemini → fallback local con aviso no bloqueante. |
-| Ayuda | Pistas contextuales; tutorial del Piso 12 **[verificar]**. |
+| Ayuda | Pistas contextuales, objetivo actual con Tab (`ObjectiveReminder`, `StorySequence.SetObjective`) y la narración guiada del Piso 12 (`StorySequence`). |
+
+---
+
+## 11. Jugabilidad: combate, vida, forcejeo y persistencia
+
+- **Pistola M1911** (`Scripts/Player/PlayerWeapon.cs`): disparo hitscan desde la cámara (clic izquierdo), apuntado con FOV reducido (clic derecho), recarga con R, cargador de 7 y reserva limitada. Cada disparo emite ruido (`GameEvents.RaiseNoiseEmitted`), así que disparar atrae a los infectados: el arma resuelve un problema y crea otro. Sin munición, el subtítulo lo dice («Clic. El cargador está vacío…»).
+- **Vida por golpes** (`PlayerHealth.cs`): 3 puntos de vida, cada uno se pierde tras varios golpes; el panel de vitales muestra `ILESO / HERIDO / CRÍTICO` y sube los BPM. Es la misma información biométrica que luego miente en el giro.
+- **Forcejeo QTE** (`StruggleQTE.cs`): el primer agarre estando ileso abre un forcejeo con Espacio; fallarlo cuesta un punto de vida. Da una segunda oportunidad antes de la captura.
+- **Captura y reinicio** (`Core/PlayerCaptureHandler.cs`): al caer, el HUD avisa «Señal vital interrumpida», el piso se recarga y la pantalla «Piso reiniciado» (tema hive) deja REINTENTAR o volver al menú (`UI/Menus/MenuGameFlowBridge.cs`).
+- **Persistencia** (`Core/GameSession.cs`, `Player/PlayerStatePersistence.cs`): al entrar en un piso se guarda un checkpoint con munición, vida y arma; reiniciar o morir restaura ese checkpoint (no se puede acumular munición muriendo) y JUGAR desde el menú empieza de cero.
+- **Salida del Piso 12** (`Interaction/LevelExitGate.cs`): la persiana de la escalera solo se abre al eliminar a los 2 infectados; después `StairsExit` baja al Piso 6.
+
+## 12. Audio e infectados
+
+- **Audio** (`Assets/_Project/Audio/`): zumbido de fluorescentes 3D, sirena, golpes, crujidos, susurros, teléfono, grabadora y los sonidos de la M1911, todos generados por procedimiento para el proyecto (ver `docs/ASSETS.md`). `AmbientOneShots`, `LightFlicker` y `ScareTrigger` (`Scripts/Interaction/`) los reparten en el espacio para sostener la tensión sin música.
+- **Infectados** (`Scripts/AI/Infected/`): FSM de 5 estados (patrulla, investigar ruido, sabotear luces, emboscada con mímica, persecución) evaluada cada 0,15 s. La mímica lanza notificaciones falsas al HUD (`IsFake`: naranja, sin sello BIO-ID): enseña al jugador a desconfiar de la interfaz antes del giro final.
+- **Pisos 6 y 1 sin enemigos:** a propósito. El 6 es el respiro donde Elena demuestra que puede ayudar (abre la puerta); el 1 es calma antes del giro.
+
+## 13. Built-in en lugar de URP
+
+- **Decisión:** el proyecto corre en el pipeline Built-in con materiales `Standard`; no hay asset URP asignado (`ProjectSettings/GraphicsSettings.asset`).
+- **Por qué:** el paso de configuración del asset URP que pedía el `README` original nunca quedó versionado, y los pisos 6 y 1 y el viewmodel se construyeron ya con `Standard`. Cambiar de pipeline a un día de la entrega habría obligado a reconvertir todos los materiales.
+- **Costes:** los materiales URP/Lit se ven rosas (hay que mantenerlos fuera); sin Volumes de post-proceso. La visión térmica, pensada como Volume `VP_Thermal`, se resolvió con una capa UI Toolkit a pantalla completa (`Scripts/UI/ThermalOverlayController.cs`, `hud-thermal-overlay` en `UI/Layouts/HUD_Biometric.uxml`, viñeta `UI/Textures/T_ThermalVignette.png`), que además respeta `.reduce-motion` y `.a11y-hc`. `BioScanner` tiñe `_Color` (Standard) y `_BaseColor` (URP) solo si el material los tiene, así que funciona en ambos.
+- **Beneficio:** un build de Windows más ligero y sin dependencias de configuración de render; el estilo visual descansa en la iluminación en tiempo real y en el HUD, no en el post-proceso.
