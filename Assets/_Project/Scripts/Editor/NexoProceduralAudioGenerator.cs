@@ -35,6 +35,7 @@ namespace Nexo.EditorTools
             WriteMono($"{AmbienceFolder}/SFX_F06_ElectricHum_Loop.wav", ElectricHum(700));
             WriteMono($"{AmbienceFolder}/SFX_F06_AlarmDistant_Loop.wav", DistantAlarm(800));
             WriteMono($"{AmbienceFolder}/SFX_F06_LabRoomTone_Loop.wav", RoomTone(900));
+            WriteMono($"{AmbienceFolder}/SFX_F06_Drip_Loop.wav", Drip(1000));
 
             AssetDatabase.Refresh();
             Debug.Log("[NexoProceduralAudioGenerator] SFX generados en " + SfxFolder + " y " + AmbienceFolder);
@@ -316,6 +317,32 @@ namespace Nexo.EditorTools
                 s[i] = lp2 * (0.8f + 0.2f * Mathf.Sin(2f * Mathf.PI * 0.07f * t)) + Mathf.Sin(2f * Mathf.PI * 48f * t) * 0.02f;
             }
             return Normalize(Crossfade(s, SampleRate), 0.45f);
+        }
+
+        /// <summary>Goteo irregular en una sala húmeda (gotas con tono descendente y eco corto; bucle de 9 s).</summary>
+        private static float[] Drip(int seed)
+        {
+            var rng = new Random(seed);
+            int n = 9 * SampleRate;
+            float[] dry = new float[n];
+            float t0 = 0.4f;
+            while (t0 < 8.4f)
+            {
+                int start = (int)(t0 * SampleRate);
+                float pitch = 900f + (float)rng.NextDouble() * 700f;
+                float amp = 0.5f + (float)rng.NextDouble() * 0.5f;
+                for (int i = 0; i < (int)(0.12f * SampleRate) && start + i < n; i++)
+                {
+                    float t = i / (float)SampleRate;
+                    // La frecuencia sube al principio (burbuja que se rompe) y cae rápido
+                    float f = pitch * (1f + 0.9f * Mathf.Exp(-t * 60f));
+                    dry[start + i] += amp * Mathf.Sin(2f * Mathf.PI * f * t) * Mathf.Exp(-t * 45f);
+                }
+                t0 += 0.6f + (float)rng.NextDouble() * 1.4f;
+            }
+            float[] wet = SchroederReverb(dry, 0.75f, 0.45f, 11);
+            for (int i = 0; i < n; i++) dry[i] = dry[i] * 0.8f + wet[i];
+            return Normalize(Crossfade(dry, (int)(0.4f * SampleRate)), 0.55f);
         }
 
         // ---------------- DSP ----------------
