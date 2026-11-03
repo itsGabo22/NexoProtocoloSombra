@@ -31,7 +31,7 @@ namespace Nexo.AI.Elena
             dialogue = "Alex, la señal está fallando... sigue caminando, yo te aviso, ¿sí?",
             emotion = "scared",
             ui_action = "none",
-            ui_parameter = string.Empty,
+            target_id = string.Empty,
             trust_level = 50
         };
 

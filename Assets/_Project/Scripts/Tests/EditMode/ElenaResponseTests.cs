@@ -14,7 +14,7 @@ namespace Nexo.Tests
                 dialogue = "Alex, todo despejado hacia las escaleras.",
                 emotion = "CALM",
                 ui_action = "HIGHLIGHT_SAFE_ROUTE",
-                ui_parameter = "",
+                target_id = "",
                 trust_level = 150 // debe clampearse a 100
             };
 
@@ -61,7 +61,7 @@ namespace Nexo.Tests
         [Test]
         public void ElenaJsonTryParse_ExtractsFromMarkdownFencedJson()
         {
-            string markdownFenced = "```json\n{\n  \"dialogue\": \"Puerta abierta.\",\n  \"emotion\": \"happy\",\n  \"ui_action\": \"UNLOCK_DOOR\",\n  \"ui_parameter\": \"F12_Door_Stairs\",\n  \"trust_level\": 70\n}\n```";
+            string markdownFenced = "```json\n{\n  \"dialogue\": \"Puerta abierta.\",\n  \"emotion\": \"happy\",\n  \"ui_action\": \"UNLOCK_DOOR\",\n  \"target_id\": \"F12_Door_Stairs\",\n  \"trust_level\": 70\n}\n```";
 
             bool parsed = ElenaJson.TryParse(markdownFenced, out ElenaResponse response, out string error);
 
@@ -70,8 +70,30 @@ namespace Nexo.Tests
             Assert.AreEqual("Puerta abierta.", response.dialogue);
             Assert.AreEqual(ElenaEmotion.Happy, response.ParsedEmotion);
             Assert.AreEqual(ElenaUiAction.UnlockDoor, response.ParsedAction);
-            Assert.AreEqual("F12_Door_Stairs", response.ui_parameter);
+            Assert.AreEqual("F12_Door_Stairs", response.target_id);
             Assert.AreEqual(70, response.trust_level);
+        }
+
+        [TestCase("TOGGLE_HALLWAY_LIGHTS", ElenaUiAction.ToggleHallwayLights)]
+        [TestCase("SHOW_HINT", ElenaUiAction.ShowHint)]
+        [TestCase("PING_ENEMY_RADAR", ElenaUiAction.PingEnemyRadar)]
+        [TestCase("NONE", ElenaUiAction.None)]
+        public void PromptActions_AreAllRecognized(string rawAction, ElenaUiAction expected)
+        {
+            var response = new ElenaResponse { dialogue = "Hola, Alex.", ui_action = rawAction };
+
+            Assert.IsTrue(response.IsValid(out string error), error);
+            Assert.AreEqual(expected, response.ParsedAction);
+        }
+
+        [Test]
+        public void GlitchIntensityAndTarget_AreNormalized()
+        {
+            var response = new ElenaResponse { dialogue = "Hola.", target_id = "  F12_Door_Stairs ", glitch_intensity = 3.5f };
+
+            Assert.IsTrue(response.IsValid(out _));
+            Assert.AreEqual(1f, response.glitch_intensity);
+            Assert.AreEqual("F12_Door_Stairs", response.target_id);
         }
     }
 }

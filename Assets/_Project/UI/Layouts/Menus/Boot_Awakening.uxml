@@ -1,0 +1,33 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="../../Styles/theme-nexo-blue.uss" />
+    <Style src="../../Styles/theme-hive-red.uss" />
+    <Style src="../../Styles/components.uss" />
+    <Style src="../../Styles/nexo-menu-tokens.uss" />
+    <Style src="../../Styles/nexo-menu-components.uss" />
+    <Style src="../../Styles/tailwind-utilities.uss" />
+    <Style src="../../Styles/nexo-menu-screens.uss" />
+    <ui:Template name="NxLensFrame" src="../Components/NxLensFrame.uxml" />
+
+    <!-- Pantalla 1: Despertar (spec §6.1). Sin elementos interactivos. -->
+    <ui:VisualElement name="boot-root" picking-mode="Ignore" class="theme-nexo nx-screen">
+        <!-- TODO controller: al terminar la animación de párpados, añadir el modificador open de boot-lid a ambos (altura 0 con transición de 1.2s; 0s con reduce-motion). -->
+        <ui:VisualElement name="boot-lid-top" picking-mode="Ignore" class="boot-lid boot-lid--top" />
+        <ui:VisualElement name="boot-lid-bottom" picking-mode="Ignore" class="boot-lid boot-lid--bottom" />
+
+        <ui:Instance template="NxLensFrame" name="boot-lens" picking-mode="Ignore" class="nx-fill nx-lens--dim" />
+
+        <ui:VisualElement name="boot-progress" picking-mode="Ignore" class="boot-progress">
+            <ui:Label name="boot-progress-label" text="CALIBRANDO ÓPTICA" class="label text-muted nx-mb-16" />
+            <ui:VisualElement name="boot-progress-row" class="boot-progress__row">
+                <ui:VisualElement name="boot-progress-track" class="boot-progress__track">
+                    <!-- TODO controller: ancho de boot-progress-fill y texto de boot-progress-value según el progreso real (38 % es el estado estático). -->
+                    <ui:VisualElement name="boot-progress-fill" class="boot-progress__fill nx-w-38" />
+                </ui:VisualElement>
+                <ui:Label name="boot-progress-value" text="38%" class="boot-progress__value label text-main" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:Label name="boot-footer-left" text="NEXOOS V4.2 · PISO 12" class="nx-version label text-muted" />
+        <ui:Label name="boot-footer-right" text="LOS OJOS SE ABREN" class="nx-corner-text-br label text-muted" />
+    </ui:VisualElement>
+</ui:UXML>

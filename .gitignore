@@ -39,12 +39,19 @@ crashlytics-build.properties
 # Packs de terceros (Drive)
 /Assets/_ThirdPartyAssets/
 /Assets/_ThirdPartyAssets.meta
+/Assets/ThirdPartyAssets/
+/Assets/ThirdPartyAssets.meta
+
+# Carpeta residual creada por Unity Hub
+/My project/
 
 # Secretos
 /Assets/_Project/Data/Secrets/
 /Assets/_Project/Data/Secrets.meta
 *.env
 secrets.json
+**/ElenaSecrets.asset
+**/ElenaSecrets.asset.meta
 
 # Antigravity: solo se versiona rules.md
 .antigravity/*

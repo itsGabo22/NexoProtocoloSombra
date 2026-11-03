@@ -62,6 +62,13 @@ namespace Nexo.Core
         public static event Action OnHudCorruptionRequested;
         public static event Action OnHudCorruptionFinished;
         public static event Action OnPlotTwistTriggered;
+        public static event Action<string[]> OnAvailableDoorsChanged;
+        public static event Action<Transform> OnPlayerSpawned;
+        public static event Action OnPlayerCaught;
+        public static event Action<int> OnInfectedNearbyChanged;
+        public static event Action<int> OnAmmoPicked;
+        public static event Action<string> OnPlayerSpoke;
+        public static event Action<Transform> OnPlayerAttacked;
 
         public static void RaiseNoiseChanged(float noise) => OnNoiseChanged?.Invoke(noise);
         public static void RaiseBatteryChanged(float battery) => OnBatteryChanged?.Invoke(battery);
@@ -79,6 +86,13 @@ namespace Nexo.Core
         public static void RaiseHudCorruptionRequested() => OnHudCorruptionRequested?.Invoke();
         public static void RaiseHudCorruptionFinished() => OnHudCorruptionFinished?.Invoke();
         public static void RaisePlotTwistTriggered() => OnPlotTwistTriggered?.Invoke();
+        public static void RaiseAvailableDoorsChanged(string[] doorIds) => OnAvailableDoorsChanged?.Invoke(doorIds);
+        public static void RaisePlayerSpawned(Transform player) => OnPlayerSpawned?.Invoke(player);
+        public static void RaisePlayerCaught() => OnPlayerCaught?.Invoke();
+        public static void RaiseInfectedNearbyChanged(int count) => OnInfectedNearbyChanged?.Invoke(count);
+        public static void RaiseAmmoPicked(int rounds) => OnAmmoPicked?.Invoke(rounds);
+        public static void RaisePlayerSpoke(string text) => OnPlayerSpoke?.Invoke(text);
+        public static void RaisePlayerAttacked(Transform attacker) => OnPlayerAttacked?.Invoke(attacker);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -99,6 +113,13 @@ namespace Nexo.Core
             OnHudCorruptionRequested = null;
             OnHudCorruptionFinished = null;
             OnPlotTwistTriggered = null;
+            OnAvailableDoorsChanged = null;
+            OnPlayerSpawned = null;
+            OnPlayerCaught = null;
+            OnInfectedNearbyChanged = null;
+            OnAmmoPicked = null;
+            OnPlayerSpoke = null;
+            OnPlayerAttacked = null;
         }
     }
 }

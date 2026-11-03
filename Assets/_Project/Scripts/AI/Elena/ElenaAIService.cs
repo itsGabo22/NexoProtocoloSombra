@@ -53,12 +53,14 @@ namespace Nexo.AI.Elena
         private void OnEnable()
         {
             GameEvents.OnQuickQuestionSelected += HandleQuickQuestionSelected;
+            GameEvents.OnPlayerSpoke += HandlePlayerSpoke;
             GameEvents.RaiseQuickQuestionsChanged(IntentTexts);
         }
 
         private void OnDisable()
         {
             GameEvents.OnQuickQuestionSelected -= HandleQuickQuestionSelected;
+            GameEvents.OnPlayerSpoke -= HandlePlayerSpoke;
         }
 
         private async void HandleQuickQuestionSelected(int index)
@@ -80,6 +82,35 @@ namespace Nexo.AI.Elena
             }
         }
 
+        /// <summary>
+        /// Pregunta libre dicha por voz (ElenaVoiceInput). La intención se deduce por palabras clave para el fallback;
+        /// Gemini recibe además el texto literal en player_text.
+        /// </summary>
+        private async void HandlePlayerSpoke(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
+
+            try
+            {
+                await AskAsync(InferIntent(text), text);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                _isBusy = false;
+                GameEvents.RaiseElenaThinking(false);
+            }
+        }
+
+        private static string InferIntent(string text)
+        {
+            string t = text.ToLowerInvariant();
+            if (t.Contains("puerta") || t.Contains("abre") || t.Contains("abrir") || t.Contains("desbloquea")) return "OPEN_DOOR";
+            if (t.Contains("ruta") || t.Contains("camino") || t.Contains("salida") || t.Contains("despejado") || t.Contains("pasillo") || t.Contains("donde")) return "SAFE_PATH";
+            if (t.Contains("miedo") || t.Contains("ayuda") || t.Contains("auxilio") || t.Contains("asustado")) return "FEAR";
+            return "GENERIC";
+        }
+
         public async Awaitable AskAsync(string intentKey, string questionText)
         {
             if (_isBusy) return;
@@ -88,8 +119,8 @@ namespace Nexo.AI.Elena
             GameEvents.RaiseElenaThinking(true);
 
             ElenaRequestContext context = _stateTracker != null
-                ? _stateTracker.CaptureContext(questionText)
-                : new ElenaRequestContext { floor = 12, question_selected = questionText };
+                ? _stateTracker.CaptureContext(intentKey, questionText)
+                : new ElenaRequestContext { floor = 12, player_intent = intentKey, player_text = questionText };
 
             ElenaResponse response = null;
             bool isOnline = Application.internetReachability != NetworkReachability.NotReachable;

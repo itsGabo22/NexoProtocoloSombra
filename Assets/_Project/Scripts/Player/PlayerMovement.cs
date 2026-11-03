@@ -1,3 +1,4 @@
+using System;
 using Nexo.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -37,21 +38,35 @@ namespace Nexo.Player
         private static readonly int SpeedHash = Animator.StringToHash("Speed");
         private static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
         private static readonly int IsCrouchingHash = Animator.StringToHash("IsCrouching");
+        private static readonly int CeilingMask = (1 << 0) | (1 << 11); // Default | Environment
 
         private CharacterController _controller;
         private Vector3 _velocity;
         private float _pitch = 0f;
         private bool _isCrouching = false;
         private bool _isFrozen = false;
+        private bool _inputLocked = false;
 
         public Vector2 MoveInput { get; private set; }
         public bool IsMoving => _controller != null && _controller.isGrounded && MoveInput.sqrMagnitude > 0.01f;
         public bool IsCrouching => _isCrouching;
+        public bool IsInputLocked => _inputLocked || _isFrozen;
         public bool IsSprinting { get; private set; }
+
+        /// <summary>
+        /// Se emite cuando el jugador empieza (true) o deja (false) de esprintar en movimiento.
+        /// </summary>
+        public event Action<bool> SprintStateChanged;
+
+        private bool _wasSprintingMoving;
+        private bool _hasSpeedParam;
+        private bool _hasIsMovingParam;
+        private bool _hasIsCrouchingParam;
 
         private void Awake()
         {
             _controller = GetComponent<CharacterController>();
+            CacheAnimatorParameters();
 
             // Si no se asignó la cabeza manualmente, buscarla en la jerarquía del modelo Mixamo
             if (_headBoneToHide == null)
@@ -80,6 +95,17 @@ namespace Nexo.Player
             Cursor.visible = false;
         }
 
+        /// <summary>
+        /// Bloquea la entrada de movimiento/cámara y libera el cursor mientras hay UI modal abierta
+        /// (terminal de seguridad, rueda de órdenes). La gravedad sigue aplicándose.
+        /// </summary>
+        public void SetInputLocked(bool locked, bool showCursor)
+        {
+            _inputLocked = locked;
+            Cursor.lockState = locked && showCursor ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = locked && showCursor;
+        }
+
         private void OnEnable()
         {
             GameEvents.OnPlotTwistTriggered += HandlePlotTwistTriggered;
@@ -94,10 +120,12 @@ namespace Nexo.Player
         {
             _isFrozen = true;
             MoveInput = Vector2.zero;
+            IsSprinting = false;
+            NotifySprintState();
             if (_characterAnimator != null)
             {
-                _characterAnimator.SetFloat(SpeedHash, 0f);
-                _characterAnimator.SetBool(IsMovingHash, false);
+                if (_hasSpeedParam) _characterAnimator.SetFloat(SpeedHash, 0f);
+                if (_hasIsMovingParam) _characterAnimator.SetBool(IsMovingHash, false);
             }
         }
 
@@ -110,11 +138,21 @@ namespace Nexo.Player
             HandleCrouch();
             HandleMovement();
             UpdateAnimator();
+            NotifySprintState();
+        }
+
+        private void NotifySprintState()
+        {
+            bool sprintingMoving = IsSprinting && IsMoving;
+            if (sprintingMoving == _wasSprintingMoving) return;
+
+            _wasSprintingMoving = sprintingMoving;
+            SprintStateChanged?.Invoke(sprintingMoving);
         }
 
         private void HandleLook()
         {
-            if (Mouse.current == null) return;
+            if (_inputLocked || Mouse.current == null) return;
 
             Vector2 mouseDelta = Mouse.current.delta.ReadValue() * (_mouseSensitivity * 0.08f);
 
@@ -131,11 +169,14 @@ namespace Nexo.Player
 
         private void HandleCrouch()
         {
-            if (Keyboard.current != null && (Keyboard.current.leftCtrlKey.wasPressedThisFrame || Keyboard.current.cKey.wasPressedThisFrame))
+            if (!_inputLocked && Keyboard.current != null && (Keyboard.current.leftCtrlKey.wasPressedThisFrame || Keyboard.current.cKey.wasPressedThisFrame))
             {
                 if (_isCrouching)
                 {
-                    if (!Physics.Raycast(transform.position, Vector3.up, _standingHeight + 0.1f))
+                    // Solo bloquea un techo real (Default|Environment): sin máscara el rayo chocaba con el propio jugador
+                    Vector3 origin = transform.position + Vector3.up * (_crouchingHeight - 0.05f);
+                    float headroom = _standingHeight - _crouchingHeight + 0.15f;
+                    if (!Physics.Raycast(origin, Vector3.up, headroom, CeilingMask, QueryTriggerInteraction.Ignore))
                     {
                         _isCrouching = false;
                     }
@@ -175,7 +216,7 @@ namespace Nexo.Player
             Vector2 rawInput = Vector2.zero;
             bool sprintPressed = false;
 
-            if (Keyboard.current != null)
+            if (!_inputLocked && Keyboard.current != null)
             {
                 if (Keyboard.current.wKey.isPressed) rawInput.y += 1f;
                 if (Keyboard.current.sKey.isPressed) rawInput.y -= 1f;
@@ -203,9 +244,35 @@ namespace Nexo.Player
             float speedMagnitude = MoveInput.magnitude;
             if (IsSprinting) speedMagnitude *= 1.5f;
 
-            _characterAnimator.SetFloat(SpeedHash, speedMagnitude);
-            _characterAnimator.SetBool(IsMovingHash, IsMoving);
-            _characterAnimator.SetBool(IsCrouchingHash, _isCrouching);
+            if (_hasSpeedParam) _characterAnimator.SetFloat(SpeedHash, speedMagnitude);
+            if (_hasIsMovingParam) _characterAnimator.SetBool(IsMovingHash, IsMoving);
+            if (_hasIsCrouchingParam) _characterAnimator.SetBool(IsCrouchingHash, _isCrouching);
+        }
+
+        /// <summary>
+        /// Comprueba una sola vez qué parámetros existen en el Animator Controller asignado.
+        /// Escribir un parámetro inexistente genera un error por frame que satura la Console y el Editor.log.
+        /// </summary>
+        private void CacheAnimatorParameters()
+        {
+            if (_characterAnimator == null || _characterAnimator.runtimeAnimatorController == null)
+            {
+                _characterAnimator = null;
+                return;
+            }
+
+            foreach (AnimatorControllerParameter parameter in _characterAnimator.parameters)
+            {
+                if (parameter.nameHash == SpeedHash) _hasSpeedParam = parameter.type == AnimatorControllerParameterType.Float;
+                else if (parameter.nameHash == IsMovingHash) _hasIsMovingParam = parameter.type == AnimatorControllerParameterType.Bool;
+                else if (parameter.nameHash == IsCrouchingHash) _hasIsCrouchingParam = parameter.type == AnimatorControllerParameterType.Bool;
+            }
+
+            if (!_hasSpeedParam || !_hasIsMovingParam || !_hasIsCrouchingParam)
+            {
+                Debug.LogWarning($"[PlayerMovement] '{_characterAnimator.runtimeAnimatorController.name}' no tiene todos los parámetros " +
+                                 "Speed (Float), IsMoving (Bool) e IsCrouching (Bool); los que falten se ignoran.", this);
+            }
         }
     }
 }

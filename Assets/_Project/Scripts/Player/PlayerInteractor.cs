@@ -1,3 +1,5 @@
+using System.Collections;
+using Nexo.Core;
 using Nexo.Interaction;
 using Nexo.UI;
 using UnityEngine;
@@ -6,62 +8,149 @@ using UnityEngine.InputSystem;
 namespace Nexo.Player
 {
     /// <summary>
-    /// Realiza un raycast continuo desde la cámara del jugador para detectar objetos que implementen IInteractable.
-    /// Actualiza el prompt diegético en el HUD y desencadena Interact() al pulsar [E].
+    /// Detecta objetos IInteractable frente a la cámara del jugador mediante un raycast periódico (cada 0.1s).
+    /// Actualiza el prompt diegético del HUD y ejecuta Interact() al recibir la acción Interact del Input System.
     /// </summary>
     public sealed class PlayerInteractor : MonoBehaviour
     {
         [Header("Configuración de Interacción")]
-        [SerializeField] private Camera _playerCamera;
+        [SerializeField] private Transform _cameraTransform;
         [SerializeField] private float _interactDistance = 2.5f;
         [SerializeField] private LayerMask _interactableMask = ~0;
+        [SerializeField] private float _scanInterval = 0.1f;
+
+        [Header("Entrada (NexoControls/Player/Interact)")]
+        [SerializeField] private InputActionReference _interactAction;
 
         [Header("Referencia al HUD")]
         [SerializeField] private HUDController _hudController;
 
         private IInteractable _currentInteractable;
+        private Coroutine _scanRoutine;
+        private WaitForSeconds _scanWait;
+        private bool _isCaptured;
 
         private void Awake()
         {
-            if (_playerCamera == null)
+            _scanWait = new WaitForSeconds(_scanInterval);
+
+            if (_cameraTransform == null)
             {
-                _playerCamera = Camera.main;
+                Debug.LogError($"[PlayerInteractor] Falta asignar _cameraTransform en {name}.", this);
+            }
+            if (_interactAction == null)
+            {
+                Debug.LogError($"[PlayerInteractor] Falta asignar _interactAction (NexoControls/Player/Interact) en {name}.", this);
             }
             if (_hudController == null)
             {
-                _hudController = FindFirstObjectByType<HUDController>();
+                Debug.LogWarning($"[PlayerInteractor] Sin HUDController asignado en {name}: no se mostrará el prompt [E].", this);
             }
         }
 
-        // JUSTIFICACIÓN UPDATE: Detección por raycast en el cono visual del jugador y lectura de tecla E.
-        private void Update()
+        private void OnEnable()
         {
-            if (_playerCamera == null) return;
+            if (_interactAction != null)
+            {
+                _interactAction.action.performed += HandleInteractPerformed;
+                _interactAction.action.Enable();
+            }
 
-            Ray ray = new Ray(_playerCamera.transform.position, _playerCamera.transform.forward);
-            if (Physics.Raycast(ray, out RaycastHit hit, _interactDistance, _interactableMask))
+            GameEvents.OnPlayerCaught += HandlePlayerCaught;
+            GameEvents.OnFloorChanged += HandleFloorChanged;
+
+            if (!_isCaptured) StartScanning();
+        }
+
+        private void OnDisable()
+        {
+            if (_interactAction != null)
+            {
+                _interactAction.action.performed -= HandleInteractPerformed;
+            }
+
+            GameEvents.OnPlayerCaught -= HandlePlayerCaught;
+            GameEvents.OnFloorChanged -= HandleFloorChanged;
+
+            StopScanning();
+        }
+
+        private void HandlePlayerCaught()
+        {
+            // Durante la captura no se detecta ni se interactúa con nada hasta el reinicio del piso
+            _isCaptured = true;
+            StopScanning();
+        }
+
+        private void HandleFloorChanged(int floor)
+        {
+            if (!_isCaptured) return;
+
+            _isCaptured = false;
+            StartScanning();
+        }
+
+        private void StartScanning()
+        {
+            if (_scanRoutine != null || _cameraTransform == null) return;
+            _scanRoutine = StartCoroutine(ScanRoutine());
+        }
+
+        private void StopScanning()
+        {
+            if (_scanRoutine != null)
+            {
+                StopCoroutine(_scanRoutine);
+                _scanRoutine = null;
+            }
+
+            ClearCurrentInteractable();
+        }
+
+        /// <summary>
+        /// Barrido periódico del raycast de interacción (sustituye al sondeo por frame).
+        /// </summary>
+        private IEnumerator ScanRoutine()
+        {
+            while (true)
+            {
+                Scan();
+                yield return _scanWait;
+            }
+        }
+
+        private void Scan()
+        {
+            Ray ray = new Ray(_cameraTransform.position, _cameraTransform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit, _interactDistance, _interactableMask, QueryTriggerInteraction.Collide))
             {
                 if (hit.collider.TryGetComponent<IInteractable>(out var interactable))
                 {
                     SetCurrentInteractable(interactable);
+                    return;
                 }
-                else if (hit.collider.GetComponentInParent<IInteractable>() is { } parentInteractable)
+
+                IInteractable parentInteractable = hit.collider.GetComponentInParent<IInteractable>();
+                if (parentInteractable != null)
                 {
                     SetCurrentInteractable(parentInteractable);
+                    return;
                 }
-                else
-                {
-                    ClearCurrentInteractable();
-                }
-            }
-            else
-            {
-                ClearCurrentInteractable();
             }
 
-            if (_currentInteractable != null && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
+            ClearCurrentInteractable();
+        }
+
+        private void HandleInteractPerformed(InputAction.CallbackContext context)
+        {
+            if (_isCaptured || _currentInteractable == null) return;
+
+            _currentInteractable.Interact();
+
+            // Refrescar el prompt de inmediato (p. ej. "Abrir" -> "Cerrar")
+            if (_hudController != null)
             {
-                _currentInteractable.Interact();
+                _hudController.SetInteractPrompt(_currentInteractable.Prompt);
             }
         }
 
@@ -76,13 +165,12 @@ namespace Nexo.Player
 
         private void ClearCurrentInteractable()
         {
-            if (_currentInteractable != null)
+            if (_currentInteractable == null) return;
+
+            _currentInteractable = null;
+            if (_hudController != null)
             {
-                _currentInteractable = null;
-                if (_hudController != null)
-                {
-                    _hudController.SetInteractPrompt(string.Empty);
-                }
+                _hudController.SetInteractPrompt(string.Empty);
             }
         }
     }

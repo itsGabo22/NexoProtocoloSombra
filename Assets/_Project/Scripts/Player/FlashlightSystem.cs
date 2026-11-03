@@ -1,3 +1,4 @@
+using System;
 using Nexo.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,6 +25,13 @@ namespace Nexo.Player
 
         public bool IsOn => _isOn;
         public float Battery => _battery;
+        public bool CanTurnOn => !_isLocked && _battery > 0.05f;
+
+        /// <summary>
+        /// Se emite cada vez que la linterna/visión térmica se enciende (true) o se apaga (false),
+        /// ya sea por el jugador, por batería agotada o por el giro argumental.
+        /// </summary>
+        public event Action<bool> StateChanged;
 
         private void Start()
         {
@@ -46,12 +54,8 @@ namespace Nexo.Player
 
         private void HandlePlotTwistTriggered()
         {
+            SetOn(false);
             _isLocked = true;
-            _isOn = false;
-            if (_spotlight != null)
-            {
-                _spotlight.enabled = false;
-            }
             _battery = 0f;
             GameEvents.RaiseBatteryChanged(_battery);
         }
@@ -69,12 +73,11 @@ namespace Nexo.Player
             if (_isOn)
             {
                 _battery = Mathf.Max(0f, _battery - _drainRate * Time.deltaTime);
+                GameEvents.RaiseBatteryChanged(_battery);
                 if (_battery <= 0f)
                 {
-                    _isOn = false;
-                    if (_spotlight != null) _spotlight.enabled = false;
+                    SetOn(false);
                 }
-                GameEvents.RaiseBatteryChanged(_battery);
             }
             else if (_battery < 1.0f)
             {
@@ -85,14 +88,23 @@ namespace Nexo.Player
 
         public void ToggleFlashlight()
         {
-            if (_isLocked) return;
-            if (!_isOn && _battery <= 0.05f) return;
+            SetOn(!_isOn);
+        }
 
-            _isOn = !_isOn;
+        /// <summary>
+        /// Enciende o apaga la linterna/visión térmica respetando el bloqueo y la batería mínima.
+        /// </summary>
+        public void SetOn(bool on)
+        {
+            if (on && !CanTurnOn) return;
+            if (on == _isOn) return;
+
+            _isOn = on;
             if (_spotlight != null)
             {
                 _spotlight.enabled = _isOn;
             }
+            StateChanged?.Invoke(_isOn);
         }
     }
 }

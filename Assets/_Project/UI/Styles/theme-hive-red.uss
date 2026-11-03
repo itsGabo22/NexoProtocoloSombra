@@ -6,7 +6,7 @@
     --c-accent-dim: rgba(255, 59, 59, 0.3);
     --c-text: rgb(255, 229, 229);
     --c-muted: rgb(200, 130, 130);
-    --c-ok: rgb(255, 160, 160);
+    --c-ok: rgb(126, 224, 208);
     --c-warn: rgb(255, 120, 80);
     --c-danger: rgb(255, 59, 59);
     --c-fake: rgb(255, 120, 80);

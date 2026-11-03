@@ -101,7 +101,8 @@
 
 /* ---------- Opacidad y transformaciones ---------- */
 .opacity-0 { opacity: 0; } .opacity-25 { opacity: 0.25; } .opacity-50 { opacity: 0.5; } .opacity-75 { opacity: 0.75; } .opacity-100 { opacity: 1; }
-.pointer-none { picking-mode: ignore; }
+/* picking-mode no es propiedad USS: usar el atributo picking-mode='Ignore' en UXML junto a esta clase */
+.pointer-none { }
 .scale-95 { scale: 0.95 0.95; } .scale-100 { scale: 1 1; } .scale-110 { scale: 1.1 1.1; }
 
 /* ---------- Transiciones ---------- */
