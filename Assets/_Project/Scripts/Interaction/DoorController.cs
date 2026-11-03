@@ -33,6 +33,9 @@ namespace Nexo.Interaction
         public bool IsLocked => _isLocked;
         public bool IsOpen => _isOpen;
 
+        /// <summary>Se emite al abrirse (true) o cerrarse (false) la puerta (p. ej. DoorNavMeshLink).</summary>
+        public event System.Action<bool> OpenChanged;
+
         public string Prompt
         {
             get
@@ -125,6 +128,7 @@ namespace Nexo.Interaction
             _isOpen = open;
             // Las puertas metálicas hacen ruido: los infectados cercanos pueden oírlas
             if (changed && isActiveAndEnabled) GameEvents.RaiseNoiseEmitted(transform.position, _moveNoise);
+            if (changed) OpenChanged?.Invoke(open);
             if (_doorHinge == null) return;
 
             _targetPosition = _isOpen ? _closedPosition + _openOffset : _closedPosition;
