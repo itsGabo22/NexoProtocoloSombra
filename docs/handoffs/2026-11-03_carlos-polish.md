@@ -65,3 +65,9 @@
 - **Ragdoll:** no se configuró; las caídas son procedurales.
 - Si se cambia el Piso 6 a mano, volver a ejecutar el constructor lo **borra y rehace** `F06_Sombra` (lo de fuera de esa raíz no se toca).
 - Archivo de cámaras: regenerar con `Nexo/Cámaras/Capturar archivo de la red` si cambian las escenas. La captura F12-02 sale oscura en el Editor.
+
+## Cuarta tanda (2026-11-03, noche)
+
+- **Piso 6 alineado con el guion oficial** (`Narrativa del Piso 6`): tiempos y emociones de los Momentos 0-4, subtítulo de llegada y de la voz en la oscuridad; la terminal de SOMBRA ya **no** abre la puerta (objetivo: «Pídele a Elena que abra la puerta de las escaleras [2] y baja al Piso 1»); N5 y N6 en el Lab B; N7 en Contención; **Contención sin infectado** (trampa de confianza: celda vacía, goteo y grabación); subtítulos en crujidos, truenos y goteo.
+- **Piso 1 ampliado (para Gabriel, es su escena):** raíz nueva `F01_Expansion` con un circuito de servicio: puerta nueva al norte del vestíbulo → pasillo del correo (patrulla, cobertura) → Sala de seguridad (terminal, monitores, nota, munición) → pasillo este (salida de emergencia sellada) → vuelta al vestíbulo por una puerta nueva al este; sala de descanso a oscuras (reptante, armario-escondite, munición). Las paredes originales `Wall_North` y `Wall_East` **solo se desactivaron** (m_IsActive 0) y se sustituyeron por versiones con hueco; ningún otro objeto ni valor original cambió (comprobado). El camino al escáner sigue siendo de 18 m y el giro no se toca. Infectados, sustos y audio de las alas cuelgan de `F01_Ambience` y se apagan al empezar el giro.
+- **Red de cámaras:** 12 cámaras (2 nuevas en las alas del Piso 1), todas con archivo.
