@@ -102,6 +102,7 @@ Cuatro zonas periféricas que dejan el centro libre: vitales (arriba izquierda),
 - **Coherencia de idioma.** Todo lo que lee el jugador está en español: la emoción de Elena (CALMA, ALEGRE, ASUSTADA, URGENTE, TRISTE, SUSURRO, en vez del nombre del enum), los destinos de las órdenes («Ruta despejada hacia la puerta de las escaleras», nunca `F12_Door_Stairs`), la terminal («TERMINAL DE SEGURIDAD · PISO 12», puertas con nombre) y los diálogos de respaldo con sus tildes. Los ids técnicos solo existen en datos (`target_id`); una prueba impide que aparezcan en los diálogos.
 - **Feedback de daño.** Un golpe produce un destello rojo breve en los bordes (viñeta, el centro queda libre) y, con el último punto de vida, un pulso lento y suave. Con «reducir movimiento» no hay destello y la viñeta de salud baja queda fija: la información se mantiene sin animación (WCAG 2.3.3). El subtítulo «(Te golpean: x/4)» sigue existiendo como canal no visual.
 - **Ayuda de controles.** Una franja arriba al centro, una vez por sesión y durante 6 s, con las acciones que no son evidentes: «R recargar · clic der. apuntar · F visión térmica · V hablar con Elena · C agacharse» (teclas verificadas en `NexoControls.inputactions` y en el código). No se repite tras un reinicio de piso para no castigar al jugador que ya la vio (heurística de Nielsen 7: flexibilidad y eficiencia).
+- **Higiene de textos.** Un traductor (`HudTextSanitizer`) reescribe en el momento de mostrar cualquier id interno que llegue al HUD, venga del código, de una escena, de un JSON de Elena o de Gemini: el dato original se conserva y el jugador nunca lee `F12_Door_Stairs`. Las notificaciones idénticas no se apilan (una tarjeta que «late» y reinicia su vida) y hay como máximo 3 a la vez, para que la columna izquierda no tape la vista (heurística de Nielsen 8: diseño estético y minimalista). La munición vacía usa un chip rojo relleno, distinto en forma y no solo en color del aviso ámbar de munición baja.
 - **Detalles.** La batería térmica indica ACTIVA/APAGADA; el retrato de Elena carga `Resources/Elena/portrait.png` si existe; la terminal amplía la única cámara al ancho disponible; Opciones › VIDEO incluye «Volumen general» (no hay AudioMixer con parámetros expuestos, así que se aplica con `AudioListener.volume` y se guarda en PlayerPrefs).
 
 ### 4.2 Elena: Gemini con fallback local
@@ -157,7 +158,7 @@ Referencias: `docs/ui/NEXOOS_DESIGN_SPEC.md` §4, `Assets/_Project/UI/Styles/*.u
 
 ## 7. Pruebas
 
-108 pruebas EditMode (NUnit, `Nexo.Tests.EditMode.asmdef`), todas en verde en batchmode el 2026-11-03 (35 antes del pulido del HUD):
+146 pruebas EditMode (NUnit, `Nexo.Tests.EditMode.asmdef`), todas en verde en batchmode el 2026-11-03 (35 antes del pulido del HUD, 108 antes de la higiene de textos):
 
 | Archivo | Casos | Qué cubre |
 | --- | --- | --- |
@@ -169,6 +170,8 @@ Referencias: `docs/ui/NEXOOS_DESIGN_SPEC.md` §4, `Assets/_Project/UI/Styles/*.u
 | `AmmoDisplayStateTests.cs` | 27 | Estados, textos, celdas y «+N» del panel de arma. |
 | `HudLabelsTests.cs` | 24 | Emociones y puertas en español, título de la terminal, ayuda de controles una vez por sesión. |
 | `VitalsFeedbackTests.cs` | 21 | Lectura del porcentaje de vida, detección de daño, salud baja y volumen general. |
+| `HudTextSanitizerTests.cs` | 26 | Traducción de ids internos en frases reales, varios ids, puntuación, ids desconocidos y textos sin ids. |
+| `NotificationStackTests.cs` | 12 | Deduplicación dentro y fuera de la ventana de 8 s, tope de 3, expulsión de la más antigua y notificaciones falsas. |
 
 Además, el 2026-11-03 se recorrió el juego completo en Play (ver `docs/handoffs/2026-11-03_final-integration.md`): menú → JUGAR → Piso 12 (combate, salida) → Piso 6 (Elena abre `F06_Door_Stairs` con la pregunta [2]) → Piso 1 → BioScanner → giro → créditos → menú → JUGAR desde cero, con persistencia de vida y munición entre pisos y REINICIAR en cada piso.
 

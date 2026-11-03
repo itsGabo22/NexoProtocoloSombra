@@ -102,3 +102,75 @@
 - **Carlos — notificación duplicada de munición**: `PlayerWeapon.AnnounceAmmo` sigue lanzando la tarjeta «M1911 · Cargador x/7 · Reserva y» tras recargar o recoger; con el panel nuevo es redundante. Se puede quitar si se prefiere.
 - **Carlos — retrato**: añadir `Assets/_Project/Resources/Elena/portrait.png` (cuadrado, ≥ 128 px, Texture Type Default) cuando exista.
 - **Arma deshabilitada**: si en el futuro `GameSession.HasWeapon` es false, el panel seguirá mostrando el último estado (hoy siempre es true).
+
+---
+
+# Fase 2: higiene de textos del HUD (rama `feature/hud-text-hygiene`)
+
+`feature/hud-polish` ya estaba fusionada en `develop` (PR #7, ae7a6f1), así que esta fase sale de una rama nueva desde `origin/develop`.
+
+## 6. Auditoría (antes de cambiar nada)
+
+### Rutas de texto visible en el HUD
+- `HUDController.ShowNotification` (remitente + cuerpo, entra por `GameEvents.OnNotification` y por las órdenes de Elena), `StartTypewriter` (diálogo de Elena), `SetInteractPrompt` (prompt `[E]`).
+- `SubtitleController.HandleSubtitle` (subtítulos, `GameEvents.OnSubtitle`).
+- `TerminalController` (lista de puertas con `DoorDisplayNames.Label`, estado, etiquetas de cámara del Inspector).
+- Las tarjetas no se deduplican ni tienen tope: cada `OnNotification` crea una tarjeta de 5,5 s. La pila solo tiene `max-height: 720px`.
+
+### Fugas de ids internos (fuente → texto actual)
+| Archivo | Línea | Texto | Dueño |
+| --- | --- | --- | --- |
+| `Scripts/Interaction/DoorController.cs` | 75 | `"{_doorId}: apertura denegada. Presencia hostil activa en el piso."` | Carlos |
+| `Scripts/Interaction/DoorController.cs` | 86 | `"Acceso denegado: {_doorId} requiere desbloqueo de Elena."` | Carlos |
+| `Scripts/Interaction/DoorController.cs` | 97 | `"Puerta {_doorId} desbloqueada remotamente."` | Carlos |
+| `Scripts/Interaction/SecurityTerminal.cs` | 89 | `"{door.DoorId}: bloqueo de protocolo activo. Solicita apertura a Elena."` | Carlos |
+| `Scripts/UI/HUDController.cs` | 576 | Ruta segura: `DoorDisplayNames.Destination(target)`; con `F01_BioScanner` (fallback Piso 1, SAFE_PATH) muestra «una puerta» | Gabriel |
+| `Scripts/UI/HUDController.cs` | 583 | Pista: imprime `targetId` tal cual si Elena lo manda | Gabriel |
+| Diálogo de Gemini en vivo | — | Puede repetir `room_id`/`available_doors` del contexto (`F12_Cubicles`, `F12_Door_Stairs`) | Gemini |
+
+- Diálogos de `Data/ElenaFallback/*.json`: sin ids (lo vigila `ElenaFallbackFilesTests.EveryDialogue_HidesTechnicalIds`).
+- Escenas/prefabs: ningún campo de texto (`_body`, `Text`, `_subtitle`, `_prompt`, `_promptText`, `_label`, `_author`) contiene ids. Los `F12_*`/`F06_*`/`F01_*` restantes son nombres de GameObject.
+- Ids reales: puertas `F12_Door_Stairs`, `F12_Door_Meeting`, `F06_Door_Stairs`, `F06_Door_Lab`; RoomId `F12_Cubicles`, `F12_Cubicles_East`, `F12_ServerRoom`; `F01_BioScanner` (target del fallback); `F12_Terminal_Security`.
+
+### Munición
+- `components.uss` ya pinta vacío/sin munición con `--c-danger` y baja con `--c-warn`. Con el tema nexo el rojo es claro (248,113,113) y en daltonismo deutan/protan `--c-danger` es naranja Okabe-Ito (230,159,0), casi igual que el ámbar `--c-warn` (251,191,36): ahí está la confusión. En hive, warn (255,120,80) y danger (255,59,59) también son cercanos.
+
+### Línea base
+- 108/108 EditMode esperados (ver resultado en §8).
+
+## 7. Qué se hizo (fase 2)
+
+| Parte | Estado | Detalle |
+| --- | --- | --- |
+| 1. Traductor de ids al mostrar | Hecho | `Scripts/UI/HudTextSanitizer.cs` (puro, sin UnityEngine): sustituye `\bF\d{1,2}_\w+` y `\w+_Door_\w+` por nombres de `DoorDisplayNames` (ampliado con salas, escáner y terminal). «Puerta F12_Door_Stairs» → «Puerta de las escaleras»; al inicio de frase pone mayúscula; puerta desconocida → «una puerta», otro id → «ese lugar». Se aplica en notificaciones (remitente y cuerpo), diálogo de Elena, prompt `[E]`, subtítulos (`SubtitleController`) y terminal (puertas, estado y etiquetas de cámara). Los eventos y datos originales no se tocan. También arregla la ruta segura del Piso 1 (`F01_BioScanner` → «el escáner maestro», antes «una puerta»). |
+| 2. Deduplicación y tope | Hecho | `Scripts/UI/NotificationStack.cs` (+ `NotificationAction`, `NotificationResult`), reloj inyectable. Idéntica (remitente + cuerpo traducido + real/falsa) visible → se reinicia su vida de 5,5 s y la tarjeta late una vez (sin latido con reducir movimiento); si caducó hace < 8 s → no se muestra; máximo 3 tarjetas, la 4.ª retira al instante la más antigua. Las falsas nunca se funden con una real y conservan su estilo. |
+| 3. Munición vacía en rojo | Hecho | Vacío y sin munición ya usaban `--c-danger`, pero en hive (naranja vs rojo) y en daltonismo deutan/protan (danger naranja ≈ warn ámbar) se confundían. Ahora la etiqueta RECARGAR [R] / SIN MUNICIÓN es un chip relleno de `--c-danger` con texto `--c-bg` (forma distinta, no solo color), borde de 3 px en alto contraste, y en deutan/protan `--c-warn` pasa a amarillo Okabe-Ito (240,228,66). `AmmoDisplayState` no cambia (los estados ya eran distintos). |
+| 4. Informe de fugas | Hecho | Abajo. No quedan fugas en archivos de Gabriel ni en los JSON de fallback. |
+
+## 8. Verificación (fase 2)
+
+- Batchmode con el Editor cerrado: línea base **108/108**; tras los cambios **146/146** (nuevos `HudTextSanitizerTests` 26 y `NotificationStackTests` 12). Sin errores ni warnings de compilación ni avisos de USS.
+- Sin Play ni capturas (unity-mcp no conectado): la checklist de abajo está **pendiente** de que Gabriel la pase.
+
+## 9. Para Carlos (fugas en sus scripts; el HUD ya las traduce al mostrar, pero conviene arreglar el origen)
+
+| Archivo | Línea | Texto actual | Propuesta |
+| --- | --- | --- | --- |
+| `Scripts/Interaction/DoorController.cs` | 75 | `$"{_doorId}: apertura denegada. Presencia hostil activa en el piso."` | `$"{Nexo.UI.DoorDisplayNames.Label(_doorId)}: apertura denegada. Hay infectados activos en el piso."` |
+| `Scripts/Interaction/DoorController.cs` | 86 | `$"Acceso denegado: {_doorId} requiere desbloqueo de Elena."` | `$"Acceso denegado: {Nexo.UI.DoorDisplayNames.Destination(_doorId)} requiere desbloqueo de Elena."` |
+| `Scripts/Interaction/DoorController.cs` | 97 | `$"Puerta {_doorId} desbloqueada remotamente."` | `$"{Nexo.UI.DoorDisplayNames.Label(_doorId)}: desbloqueada a distancia."` |
+| `Scripts/Interaction/SecurityTerminal.cs` | 89 | `$"{door.DoorId}: bloqueo de protocolo activo. Solicita apertura a Elena."` | `$"{Nexo.UI.DoorDisplayNames.Label(door.DoorId)}: bloqueo de protocolo activo. Pide a Elena la apertura."` |
+
+- `DoorController` (línea 86) lanza la misma notificación en cada pulsación de [E]; con la deduplicación ya no se apila, pero un enfriamiento de ~2 s en origen evitaría trabajo inútil.
+- Escenas/prefabs: sin fugas en campos de texto.
+
+## 10. Checklist manual (pendiente, Play desde `Systems_Persistent`)
+
+1. Pulsar [E] 10 veces ante `F12_Door_Stairs` bloqueada: una sola tarjeta «Acceso denegado: la puerta de las escaleras requiere desbloqueo de Elena.» que late en cada pulsación; ningún id crudo.
+2. Leer la nota de J. RAMOS · SEGURIDAD dos veces seguidas: una sola tarjeta.
+3. Provocar 4 o más notificaciones distintas (nota, radar [Q], ruta segura [1], captura): nunca más de 3 a la vez; la más antigua desaparece.
+4. Mimetismo de un infectado: la tarjeta falsa de «ELENA» aparece aunque haya una real con el mismo texto, sin sello BIO-ID y con su estilo.
+5. Piso 1, pregunta [1]: «Ruta despejada hacia el escáner maestro».
+6. Vaciar el cargador con reserva: chip rojo «RECARGAR [R]»; sin reserva: chip rojo «SIN MUNICIÓN»; con 1–2 balas: texto ámbar «MUNICIÓN BAJA» sin chip.
+7. Repetir el punto 6 en tema nexo, tras el giro (hive), con alto contraste y con daltonismo deutan: el vacío siempre es un chip relleno y se distingue del aviso.
+8. Activar «Reducir movimiento»: la tarjeta repetida no late, pero su tiempo de vida se reinicia igual.
