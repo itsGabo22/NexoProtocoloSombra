@@ -90,6 +90,15 @@ namespace Nexo.Interaction
             GameEvents.RaiseNotification(new HudNotification("ELENA", $"Puerta {_doorId} desbloqueada remotamente.", false));
         }
 
+        /// <summary>
+        /// Cierra y bloquea la puerta (protocolos de contención del guion).
+        /// </summary>
+        public void Lock()
+        {
+            _isLocked = true;
+            SetOpen(false);
+        }
+
         public void ToggleDoor()
         {
             SetOpen(!_isOpen);
