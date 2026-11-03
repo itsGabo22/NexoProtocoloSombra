@@ -502,6 +502,7 @@ MonoBehaviour:
   _stunDuration: 0.7
   _downedDuration: 30
   _visualRoot: {fileID: 981424899286702572}
+  _reviveAfterDowned: 0
   _crouchSightFactor: 0.55
 --- !u!95 &8158308793063675666
 Animator:
