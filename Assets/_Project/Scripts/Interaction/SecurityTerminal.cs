@@ -1,5 +1,6 @@
 using System;
 using Nexo.Core;
+using Nexo.UI;
 using UnityEngine;
 
 namespace Nexo.Interaction
@@ -86,7 +87,7 @@ namespace Nexo.Interaction
 
             if (door.IsLocked)
             {
-                GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"{door.DoorId}: bloqueo de protocolo activo. Solicita apertura a Elena.", false));
+                GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"{DoorDisplayNames.Label(door.DoorId)}: bloqueo de protocolo activo. Solicita apertura a Elena.", false));
                 return false;
             }
 

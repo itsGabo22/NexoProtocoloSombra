@@ -1,6 +1,7 @@
 using System.Collections;
 using Nexo.AI.Elena;
 using Nexo.Core;
+using Nexo.UI;
 using UnityEngine;
 
 namespace Nexo.Interaction
@@ -77,7 +78,7 @@ namespace Nexo.Interaction
             {
                 if (_remoteUnlockBlocked)
                 {
-                    GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"{_doorId}: apertura denegada. Presencia hostil activa en el piso.", false));
+                    GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"{DoorDisplayNames.Label(_doorId)}: apertura denegada. Presencia hostil activa en el piso.", false));
                     return;
                 }
                 UnlockAndOpen();
@@ -88,7 +89,7 @@ namespace Nexo.Interaction
         {
             if (_isLocked)
             {
-                GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"Acceso denegado: {_doorId} requiere desbloqueo de Elena.", false));
+                GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"Acceso denegado: {DoorDisplayNames.Destination(_doorId)} requiere desbloqueo de Elena.", false));
                 return;
             }
 
@@ -99,7 +100,7 @@ namespace Nexo.Interaction
         {
             _isLocked = false;
             SetOpen(true);
-            GameEvents.RaiseNotification(new HudNotification("ELENA", $"Puerta {_doorId} desbloqueada remotamente.", false));
+            GameEvents.RaiseNotification(new HudNotification("ELENA", $"{DoorDisplayNames.Label(_doorId)} desbloqueada remotamente.", false));
         }
 
         /// <summary>
