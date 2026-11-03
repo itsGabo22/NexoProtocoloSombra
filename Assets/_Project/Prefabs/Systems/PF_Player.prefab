@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 4508871564116400127}
   - component: {fileID: 8190292801290388745}
   - component: {fileID: 1361685721644678070}
+  - component: {fileID: 3034190721521066088}
   m_Layer: 8
   m_Name: PF_Player
   m_TagString: Untagged
@@ -184,6 +185,7 @@ Transform:
   - {fileID: 8560338418566997380}
   - {fileID: 389466765348899475}
   - {fileID: 9101255540529252220}
+  - {fileID: 1055408372811464206}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &9064921053485688899
@@ -484,6 +486,22 @@ MonoBehaviour:
   _swaySmooth: 10
   _hitJolt: 6
   _struggleShake: 2.2
+--- !u!114 &3034190721521066088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691618561519237747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3c786e6c6fbf314898da9da08c68d29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Player.DemoShortcuts
+  EnableDemoShortcuts: 0
+  _health: {fileID: 0}
+  _weapon: {fileID: 0}
+  _scannerStandOff: 1.6
 --- !u!1 &7159589432008154132
 GameObject:
   m_ObjectHideFlags: 0
@@ -721,6 +739,80 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &7517490651159329705
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1055408372811464206}
+  - component: {fileID: 3542634735039165626}
+  - component: {fileID: 3818209395982634920}
+  m_Layer: 0
+  m_Name: CameraNetworkUI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1055408372811464206
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517490651159329705}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5951813630856220629}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3542634735039165626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517490651159329705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+  m_PanelSettings: {fileID: 11400000, guid: 4e52caf4cd7bbfb4f8aa3a62304ae6b6, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 1d154f1fac1f9ca4e9d458d391fd69c4, type: 3}
+  m_SortingOrder: 40
+  m_Position: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+  m_PivotReferenceSize: 0
+  m_Pivot: 0
+  m_WorldSpaceCollider: {fileID: 0}
+--- !u!114 &3818209395982634920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7517490651159329705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efd0dd763eb324942b784a58f39d37e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.UI.CameraNetworkController
+  _network: {fileID: 11400000, guid: 5d85068cb636f404881b9afc5ba3a4c4, type: 2}
+  _playerMovement: {fileID: 1679263959686769015}
+  _sortingOrder: 40
+  _renderWidth: 640
+  _renderHeight: 360
+  _liveFarClip: 60
 --- !u!1 &8960791460796191440
 GameObject:
   m_ObjectHideFlags: 0
