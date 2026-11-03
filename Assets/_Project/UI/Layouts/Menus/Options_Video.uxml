@@ -55,6 +55,11 @@
                 <ui:AttributeOverrides element-name="setting-row-label" text="Sincronización vertical" />
                 <ui:AttributeOverrides element-name="setting-row-state" text="DESACTIVADO" />
             </ui:Instance>
+            <!-- Volumen general (AudioPrefs → AudioListener.volume). Sección de audio dentro de VIDEO: no hay pestaña AUDIO todavía -->
+            <ui:Instance template="NxSettingRowSlider" name="optv-row-master-volume" focusable="true" tabindex="7" class="nx-focusable nx-pct-85">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Volumen general" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="100" />
+            </ui:Instance>
         </ui:Instance>
 
         <!-- TODO controller: el panel derecho describe la fila enfocada. -->
