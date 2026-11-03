@@ -37,7 +37,8 @@ namespace Nexo.EditorTools
             SerializedProperty fallback = so.FindProperty("_forceFallback");
             SerializedProperty secrets = so.FindProperty("_secrets");
             bool previousFallback = fallback.boolValue;
-            UnityEngine.Object previousSecrets = secrets.objectReferenceValue;
+            // El build descarga assets de memoria: se guarda la ruta para recargar la referencia al terminar
+            string previousSecretsPath = secrets.objectReferenceValue != null ? AssetDatabase.GetAssetPath(secrets.objectReferenceValue) : string.Empty;
 
             string root = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Builds"));
             string folder = Path.Combine(root, folderName);
@@ -69,6 +70,7 @@ namespace Nexo.EditorTools
                 {
                     // Los símbolos de depuración no hacen falta para la entrega
                     foreach (string dir in Directory.GetDirectories(folder, "*_BurstDebugInformation_DoNotShip")) Directory.Delete(dir, true);
+                    foreach (string dir in Directory.GetDirectories(folder, "*_BackUpThisFolder_ButDontShipItWithYourGame")) Directory.Delete(dir, true);
                     if (File.Exists(zip)) File.Delete(zip);
                     ZipFile.CreateFromDirectory(folder, zip, System.IO.Compression.CompressionLevel.Optimal, true);
                     Debug.Log($"[NexoReleaseBuilder] Zip: {zip} ({new FileInfo(zip).Length / 1048576f:F1} MB)");
@@ -83,10 +85,17 @@ namespace Nexo.EditorTools
             finally
             {
                 // Se restaura siempre: en el repo Elena usa Gemini en el Editor
-                so.Update();
-                fallback.boolValue = previousFallback;
-                secrets.objectReferenceValue = previousSecrets;
+                config = AssetDatabase.LoadAssetAtPath<ElenaConfig>(ConfigPath);
+                so = new SerializedObject(config);
+                so.FindProperty("_forceFallback").boolValue = previousFallback;
+                so.FindProperty("_secrets").objectReferenceValue = string.IsNullOrEmpty(previousSecretsPath)
+                    ? null
+                    : AssetDatabase.LoadAssetAtPath<ElenaSecrets>(previousSecretsPath);
                 so.ApplyModifiedPropertiesWithoutUndo();
+                if (!string.IsNullOrEmpty(previousSecretsPath) && so.FindProperty("_secrets").objectReferenceValue == null)
+                {
+                    Debug.LogWarning("[NexoReleaseBuilder] No se pudo restaurar la referencia a ElenaSecrets: ejecuta git restore " + ConfigPath);
+                }
                 AssetDatabase.SaveAssets();
             }
         }
