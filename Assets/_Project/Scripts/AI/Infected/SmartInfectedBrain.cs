@@ -350,11 +350,11 @@ namespace Nexo.AI.Infected
                 if (_canSeePlayer)
                 {
                     LastKnownPlayerPos = _player.position;
-                    _memory?.RecordSighting(LastKnownPlayerPos);
+                    if (_memory != null) _memory.RecordSighting(LastKnownPlayerPos);
                 }
 
                 _navigation.Tick(now);
-                _memory?.Tick(now);
+                if (_memory != null) _memory.Tick(now);
                 _currentState?.Tick();
                 UpdateAnimatorSpeed();
 
@@ -578,7 +578,7 @@ namespace Nexo.AI.Infected
             LastNoisePos = position;
             LastNoiseAlarming = intensity >= 85f || sqrDistance <= (effectiveRange * 0.45f) * (effectiveRange * 0.45f);
             _heardNoise = true;
-            _memory?.RecordNoise(position, intensity);
+            if (_memory != null) _memory.RecordNoise(position, intensity);
         }
 
         /// <summary>
@@ -630,7 +630,7 @@ namespace Nexo.AI.Infected
         /// <summary>Al perder el rastro: registra el escondite probable y busca en los alrededores.</summary>
         public void LoseTrackOfPlayer()
         {
-            _memory?.RecordLostPlayer(LastKnownPlayerPos);
+            if (_memory != null) _memory.RecordLostPlayer(LastKnownPlayerPos);
             Search.SetCenter(LastKnownPlayerPos);
             ChangeState(Search);
         }
