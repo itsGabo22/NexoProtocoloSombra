@@ -475,10 +475,10 @@ MonoBehaviour:
   _patrolPoints: []
   _tickInterval: 0.15
   _walkSpeed: 1.6
-  _runSpeed: 4.2
+  _runSpeed: 4.6
   _attackRange: 1.6
   _attackCooldown: 1.5
-  _sightDistance: 14
+  _sightDistance: 16
   _sightAngle: 80
   _obstacleMask:
     serializedVersion: 2
@@ -498,9 +498,9 @@ MonoBehaviour:
   - "Alex, ven al pasillo norte. Aqu\xED estoy a salvo."
   - "Apaga la linterna, te est\xE1n viendo. Ven hacia m\xED."
   - "La salida est\xE1 por los cub\xEDculos, r\xE1pido."
-  _maxHealth: 3
-  _stunDuration: 1.2
-  _downedDuration: 20
+  _maxHealth: 6
+  _stunDuration: 0.7
+  _downedDuration: 30
   _visualRoot: {fileID: 981424899286702572}
   _crouchSightFactor: 0.55
 --- !u!95 &8158308793063675666

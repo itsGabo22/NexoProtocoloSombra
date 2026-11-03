@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 4623130270281869729}
   - component: {fileID: 6939384984380968025}
   - component: {fileID: 4582414391936626458}
+  - component: {fileID: 3983387866614711262}
   m_Layer: 8
   m_Name: PF_Player
   m_TagString: Untagged
@@ -287,6 +288,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2561
   _shotNoise: 100
+  _aimLocalPosition: {x: 0, y: -0.1, z: 0.16}
+  _aimFov: 42
+  _aimTransitionTime: 0.15
+  _hipSpread: 3.5
+  _aimSpread: 0.3
   _shotClip: {fileID: 8300000, guid: e4af3aa8cff6c51478d4017d251d9158, type: 3}
   _emptyClip: {fileID: 8300000, guid: 417609d8d8c1b9447a8b9bb18bd9760c, type: 3}
   _reloadClip: {fileID: 8300000, guid: 15105776fbf714d4db662acd73446e3d, type: 3}
@@ -325,6 +331,18 @@ MonoBehaviour:
   _noiseSensor: {fileID: 6939384984380968025}
   _elenaConfig: {fileID: 11400000, guid: 6f804b67bd0db2744a8735f7d17a5507, type: 2}
   _talkNoise: 35
+--- !u!114 &3983387866614711262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691618561519237747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ace9c24c7ab64314b7199527a84e7f9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Player.ObjectiveReminder
 --- !u!1 &7159589432008154132
 GameObject:
   m_ObjectHideFlags: 0
