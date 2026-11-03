@@ -45,8 +45,10 @@
 .crosshair { left: 50%; top: 50%; width: 6px; height: 6px; margin-left: -3px; margin-top: -3px; border-radius: 3px; background-color: var(--c-text); opacity: 0.7; }
 
 /* Notificaciones: estado base oculto, .hud-notification--visible las muestra */
-.hud-notification { width: 360px; margin-bottom: 8px; padding: 10px 12px; background-color: var(--c-surface); border-color: var(--c-accent); border-width: 1px; border-radius: 6px; opacity: 0; translate: 0 -12px; transition-property: opacity, translate; transition-duration: 250ms; }
+.hud-notification { width: 360px; margin-bottom: 8px; padding: 10px 12px; background-color: var(--c-surface); border-color: var(--c-accent); border-width: 1px; border-radius: 6px; opacity: 0; translate: 0 -12px; transition-property: opacity, translate, scale, border-color; transition-duration: 250ms; }
 .hud-notification--visible { opacity: 1; translate: 0 0; }
+/* Notificación repetida: no se apila, la tarjeta existente late una vez (HUDController no lo aplica con reducir movimiento) */
+.hud-notification.hud-notification--pulse { scale: 1.02 1.02; border-color: var(--c-text); }
 /* Pila bajo los vitales: tope de altura para no alcanzar el panel de ruido (abajo izquierda) a 100/125/150 %;
    si hay demasiadas tarjetas se recortan las más antiguas (arriba) y las nuevas siguen visibles */
 .hud-notifications-stack { max-height: 720px; overflow: hidden; justify-content: flex-end; }

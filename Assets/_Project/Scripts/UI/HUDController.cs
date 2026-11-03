@@ -28,6 +28,15 @@ namespace Nexo.UI
         private const long HitFlashMs = 250;
         private const long LowHealthPulseMs = 1000;
         private const long HintFadeMs = 400;
+        private const long NotificationPulseMs = 180;
+
+        /// <summary>Tarjeta de notificación visible y sus temporizadores (la decisión la toma NotificationStack).</summary>
+        private sealed class NotificationCard
+        {
+            public VisualElement Element;
+            public IVisualElementScheduledItem Dismiss;
+            public IVisualElementScheduledItem PulseEnd;
+        }
 
         private static readonly string[] RootDebugLines =
         {
@@ -95,6 +104,8 @@ namespace Nexo.UI
         private readonly float[] _barLevels = new float[BarCount];
         private readonly Button[] _quick = new Button[3];
         private readonly Action[] _quickHandlers = new Action[3];
+        private readonly NotificationStack _notificationStack = new NotificationStack(CurrentTime);
+        private readonly Dictionary<int, NotificationCard> _cards = new();
 
         private IVisualElementScheduledItem _typewriter;
         private IVisualElementScheduledItem _spectro;
@@ -198,7 +209,11 @@ namespace Nexo.UI
             _hitEnd?.Pause();
             _lowPulse?.Pause();
             _hintHide?.Pause();
+            ClearNotifications();
         }
+
+        /// <summary>Reloj de la pila de notificaciones (tiempo real: no depende de Time.timeScale).</summary>
+        private static double CurrentTime() => Time.realtimeSinceStartupAsDouble;
 
         private void PulsePortrait()
         {
@@ -533,6 +548,8 @@ namespace Nexo.UI
             if (_dialogue == null) return;
             _typewriter?.Pause();
 
+            // Solo se traduce lo que se muestra: la respuesta de Elena queda intacta
+            text = HudTextSanitizer.Humanize(text) ?? string.Empty;
             int shown = 0;
             _dialogue.text = string.Empty;
             _typewriter = _dialogue.schedule.Execute(() =>
@@ -624,12 +641,31 @@ namespace Nexo.UI
             if (_interactPrompt == null) return;
             bool hasPrompt = !string.IsNullOrEmpty(prompt);
             _interactPrompt.EnableInClassList("hidden", !hasPrompt);
-            _interactPrompt.text = prompt;
+            _interactPrompt.text = HudTextSanitizer.Humanize(prompt);
         }
 
+        /// <summary>
+        /// Muestra una notificación con los ids internos traducidos. Una idéntica ya visible solo reinicia su tiempo de vida
+        /// (con un pulso breve salvo reducir movimiento); hay como máximo NotificationStack.DefaultMaxVisible tarjetas.
+        /// </summary>
         public void ShowNotification(HudNotification data)
         {
             if (_notifications == null) return;
+
+            string senderText = HudTextSanitizer.Humanize(data.Sender) ?? string.Empty;
+            string bodyText = HudTextSanitizer.Humanize(data.Body) ?? string.Empty;
+
+            NotificationResult result = _notificationStack.Push(senderText, bodyText, data.IsFake);
+            switch (result.Action)
+            {
+                case NotificationAction.Suppress:
+                    return;
+                case NotificationAction.Refresh:
+                    RefreshCard(result.CardId);
+                    return;
+            }
+
+            if (result.EvictedId != NotificationResult.None) RemoveCardNow(result.EvictedId);
 
             var card = new VisualElement();
             card.AddToClassList("hud-notification");
@@ -641,7 +677,7 @@ namespace Nexo.UI
             header.AddToClassList("items-center");
             header.AddToClassList("justify-between");
 
-            var sender = new Label(data.Sender);
+            var sender = new Label(senderText);
             sender.AddToClassList("hud-notification__sender");
             sender.AddToClassList("text-sm");
             sender.AddToClassList("text-accent");
@@ -656,7 +692,7 @@ namespace Nexo.UI
                 header.Add(seal);
             }
 
-            var body = new Label(data.Body);
+            var body = new Label(bodyText);
             body.AddToClassList("text-sm");
             body.AddToClassList("text-main");
             body.AddToClassList("wrap");
@@ -668,7 +704,58 @@ namespace Nexo.UI
             _notifications.Add(card);
 
             card.schedule.Execute(() => card.AddToClassList("hud-notification--visible")).StartingIn(20);
-            card.schedule.Execute(() => DismissCard(card)).StartingIn(NotificationMs);
+
+            int cardId = result.CardId;
+            var state = new NotificationCard { Element = card };
+            state.Dismiss = card.schedule.Execute(() => ExpireCard(cardId)).StartingIn(NotificationMs);
+            _cards[cardId] = state;
+        }
+
+        /// <summary>Reinicia el tiempo de vida de una tarjeta idéntica ya visible.</summary>
+        private void RefreshCard(int cardId)
+        {
+            if (!_cards.TryGetValue(cardId, out NotificationCard state)) return;
+
+            state.Dismiss?.Pause();
+            state.Dismiss = state.Element.schedule.Execute(() => ExpireCard(cardId)).StartingIn(NotificationMs);
+
+            if (_reduceMotion) return;
+            state.PulseEnd?.Pause();
+            state.Element.AddToClassList("hud-notification--pulse");
+            state.PulseEnd = state.Element.schedule.Execute(() => state.Element.RemoveFromClassList("hud-notification--pulse")).StartingIn(NotificationPulseMs);
+        }
+
+        /// <summary>Fin del tiempo de vida: la tarjeta se desvanece y deja de contar como visible.</summary>
+        private void ExpireCard(int cardId)
+        {
+            if (!_cards.TryGetValue(cardId, out NotificationCard state)) return;
+
+            _cards.Remove(cardId);
+            _notificationStack.Expire(cardId);
+            DismissCard(state.Element);
+        }
+
+        /// <summary>Retira al instante la tarjeta más antigua cuando se supera el tope (sin esperar al fundido).</summary>
+        private void RemoveCardNow(int cardId)
+        {
+            if (!_cards.TryGetValue(cardId, out NotificationCard state)) return;
+
+            _cards.Remove(cardId);
+            state.Dismiss?.Pause();
+            state.PulseEnd?.Pause();
+            state.Element.RemoveFromHierarchy();
+        }
+
+        private void ClearNotifications()
+        {
+            foreach (NotificationCard state in _cards.Values)
+            {
+                state.Dismiss?.Pause();
+                state.PulseEnd?.Pause();
+                state.Element.RemoveFromHierarchy();
+            }
+            _cards.Clear();
+            _notificationStack.Clear();
         }
 
         private static VisualElement BuildWave(bool irregular)
