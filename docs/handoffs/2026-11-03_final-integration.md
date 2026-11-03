@@ -59,3 +59,16 @@ Omitida a propósito: el modelo del infectado depende del pack `Pack_ZombieMale_
 - `ThermalVisionController` (de Carlos) mezcla el Volume `VP_Thermal`, que no hace nada en Built-in. Se añadió `Scripts/UI/ThermalOverlayController.cs` (HUD): escucha `FlashlightSystem.StateChanged` (método con nombre, sin `Update`) y activa `.thermal-on` en `hud-thermal-overlay` (primer hijo de `hud-root`: tinte cian 14 % + viñeta `UI/Textures/T_ThermalVignette.png`, transición de 250 ms, anulada por `.reduce-motion`; más suave con `.a11y-hc`).
 - Verificado con captura de pantalla en Play: tinte y viñeta visibles, paneles del HUD por encima, barra «VISIÓN TÉRMICA 90 %» intacta.
 - Sin test nuevo: no hay lógica pura (solo enlaza un evento con una clase USS).
+
+### Fase 5: créditos y assets (hecha)
+
+- `Credits.uxml` pasa a dos columnas (cabe en 1080 px sin desplazamiento): diseño y desarrollo, materia, Gemini 2.5 Flash (Google), tipografías (Barlow Condensed / IBM Plex · OFL 1.1), sonido procedural, M1911 (Nokobot), Mixamo (Adobe), Starter Assets de Unity Learn (Unity Companion License), Polygon Office Building (Asset Store EULA).
+- Se versionan las licencias OFL junto a las fuentes (`UI/Fonts/OFL_*.txt`, copiadas de las descargas de Google Fonts de Gabriel).
+- `docs/ASSETS.md` reconciliado. El pack de oficinas **no** es POLYGON Office de Synty (ni prefijos ni estructura de Synty); su `Read me.txt` solo da un correo.
+- **MISSING (fuera de los créditos):** autor del pack de oficinas; fuente/autor/licencia de `Pack_ZombieMale_AAB`; origen de las capturas de los clips `Infected/*.anim` y `Elena/*.anim`; confirmación de que los clips de 752cb8f son procedurales.
+
+### Fase 6: documentación (hecha)
+
+- `CLAUDE.md` reescrito: 3 pisos, Built-in + Standard, sistemas de combate/vida/QTE/persistencia, propiedad Gabriel/Carlos (Piso 12 terminado), Elena y `_forceFallback`, regla de secretos, packs, Git, notas y límites de Unity MCP. Conserva los estándares de C# y UI Toolkit.
+- `docs/DESIGN_RATIONALE.md`: resueltas 5 marcas `[verificar]` (Okabe-Ito, arco estático, espacial, ayuda, BioScanner); quedan 2 (razones de contraste sin medir, mando físico). Nuevas secciones 11 (combate, vida, QTE, persistencia), 12 (audio e infectados) y 13 (Built-in frente a URP).
+- `README.md`: versión 6000.6.7f1, Built-in, `git lfs pull`, carpeta de packs y lista de packs, controles reales (de `NexoControls.inputactions` y del código).
