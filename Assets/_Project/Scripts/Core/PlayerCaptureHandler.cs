@@ -57,7 +57,9 @@ namespace Nexo.Core
         private IEnumerator CaptureRoutine()
         {
             if (_playerMovement != null) _playerMovement.SetInputLocked(true, false);
-            GameEvents.RaiseNotification(new HudNotification("NEXOOS", "Señal vital interrumpida. Reiniciando protocolo del Piso 12...", false));
+            // El piso activo lo publica FloorMetadata al cargar (12, 6, 1...)
+            int floor = FloorMetadata.Active != null ? FloorMetadata.Active.FloorNumber : 12;
+            GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"Señal vital interrumpida. Reiniciando protocolo del Piso {floor}...", false));
 
             yield return new WaitForSeconds(_restartDelay);
 
