@@ -49,6 +49,7 @@ namespace Nexo.Player
         public Vector2 MoveInput { get; private set; }
         public bool IsMoving => _controller != null && _controller.isGrounded && MoveInput.sqrMagnitude > 0.01f;
         public bool IsCrouching => _isCrouching;
+        public bool IsInputLocked => _inputLocked || _isFrozen;
         public bool IsSprinting { get; private set; }
 
         /// <summary>
