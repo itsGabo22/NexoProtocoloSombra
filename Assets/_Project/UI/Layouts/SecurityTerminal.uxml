@@ -10,7 +10,7 @@
             <ui:VisualElement class='flex-row items-center justify-between'>
                 <ui:VisualElement class='flex-col'>
                     <ui:Label text='NEXOOS // SEGURIDAD' class='text-xs text-muted tracking-wide' />
-                    <ui:Label name='terminal-title' text='TERMINAL PISO 12' class='text-lg text-accent font-bold' />
+                    <ui:Label name='terminal-title' text='TERMINAL DE SEGURIDAD · PISO 12' class='text-lg text-accent font-bold' />
                 </ui:VisualElement>
                 <ui:Button name='terminal-close' text='[ESC] CERRAR' class='btn-quick' />
             </ui:VisualElement>

@@ -7,7 +7,7 @@ namespace Nexo.UI.Menus
     /// <summary>
     /// Opciones con dos pestañas (Q/E alternan; AUDIO y CONTROLES no existen todavía):
     /// ACCESIBILIDAD es funcional (AccessibilitySettings + AccessibilityPrefs, vista previa en vivo);
-    /// VIDEO solo cambia los valores mostrados. Esc vuelve a la pantalla de origen (menú o pausa).
+    /// VIDEO solo cambia los valores mostrados, salvo «Volumen general» (AudioPrefs). Esc vuelve a la pantalla de origen (menú o pausa).
     /// </summary>
     public sealed class OptionsController : IMenuScreen, IMenuNavigationHandler
     {
@@ -44,8 +44,12 @@ namespace Nexo.UI.Menus
             new Row("optv-row-shadows", RowKind.Toggle, null, 1),
             new Row("optv-row-antialiasing", RowKind.Choice, new[] { "Desactivado", "FXAA", "SMAA", "TAA" }, 3),
             new Row("optv-row-brightness", RowKind.Slider, null, 60),
-            new Row("optv-row-vsync", RowKind.Toggle, null, 0)
+            new Row("optv-row-vsync", RowKind.Toggle, null, 0),
+            new Row("optv-row-master-volume", RowKind.Slider, null, AudioPrefs.DefaultMasterVolume)
         };
+
+        // Fila de volumen general: la única de VIDEO que se aplica y persiste (AudioPrefs)
+        private const int MasterVolumeRow = 7;
 
         // Pestaña ACCESIBILIDAD: el orden coincide con las filas de Options_Accessibility.uxml
         private const int HighContrastRow = 0;
@@ -86,6 +90,7 @@ namespace Nexo.UI.Menus
             bool accessibility = screen == ScreenId.OptionsAccessibility;
             _rows = accessibility ? _accessibilityRows : _videoRows;
             if (accessibility) LoadAccessibilityValues();
+            else _videoRows[MasterVolumeRow].Value = AudioPrefs.MasterVolume;
 
             var elements = new VisualElement[_rows.Length];
             for (int i = 0; i < _rows.Length; i++)
@@ -175,6 +180,10 @@ namespace Nexo.UI.Menus
             if (_screen == ScreenId.OptionsAccessibility)
             {
                 SaveAccessibilityValues();
+            }
+            else if (row == _videoRows[MasterVolumeRow])
+            {
+                AudioPrefs.SetMasterVolume(row.Value);
             }
             // TODO apply: la pestaña VIDEO todavía no aplica resolución, modo de pantalla, calidad, sombras, AA, brillo ni VSync.
         }

@@ -93,7 +93,16 @@ Referencias: `Assets/_Project/Scripts/UI/Menus/MenuNavigator.cs`, `MenuFlowContr
 
 ### 4.1 HUD biométrico
 
-Cuatro paneles periféricos que dejan el centro libre: vitales (arriba izquierda), radio/videollamada de Elena (arriba derecha), ruido con espectrograma de 24 barras (abajo izquierda) y batería térmica (abajo derecha); en el centro mira, prompt `[E]`, notificaciones y subtítulos. Las animaciones usan `VisualElement.schedule.Execute(...).Every(...)` (espectrograma cada 80 ms, pulso del retrato cada 700 ms, typewriter cada 25 ms) en lugar de `Update()`.
+Cuatro zonas periféricas que dejan el centro libre: vitales (arriba izquierda), radio/videollamada de Elena (arriba derecha), ruido con espectrograma de 24 barras (abajo izquierda) y, abajo a la derecha, una columna con el arma encima de la batería térmica; en el centro mira, prompt `[E]`, notificaciones y subtítulos. Las animaciones usan `VisualElement.schedule.Execute(...).Every(...)` (espectrograma cada 80 ms, pulso del retrato cada 700 ms, typewriter cada 25 ms) en lugar de `Update()`.
+
+### 4.1.1 Pulido del HUD (2026-11-03)
+
+- **Panel de arma y munición.** El jugador tenía una M1911 pero el HUD no la mostraba: la única pista era un subtítulo al quedarse sin balas. El panel nuevo muestra «M1911», el contador grande `cargador / reserva` y una fila de celdas del cargador (lectura de un vistazo, como un juego de acción). Los estados se distinguen por **texto y color** (no solo color, WCAG 1.4.1): aviso con 2 balas o menos («MUNICIÓN BAJA»), peligro con el cargador vacío («RECARGAR [R]», que además enseña la tecla) o sin reserva («SIN MUNICIÓN») y «RECARGANDO…». Al recoger munición aparece «+N» con un pulso breve del borde. Los datos llegan por `GameEvents.OnAmmoChanged` y `OnWeaponReloadChanged` (bus de eventos, sin sondeo), y las decisiones viven en `AmmoDisplayState`, una clase pura con pruebas EditMode. Se coloca en una columna flex con la batería para que no se solape a ninguna escala.
+- **Se restauró la mentira de los vitales.** Al añadir vida por golpes, `PlayerHealth` pasó a escribir «VIDA x/y · GOLPES x/y» en la línea donde ponía «NO INFECTADO», y el HUD dejó de mentir. Todo el giro depende de que el jugador confíe en esa línea hasta que el BioScanner revela «98.4% INFECTADO»; por eso vuelve como línea propia (`hud-vitals-infection`) sin quitar la información de combate. Tras la corrupción del HUD, `HUDController` ignora nuevos vitales para que nada sobrescriba la verdad.
+- **Coherencia de idioma.** Todo lo que lee el jugador está en español: la emoción de Elena (CALMA, ALEGRE, ASUSTADA, URGENTE, TRISTE, SUSURRO, en vez del nombre del enum), los destinos de las órdenes («Ruta despejada hacia la puerta de las escaleras», nunca `F12_Door_Stairs`), la terminal («TERMINAL DE SEGURIDAD · PISO 12», puertas con nombre) y los diálogos de respaldo con sus tildes. Los ids técnicos solo existen en datos (`target_id`); una prueba impide que aparezcan en los diálogos.
+- **Feedback de daño.** Un golpe produce un destello rojo breve en los bordes (viñeta, el centro queda libre) y, con el último punto de vida, un pulso lento y suave. Con «reducir movimiento» no hay destello y la viñeta de salud baja queda fija: la información se mantiene sin animación (WCAG 2.3.3). El subtítulo «(Te golpean: x/4)» sigue existiendo como canal no visual.
+- **Ayuda de controles.** Una franja arriba al centro, una vez por sesión y durante 6 s, con las acciones que no son evidentes: «R recargar · clic der. apuntar · F visión térmica · V hablar con Elena · C agacharse» (teclas verificadas en `NexoControls.inputactions` y en el código). No se repite tras un reinicio de piso para no castigar al jugador que ya la vio (heurística de Nielsen 7: flexibilidad y eficiencia).
+- **Detalles.** La batería térmica indica ACTIVA/APAGADA; el retrato de Elena carga `Resources/Elena/portrait.png` si existe; la terminal amplía la única cámara al ancho disponible; Opciones › VIDEO incluye «Volumen general» (no hay AudioMixer con parámetros expuestos, así que se aplica con `AudioListener.volume` y se guarda en PlayerPrefs).
 
 ### 4.2 Elena: Gemini con fallback local
 
@@ -148,7 +157,7 @@ Referencias: `docs/ui/NEXOOS_DESIGN_SPEC.md` §4, `Assets/_Project/UI/Styles/*.u
 
 ## 7. Pruebas
 
-35 pruebas EditMode (NUnit, `Nexo.Tests.EditMode.asmdef`), todas en verde tras integrar `origin/develop`:
+108 pruebas EditMode (NUnit, `Nexo.Tests.EditMode.asmdef`), todas en verde en batchmode el 2026-11-03 (35 antes del pulido del HUD):
 
 | Archivo | Casos | Qué cubre |
 | --- | --- | --- |
@@ -156,7 +165,10 @@ Referencias: `docs/ui/NEXOOS_DESIGN_SPEC.md` §4, `Assets/_Project/UI/Styles/*.u
 | `FloorLabelsTests.cs` | 9 | Etiquetas de piso en pausa, reinicio y captura. |
 | `FloorProgressionOrderTests.cs` | 9 | Orden 12 → 6 → 1 y parseo del número de piso. |
 | `PlotTwistTimelineTests.cs` | 5 | Orden y tiempos de la línea del giro; rechazo de offsets negativos. |
-| `ElenaFallbackFilesTests.cs` | 3 | Que cada fallback de piso exista y cumpla el contrato. |
+| `ElenaFallbackFilesTests.cs` | 4 | Que cada fallback de piso exista, cumpla el contrato y no muestre ids técnicos. |
+| `AmmoDisplayStateTests.cs` | 27 | Estados, textos, celdas y «+N» del panel de arma. |
+| `HudLabelsTests.cs` | 24 | Emociones y puertas en español, título de la terminal, ayuda de controles una vez por sesión. |
+| `VitalsFeedbackTests.cs` | 21 | Lectura del porcentaje de vida, detección de daño, salud baja y volumen general. |
 
 Además, el 2026-11-03 se recorrió el juego completo en Play (ver `docs/handoffs/2026-11-03_final-integration.md`): menú → JUGAR → Piso 12 (combate, salida) → Piso 6 (Elena abre `F06_Door_Stairs` con la pregunta [2]) → Piso 1 → BioScanner → giro → créditos → menú → JUGAR desde cero, con persistencia de vida y munición entre pisos y REINICIAR en cada piso.
 
