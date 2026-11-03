@@ -37,6 +37,14 @@ namespace Nexo.Player
         [SerializeField] private LayerMask _hitMask = (1 << 0) | (1 << 9) | (1 << 11); // Default | Infected | Environment
         [SerializeField, Range(0f, 100f)] private float _shotNoise = 100f;
 
+        [Header("Apuntar (clic derecho)")]
+        [SerializeField] private Vector3 _aimLocalPosition = new Vector3(0f, -0.1f, 0.16f);
+        [SerializeField] private float _aimFov = 42f;
+        [SerializeField] private float _aimTransitionTime = 0.15f;
+        [Tooltip("Dispersión en grados al disparar desde la cadera / apuntando.")]
+        [SerializeField] private float _hipSpread = 3.5f;
+        [SerializeField] private float _aimSpread = 0.3f;
+
         [Header("Feedback")]
         [SerializeField] private AudioClip _shotClip;
         [SerializeField] private AudioClip _emptyClip;
@@ -46,6 +54,12 @@ namespace Nexo.Player
 
         private InputAction _fireAction;
         private InputAction _reloadAction;
+        private InputAction _aimAction;
+        private Camera _camera;
+        private float _baseFov = 60f;
+        private float _aimBlend;
+        private bool _isAiming;
+        private Coroutine _aimRoutine;
         private int _magazine;
         private int _reserve;
         private float _nextFireTime;
@@ -71,6 +85,9 @@ namespace Nexo.Player
             _reloadAction = new InputAction("Reload", InputActionType.Button);
             _reloadAction.AddBinding("<Keyboard>/r");
             _reloadAction.AddBinding("<Gamepad>/buttonWest");
+            _aimAction = new InputAction("Aim", InputActionType.Button);
+            _aimAction.AddBinding("<Mouse>/rightButton");
+            _aimAction.AddBinding("<Gamepad>/leftTrigger");
 
             if (_cameraTransform == null)
             {
@@ -78,6 +95,8 @@ namespace Nexo.Player
                 if (cam != null) _cameraTransform = cam.transform;
             }
             if (_playerMovement == null) _playerMovement = GetComponent<PlayerMovement>();
+            if (_cameraTransform != null) _camera = _cameraTransform.GetComponent<Camera>();
+            if (_camera != null) _baseFov = _camera.fieldOfView;
             if (_muzzleLight != null) _muzzleLight.enabled = false;
         }
 
@@ -102,6 +121,9 @@ namespace Nexo.Player
         {
             _fireAction.performed += HandleFire;
             _reloadAction.performed += HandleReload;
+            _aimAction.started += HandleAimStarted;
+            _aimAction.canceled += HandleAimReleased;
+            _aimAction.Enable();
             _fireAction.Enable();
             _reloadAction.Enable();
 
@@ -114,6 +136,10 @@ namespace Nexo.Player
         {
             _fireAction.performed -= HandleFire;
             _reloadAction.performed -= HandleReload;
+            _aimAction.started -= HandleAimStarted;
+            _aimAction.canceled -= HandleAimReleased;
+            _aimAction.Disable();
+            SetAimImmediate(false);
             _fireAction.Disable();
             _reloadAction.Disable();
 
@@ -127,9 +153,14 @@ namespace Nexo.Player
         {
             _fireAction?.Dispose();
             _reloadAction?.Dispose();
+            _aimAction?.Dispose();
         }
 
-        private void HandlePlayerCaught() => _isCaptured = true;
+        private void HandlePlayerCaught()
+        {
+            _isCaptured = true;
+            SetAimImmediate(false);
+        }
 
         private void HandleFloorChanged(int floor) => _isCaptured = false;
 
@@ -163,7 +194,7 @@ namespace Nexo.Player
             _recoilRoutine = StartCoroutine(RecoilRoutine());
 
             if (_cameraTransform != null &&
-                Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out RaycastHit hit, _range, _hitMask, QueryTriggerInteraction.Ignore))
+                Physics.Raycast(_cameraTransform.position, ShotDirection(), out RaycastHit hit, _range, _hitMask, QueryTriggerInteraction.Ignore))
             {
                 SmartInfectedBrain brain = hit.collider.GetComponentInParent<SmartInfectedBrain>();
                 if (brain != null) brain.ApplyHit(transform.position);
@@ -197,13 +228,66 @@ namespace Nexo.Player
             for (float t = 0f; t < duration; t += Time.deltaTime)
             {
                 float k = 1f - t / duration;
-                _viewmodel.localPosition = _viewmodelRestPos + new Vector3(0f, 0.01f, -0.06f) * k;
+                _viewmodel.localPosition = BasePosition + new Vector3(0f, 0.01f, -0.06f) * k;
                 _viewmodel.localRotation = _viewmodelRestRot * Quaternion.Euler(-14f * k, 0f, 0f);
                 yield return null;
             }
-            _viewmodel.localPosition = _viewmodelRestPos;
+            _viewmodel.localPosition = BasePosition;
             _viewmodel.localRotation = _viewmodelRestRot;
             _recoilRoutine = null;
+        }
+
+        // ---------- Apuntar ----------
+
+        /// <summary>Posición base del viewmodel según cuánto se está apuntando (0 = cadera, 1 = mira).</summary>
+        private Vector3 BasePosition => Vector3.Lerp(_viewmodelRestPos, _aimLocalPosition, _aimBlend);
+
+        private Vector3 ShotDirection()
+        {
+            float spread = Mathf.Lerp(_hipSpread, _aimSpread, _aimBlend);
+            Vector2 offset = Random.insideUnitCircle * spread;
+            return Quaternion.AngleAxis(offset.x, _cameraTransform.up) * Quaternion.AngleAxis(offset.y, _cameraTransform.right) * _cameraTransform.forward;
+        }
+
+        private void HandleAimStarted(InputAction.CallbackContext context)
+        {
+            if (!CanAct()) return;
+            SetAiming(true);
+        }
+
+        private void HandleAimReleased(InputAction.CallbackContext context) => SetAiming(false);
+
+        private void SetAiming(bool aiming)
+        {
+            if (_isAiming == aiming) return;
+            _isAiming = aiming;
+            if (_aimRoutine != null) StopCoroutine(_aimRoutine);
+            _aimRoutine = StartCoroutine(AimRoutine(aiming ? 1f : 0f));
+        }
+
+        private void SetAimImmediate(bool aiming)
+        {
+            if (_aimRoutine != null) { StopCoroutine(_aimRoutine); _aimRoutine = null; }
+            _isAiming = aiming;
+            ApplyAim(aiming ? 1f : 0f);
+        }
+
+        private IEnumerator AimRoutine(float target)
+        {
+            float speed = 1f / Mathf.Max(0.01f, _aimTransitionTime);
+            while (!Mathf.Approximately(_aimBlend, target))
+            {
+                ApplyAim(Mathf.MoveTowards(_aimBlend, target, speed * Time.deltaTime));
+                yield return null;
+            }
+            _aimRoutine = null;
+        }
+
+        private void ApplyAim(float blend)
+        {
+            _aimBlend = blend;
+            if (_camera != null) _camera.fieldOfView = Mathf.Lerp(_baseFov, _aimFov, blend);
+            if (_viewmodel != null && _recoilRoutine == null) _viewmodel.localPosition = BasePosition;
         }
 
         // ---------- Recarga y munición ----------
@@ -222,6 +306,7 @@ namespace Nexo.Player
         private IEnumerator ReloadRoutine()
         {
             _isReloading = true;
+            SetAiming(false);
             PlayClip(_reloadClip, 0.9f);
             if (_viewmodel != null) _viewmodel.localRotation = _viewmodelRestRot * Quaternion.Euler(25f, -20f, 0f);
 
