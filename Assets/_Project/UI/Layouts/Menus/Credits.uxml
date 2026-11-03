@@ -11,6 +11,8 @@
 
     <!-- Pantalla 10: Créditos, tema hive (spec §6.10). Sin elementos enfocables: Esc vuelve al menú. -->
     <ui:VisualElement name="cr-root" class="theme-hive nx-screen">
+        <!-- Velo del tema: el vestíbulo rojo sigue visible detrás, pero el texto se lee y el arma no compite con él -->
+        <ui:VisualElement name="cr-scrim" picking-mode="Ignore" class="nx-scrim" />
         <ui:Label name="cr-mode" text="MODO DEPURACIÓN ROOT" class="cr-mode label text-accent" />
         <ui:Label name="cr-title" text="CRÉDITOS" class="cr-title title text-main" />
 
