@@ -76,4 +76,5 @@
 /* ---------- 10. Créditos ---------- */
 .cr-mode { position: absolute; left: 160px; top: 112px; }
 .cr-title { position: absolute; left: 160px; top: 152px; }
-.cr-block { position: absolute; left: 160px; top: 288px; width: 1000px; }
+.cr-block { position: absolute; left: 160px; top: 288px; width: 1240px; flex-direction: row; align-items: flex-start; }
+.cr-col { width: 580px; margin-right: 80px; flex-shrink: 0; }
