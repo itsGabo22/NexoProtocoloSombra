@@ -47,6 +47,15 @@
 - **Para Gabriel:** `DoorDisplayNames` llama a `F06_Door_Lab` «Puerta del laboratorio», pero en el Piso 6 nuevo esa puerta es la de **Contención** (la voz falsa dice «estoy en Contención, ábreme»). Sugerencia: «Puerta de Contención» / «la sala de contención». No se tocó porque es archivo de UI.
 - **Notificación duplicada de munición** (`PlayerWeapon.AnnounceAmmo`): no se quitó porque `PlayerWeapon.cs` estaba protegido en este encargo. Es una línea; decidid quién la quita.
 
+## Tercera tanda (2026-11-03, noche)
+
+- **Arma invisible y linterna:** el pivote del arma, la inercia y el balanceo la sacaban por debajo del campo de visión (70°). Valores corregidos en `FirstPersonFeel` y `PF_Player`; la linterna baja de intensidad 2.8/13 m a 1.5/10 m. Comprobado en Play: el arma ocupa del 13 % al 48 % de la altura de pantalla.
+- **Piso 6 — reptantes** (`InfectedBehavior.Crawler`): modelo boca abajo sobre el agente (pose procedural; no hay animación de arrastre en los packs), lentos, colisión baja, vista 8 m / 120°, agarran del tobillo e inician el forcejeo. Dos: junto a los tubos del Lab A y en la penumbra del pasillo (a 15 m del spawn).
+- **Piso 6 — escondites** (`HidingSpot` + `PlayerHiding`): 3 armarios huecos (pasillo, Lab A, Lab B). [E] entra y sale; dentro no se ve al jugador salvo si un infectado le vio entrar, que lo saca a la fuerza.
+- **Piso 6 — puzle de energía** (`PowerBreaker`): tras el apagón el interruptor del Lab B queda «sin corriente»; el diferencial del pasillo la restablece en 3 s con ruido 70 repetido (atrae infectados).
+- **Red de cámaras — enlace diferido vivo:** los pisos no cargados se ven en reproducción: paneo lento, barra de interferencia, silueta que cruza el encuadre y reloj que avanza.
+- **Piso 1 — ambientación sin tocar el giro** (`Nexo/Floor01/Construir ambientación del vestíbulo`): raíz propia `F01_Ambience` con `PlotTwistSafeZone` (se apaga entera al empezar el giro). Tormenta con relámpago que entra por la cristalera, emergencias en ascensores, tono de sala, 2 sustos, 3 notas que no revelan el giro, terminal de seguridad en recepción y un reptante junto a los ascensores con NavMesh propio. Verificado: 0 objetos y 0 valores originales perdidos en `Floor01_Lobby.unity`; BioScanner, PlotTwistManager y sus luces intactos.
+
 ## No verificado / intervención manual
 
 - **Recorrido completo a mano** (12 → 6 → 1 → créditos → menú → JUGAR) tras estos cambios: pendiente de jugarlo una persona.

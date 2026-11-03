@@ -35,6 +35,7 @@ Reconciliado el 2026-11-03 contra los packs presentes en la máquina de Gabriel.
 | `Audio/Ambience/SFX_F06_Breathing_Loop.wav`, `SFX_F06_ElectricHum_Loop.wav`, `SFX_F06_AlarmDistant_Loop.wav`, `SFX_F06_LabRoomTone_Loop.wav` | Síntesis propia con `NexoProceduralAudioGenerator.cs` | Propio |
 | `UI/Textures/CameraArchive/CAM_*.png` | Capturas de las escenas propias del proyecto generadas con `Scripts/Editor/NexoCameraArchiveCapture.cs` | Propio |
 | `Materials/Floor06/MAT_F06_*.mat` | Materiales Standard creados por `NexoFloor06Builder.cs` | Propio |
+| `Materials/Floor01/MAT_F01_*.mat` | Materiales Standard creados por `NexoFloor01AmbienceBuilder.cs` | Propio |
 | `Data/ElenaConfig.asset` → `gemini-2.5-flash` | Diálogos de Elena generados en tiempo real por Gemini 2.5 Flash (Google); sin conexión se usan los JSON de fallback escritos por el equipo | Términos de la API de Gemini |
 
 ## Protocolo para actualizar packs
