@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nexo.Core;
+using Nexo.Player;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
@@ -70,8 +71,24 @@ namespace Nexo.AI.Infected
             "La salida está por los cubículos, rápido."
         };
 
+        [Header("Daño (M1911)")]
+        [SerializeField] private int _maxHealth = 3;
+        [SerializeField] private float _stunDuration = 1.2f;
+        [SerializeField] private float _downedDuration = 20f;
+        [Tooltip("Pieza visual que se tumba al caer (por defecto el hijo 'Body').")]
+        [SerializeField] private Transform _visualRoot;
+
+        [Header("Sigilo del jugador")]
+        [Tooltip("Multiplicador del alcance de vista cuando el jugador está agachado.")]
+        [SerializeField, Range(0.2f, 1f)] private float _crouchSightFactor = 0.55f;
+
         private NavMeshAgent _agent;
         private Transform _player;
+        private PlayerMovement _playerMovement;
+        private int _health;
+        private float _incapacitatedUntil;
+        private bool _isDowned;
+        private Coroutine _downedRoutine;
         private IInfectedState _currentState;
         private Coroutine _tickRoutine;
         private Coroutine _lookAroundRoutine;
@@ -121,6 +138,8 @@ namespace Nexo.AI.Infected
             if (_animator == null) _animator = GetComponentInChildren<Animator>();
             if (_animator != null) _animator.applyRootMotion = false;
             if (_eyes == null) _eyes = transform;
+            if (_visualRoot == null) _visualRoot = transform.Find("Body");
+            _health = _maxHealth;
 
             _tickWait = new WaitForSeconds(_tickInterval);
 
@@ -182,6 +201,7 @@ namespace Nexo.AI.Infected
         public void Initialize(Transform player, Transform[] patrolPoints)
         {
             _player = player;
+            _playerMovement = player != null ? player.GetComponent<PlayerMovement>() : null;
             if (patrolPoints != null && patrolPoints.Length > 0)
             {
                 _patrolPoints = patrolPoints;
@@ -202,6 +222,14 @@ namespace Nexo.AI.Infected
 
             while (true)
             {
+                // Aturdido por un disparo o tumbado: no percibe ni decide
+                if (Time.time < _incapacitatedUntil)
+                {
+                    UpdateAnimatorSpeed();
+                    yield return _tickWait;
+                    continue;
+                }
+
                 _canSeePlayer = EvaluateSight();
                 if (_canSeePlayer) LastKnownPlayerPos = _player.position;
 
@@ -211,6 +239,53 @@ namespace Nexo.AI.Infected
 
                 yield return _tickWait;
             }
+        }
+
+        // ---------- Daño ----------
+
+        public bool IsDowned => _isDowned;
+
+        /// <summary>
+        /// Impacto de bala: aturde unos instantes y luego persigue con rabia hacia el origen del disparo.
+        /// Al agotar la salud cae al suelo durante _downedDuration y se levanta de nuevo (no muere).
+        /// </summary>
+        public void ApplyHit(Vector3 shotOrigin)
+        {
+            if (_isDowned) return;
+
+            LastKnownPlayerPos = shotOrigin;
+            _health--;
+            StopMoving();
+            StopLookAround();
+
+            if (_health <= 0)
+            {
+                _downedRoutine = StartCoroutine(DownedRoutine());
+                return;
+            }
+
+            _incapacitatedUntil = Time.time + _stunDuration;
+            ChangeState(Chase);
+        }
+
+        private IEnumerator DownedRoutine()
+        {
+            _isDowned = true;
+            _incapacitatedUntil = float.PositiveInfinity;
+            StopMoving();
+            SetAlerted(false);
+            UpdateProximity(false);
+            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-85f, 0f, 0f);
+
+            yield return new WaitForSeconds(_downedDuration);
+
+            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.identity;
+            _health = _maxHealth;
+            _isDowned = false;
+            _incapacitatedUntil = 0f;
+            _downedRoutine = null;
+            TriggerScream();
+            ChangeState(Investigate);
         }
 
         public void ChangeState(IInfectedState next)
@@ -228,12 +303,17 @@ namespace Nexo.AI.Infected
         {
             if (_player == null) return false;
 
+            // Agachado: silueta más baja y más difícil de distinguir a distancia
+            bool crouching = _playerMovement != null && _playerMovement.IsCrouching;
+            float sightDistance = crouching ? _sightDistance * _crouchSightFactor : _sightDistance;
+            float targetHeight = crouching ? _playerTargetHeight * 0.6f : _playerTargetHeight;
+
             Vector3 origin = _eyes.position;
-            Vector3 target = _player.position + Vector3.up * _playerTargetHeight;
+            Vector3 target = _player.position + Vector3.up * targetHeight;
             Vector3 toPlayer = target - origin;
             float distance = toPlayer.magnitude;
 
-            if (distance > _sightDistance) return false;
+            if (distance > sightDistance) return false;
             if (Vector3.Angle(transform.forward, toPlayer) > _sightAngle * 0.5f) return false;
 
             // La máscara excluye la capa Player: si no hay obstáculo en medio, hay línea de visión
