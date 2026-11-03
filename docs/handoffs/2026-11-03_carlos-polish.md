@@ -38,6 +38,15 @@
 - Play en Piso 6 (llegando con `FloorProgression.LoadNext`): carga, Momento 0 y objetivo correctos, 5 infectados sobre el NavMesh reaccionando a ruidos y persiguiendo; sin errores en la Console.
 - NavMesh del Piso 6: todas las salas alcanzables desde el spawn; Contención solo con la puerta abierta; almacén sellado inalcanzable (a propósito).
 
+## Segunda sesión (2026-11-03, tarde)
+
+- **Verificación:** batchmode con el Editor cerrado, 151/151 tests EditMode (146 previos + 5 de la red de cámaras), sin errores de compilación.
+- **Regresión local revertida:** a las 11:01:26, con el Editor cerrándose tras el build lanzado por MCP, `ElenaConfig.asset`, `PF_Player.prefab` y `Systems_Persistent.unity` quedaron sobrescritos con versiones antiguas (commits `4657d1b` y `cccde31`; sin `StruggleUI` ni `CameraNetworkUI`, y con un solo fallback de Elena). No era un cambio de nadie: se restauraron con `git restore` (copia en el scratchpad de la sesión). El build `Builds/NexoProtocoloSombra_Windows_Polish` es de las 10:53 y no está afectado.
+- **`develop` integrado** (merge `303140e`, sin conflictos): trae `feature/hud-polish` y el PR #8 (higiene de textos del HUD).
+- **Ids crudos en notificaciones (pedido en `2026-11-03_hud-polish.md` §5):** `DoorController` y `SecurityTerminal` usan ahora `DoorDisplayNames.Label/Destination`.
+- **Para Gabriel:** `DoorDisplayNames` llama a `F06_Door_Lab` «Puerta del laboratorio», pero en el Piso 6 nuevo esa puerta es la de **Contención** (la voz falsa dice «estoy en Contención, ábreme»). Sugerencia: «Puerta de Contención» / «la sala de contención». No se tocó porque es archivo de UI.
+- **Notificación duplicada de munición** (`PlayerWeapon.AnnounceAmmo`): no se quitó porque `PlayerWeapon.cs` estaba protegido en este encargo. Es una línea; decidid quién la quita.
+
 ## No verificado / intervención manual
 
 - **Recorrido completo a mano** (12 → 6 → 1 → créditos → menú → JUGAR) tras estos cambios: pendiente de jugarlo una persona.
