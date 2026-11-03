@@ -12,7 +12,7 @@
 - `main` local = `origin/main` = 64b05cf. `origin/develop` = 62de04d (un merge más que `main`: PR #6, `MAT_F12_ExitButton.mat`, nada de UI).
 - Rama creada: `feature/hud-polish` desde `origin/develop`. Árbol limpio (solo `ThirdPartyAssets.zip`, excluido en `.git/info/exclude`).
 - Unity Editor **abierto** con el proyecto y **unity-mcp no conectado** (el paquete `com.unity.ai.assistant` se retiró del manifest local en la sincronización anterior). Batchmode exige cerrar el Editor.
-- Unity: `C:\Program Files\Unity\Hub\Editor\6000.6.7f1\Editor\Unity.exe`. `gh` disponible.
+- Unity: `C:\Program Files\Unity\Hub\Editor\6000.6.7f1\Editor\Unity.exe`. `gh` **no** está instalado: el PR se abre a mano desde la URL de comparación.
 - Línea base documentada en `docs/DESIGN_RATIONALE.md` §7: 35 pruebas EditMode en verde.
 
 ### HUD (`UI/Layouts/HUD_Biometric.uxml` + `Scripts/UI/HUDController.cs`)
@@ -80,6 +80,8 @@
 
 - Batchmode (Editor cerrado): línea base **35/35**; tras los cambios **108/108** EditMode. Sin errores ni warnings de compilación, sin avisos de importación de USS/UXML.
 - No se pudo hacer Play ni capturas: unity-mcp no está conectado (el paquete `com.unity.ai.assistant` no está en el manifest local).
+
+- PR: abrir a mano en https://github.com/itsGabo22/NexoProtocoloSombra/compare/develop...feature/hud-polish?expand=1 (título y cuerpo en el informe del agente). No mergear sin la checklist.
 
 ## 4. Checklist manual para Gabriel (Play desde `Systems_Persistent`, 1920×1080 y 1280×720)
 
