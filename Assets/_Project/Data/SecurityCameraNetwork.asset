@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31fbf9c745214af40bf0c1e9e855a1cb, type: 3}
+  m_Name: SecurityCameraNetwork
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.SecurityCameraNetwork
+  _floors: 0c0000000600000001000000i
+  _floorScenePaths:
+  - Assets/_Project/Scenes/Floors/Floor12_Offices.unity
+  - Assets/_Project/Scenes/Floors/Floor06_Labs.unity
+  - Assets/_Project/Scenes/Floors/Floor01_Lobby.unity
+  _feeds:
+  - Id: F12-01
+    Label: "CUB\xCDCULOS"
+    Floor: 12
+    RoomId: F12_Cubicles
+    SceneCameraName: Cam_F12_01
+    Position: {x: -8, y: 28.6, z: 3.8}
+    EulerAngles: {x: 26.165295, y: 134.02898, z: 0}
+    FieldOfView: 80
+    ArchiveFrame: {fileID: 2800000, guid: 697d99a381539c844b5e6643f04bf111, type: 3}
+    ArchiveTimestamp: 02:23:32
+  - Id: F12-02
+    Label: SALA DE SERVIDORES
+    Floor: 12
+    RoomId: 
+    SceneCameraName: 
+    Position: {x: -4, y: 27, z: -17}
+    EulerAngles: {x: 12.407424, y: 126.86989, z: -0.0000004370954}
+    FieldOfView: 70
+    ArchiveFrame: {fileID: 2800000, guid: 6c61a4f05077e274ea278cd887285069, type: 3}
+    ArchiveTimestamp: 01:30:23
+  - Id: F12-03
+    Label: SALIDA DE EMERGENCIA
+    Floor: 12
+    RoomId: 
+    SceneCameraName: 
+    Position: {x: -6, y: 27, z: -11}
+    EulerAngles: {x: 17.744669, y: 233.13011, z: 0.0000008964217}
+    FieldOfView: 70
+    ArchiveFrame: {fileID: 2800000, guid: 454bd6df4013ff8448151acd6dedd1ea, type: 3}
+    ArchiveTimestamp: 01:28:41
+  - Id: F06-01
+    Label: PASILLO DE CUARENTENA
+    Floor: 6
+    RoomId: F06_Corridor
+    SceneCameraName: 
+    Position: {x: -15.4, y: 3, z: -1.5}
+    EulerAngles: {x: 6.634578, y: 84.66077, z: 0}
+    FieldOfView: 70
+    ArchiveFrame: {fileID: 2800000, guid: d6e40d1ba341d444ca030e6df21881c0, type: 3}
+    ArchiveTimestamp: 03:10:15
+  - Id: F06-02
+    Label: LABORATORIO A
+    Floor: 6
+    RoomId: F06_LabA
+    SceneCameraName: 
+    Position: {x: -0.6, y: 3, z: 9.4}
+    EulerAngles: {x: 10.772377, y: 244.65382, z: 0}
+    FieldOfView: 75
+    ArchiveFrame: {fileID: 2800000, guid: 3de15a11b724eeb4f89d7f286618a89c, type: 3}
+    ArchiveTimestamp: 02:51:21
+  - Id: F06-03
+    Label: LABORATORIO B
+    Floor: 6
+    RoomId: F06_LabB
+    SceneCameraName: 
+    Position: {x: 0.6, y: 3, z: 9.4}
+    EulerAngles: {x: 11.265435, y: 108.88609, z: 0.00000043527336}
+    FieldOfView: 75
+    ArchiveFrame: {fileID: 2800000, guid: c28997badf8c1104488eb0fad4e08ef1, type: 3}
+    ArchiveTimestamp: 01:07:26
+  - Id: F06-04
+    Label: "CONTENCI\xD3N"
+    Floor: 6
+    RoomId: F06_Containment
+    SceneCameraName: 
+    Position: {x: -0.6, y: 3, z: -9.4}
+    EulerAngles: {x: 10.77238, y: 295.34616, z: -0.00000086908915}
+    FieldOfView: 75
+    ArchiveFrame: {fileID: 2800000, guid: 2270125f5788e1e40955c37dd4ad7cc2, type: 3}
+    ArchiveTimestamp: 01:17:08
+  - Id: F06-05
+    Label: "ALMAC\xC9N SELLADO"
+    Floor: 6
+    RoomId: 
+    SceneCameraName: 
+    Position: {x: 15.4, y: 3, z: -9.4}
+    EulerAngles: {x: 10.825666, y: 299.31, z: -0.00000043462168}
+    FieldOfView: 75
+    ArchiveFrame: {fileID: 2800000, guid: f96f678a9d13e6a43bd826d0f406edba, type: 3}
+    ArchiveTimestamp: 03:25:49
+  - Id: F01-01
+    Label: "VEST\xCDBULO"
+    Floor: 1
+    RoomId: 
+    SceneCameraName: 
+    Position: {x: 17, y: 5.5, z: -13}
+    EulerAngles: {x: 11.8746605, y: 307.40536, z: -0.00000043622194}
+    FieldOfView: 75
+    ArchiveFrame: {fileID: 2800000, guid: 0cb4baac228e0164bbc3f614070e2681, type: 3}
+    ArchiveTimestamp: 03:09:06
+  - Id: F01-02
+    Label: "PLAZA DEL BIOSC\xC1NER"
+    Floor: 1
+    RoomId: 
+    SceneCameraName: 
+    Position: {x: -7, y: 5, z: 13.5}
+    EulerAngles: {x: 22.9721, y: 128.6598, z: -0.0000009273143}
+    FieldOfView: 65
+    ArchiveFrame: {fileID: 2800000, guid: 7d8986678fe850a48a8a41f0c6f29f8e, type: 3}
+    ArchiveTimestamp: 03:35:57
