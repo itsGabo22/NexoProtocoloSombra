@@ -11,7 +11,12 @@ namespace Nexo.AI.Infected
 {
     /// <summary>
     /// Cerebro del infectado inteligente: sensores de vista/oído, parámetros del Animator (AC_SmartInfected)
-    /// y FSM de 5 estados evaluada por corrutina cada 0.15s (sin Update).
+    /// y FSM evaluada por corrutina cada 0.15 s (sin Update).
+    /// Estados de sigilo: Patrol → Suspicious → Investigate → Search → Chase → Attack → Return,
+    /// más Sabotage (luces) y Mimicry (voz falsa de Elena).
+    /// La vista puede ser instantánea (Piso 12, comportamiento original) o gradual (_gradedDetection: el infectado
+    /// necesita ver al jugador un tiempo que depende de la distancia, la postura y la linterna).
+    /// Nunca consulta la posición real del jugador salvo cuando lo ve con línea de visión.
     /// </summary>
     [RequireComponent(typeof(NavMeshAgent))]
     [DisallowMultipleComponent]
@@ -23,12 +28,27 @@ namespace Nexo.AI.Infected
         private static readonly int SabotageTriggerHash = Animator.StringToHash("SabotageTrigger");
         private static readonly int ScreamTriggerHash = Animator.StringToHash("ScreamTrigger");
 
+        private const float FarTickInterval = 0.45f;
+        private const float FarTickDistance = 40f;
+        private const float InstantSightDistance = 3f;
+
         [Header("Referencias")]
         [SerializeField] private Animator _animator;
         [SerializeField] private AudioSource _voiceSource;
         [Tooltip("Hijo a la altura de los ojos (Y = 1.6m).")]
         [SerializeField] private Transform _eyes;
         [SerializeField] private Transform[] _patrolPoints;
+        [Tooltip("Reacciones procedurales a impactos y caídas (opcional).")]
+        [SerializeField] private InfectedHitReactions _reactions;
+        [Tooltip("Memoria del infectado que aprende (opcional: solo en los infectados especiales).")]
+        [SerializeField] private InfectedLearningMemory _memory;
+
+        [Header("Comportamiento")]
+        [SerializeField] private InfectedBehavior _behavior = InfectedBehavior.Patroller;
+        [Tooltip("Pausa al llegar a cada punto de patrulla (segundos, mínimo y máximo).")]
+        [SerializeField] private Vector2 _patrolPause = new Vector2(1.2f, 3.5f);
+        [Tooltip("Radio en el que deambula el perfil Wanderer alrededor de su posición inicial.")]
+        [SerializeField] private float _wanderRadius = 6f;
 
         [Header("Evaluación de la FSM")]
         [SerializeField] private float _tickInterval = 0.15f;
@@ -46,10 +66,16 @@ namespace Nexo.AI.Infected
         [Tooltip("Default | Environment. NUNCA incluir la capa Player.")]
         [SerializeField] private LayerMask _obstacleMask = (1 << 0) | (1 << 11); // Default (0) | Environment (11)
         [SerializeField] private float _playerTargetHeight = 1.2f;
+        [Tooltip("Detección gradual: debe ver al jugador un tiempo antes de reconocerlo (sigilo del Piso 6).")]
+        [SerializeField] private bool _gradedDetection = false;
+        [Tooltip("Segundos de visión continua a media distancia para reconocer al jugador (detección gradual).")]
+        [SerializeField] private float _detectionTime = 1.4f;
 
         [Header("Oído")]
         [Tooltip("Rango a intensidad 100. El rango real es intensity / 100 * este valor.")]
         [SerializeField] private float _maxHearingRange = 25f;
+        [Tooltip("Factor del alcance cuando hay una pared entre el ruido y el infectado.")]
+        [SerializeField, Range(0.2f, 1f)] private float _occludedHearingFactor = 0.55f;
 
         [Header("Proximidad (contexto de Elena / radar)")]
         [Tooltip("Distancia al jugador a la que este infectado cuenta en infected_nearby.")]
@@ -64,6 +90,8 @@ namespace Nexo.AI.Infected
         [SerializeField] private bool _mimicryEnabled = true;
         [SerializeField] private float _mimicryCooldown = 45f;
         [SerializeField] private AudioClip[] _mimicClips;
+        [Tooltip("Tono de la voz imitada (< 1 = más grave). El eco lo aporta el AudioEchoFilter de la fuente.")]
+        [SerializeField, Range(0.6f, 1.2f)] private float _mimicPitch = 0.88f;
         [SerializeField] private string[] _mimicMessages =
         {
             "Alex, ven al pasillo norte. Aquí estoy a salvo.",
@@ -73,7 +101,17 @@ namespace Nexo.AI.Infected
 
         [Header("Daño (M1911)")]
         [SerializeField] private int _maxHealth = 3;
-        [SerializeField] private float _stunDuration = 1.2f;
+        [Tooltip("Daño por disparo según la zona: torso / cabeza / piernas.")]
+        [SerializeField] private int _torsoDamage = 1;
+        [SerializeField] private int _headDamage = 3;
+        [SerializeField] private int _legDamage = 1;
+        [Tooltip("Aturdimiento por zona: torso / cabeza / piernas (segundos).")]
+        [SerializeField] private float _stunDuration = 0.6f;
+        [SerializeField] private float _headStunDuration = 1.3f;
+        [SerializeField] private float _legStunDuration = 0.9f;
+        [Tooltip("Un disparo en la pierna lo hace cojear: multiplica su velocidad durante unos segundos.")]
+        [SerializeField, Range(0.3f, 1f)] private float _limpSpeedFactor = 0.6f;
+        [SerializeField] private float _limpDuration = 5f;
         [SerializeField] private float _downedDuration = 20f;
         [Tooltip("Pieza visual que se tumba al caer (por defecto el hijo 'Body').")]
         [SerializeField] private Transform _visualRoot;
@@ -85,13 +123,19 @@ namespace Nexo.AI.Infected
         [SerializeField, Range(0.2f, 1f)] private float _crouchSightFactor = 0.55f;
 
         private NavMeshAgent _agent;
+        private InfectedNavigationGuard _navigation;
         private Transform _player;
+        private Transform _aimCamera;
         private PlayerMovement _playerMovement;
+        private FlashlightSystem _playerFlashlight;
         private int _health;
         private float _incapacitatedUntil;
+        private float _limpUntil;
         private bool _isDowned;
         private Coroutine _downedRoutine;
         private bool _isDead;
+        private Vector3 _homePosition;
+        private Quaternion _homeRotation;
 
         /// <summary>Se emite cuando un infectado muere definitivamente (LevelExitGate cuenta las bajas).</summary>
         public static event Action<SmartInfectedBrain> Died;
@@ -99,9 +143,13 @@ namespace Nexo.AI.Infected
         private Coroutine _tickRoutine;
         private Coroutine _lookAroundRoutine;
         private WaitForSeconds _tickWait;
+        private WaitForSeconds _farTickWait;
+        private float _lastTickTime;
 
         private bool _heardNoise;
         private bool _canSeePlayer;
+        private bool _hadSight;
+        private float _awareness;
         private float _lastAttackTime = float.NegativeInfinity;
         private float _lastSabotageTime;
         private float _lastMimicryTime;
@@ -114,26 +162,48 @@ namespace Nexo.AI.Infected
         public event Action<SmartInfectedBrain> PlayerAttacked;
 
         public PatrolState Patrol { get; private set; }
+        public SuspiciousState Suspicious { get; private set; }
         public InvestigateNoiseState Investigate { get; private set; }
+        public SearchState Search { get; private set; }
+        public ChaseState Chase { get; private set; }
+        public AttackState Attack { get; private set; }
+        public ReturnState Return { get; private set; }
         public SabotageLightState Sabotage { get; private set; }
         public MimicryAmbushState Mimicry { get; private set; }
-        public ChaseState Chase { get; private set; }
 
         public NavMeshAgent Agent => _agent;
         public Transform Player => _player;
         public Transform[] PatrolPoints => _patrolPoints;
+        public InfectedBehavior Behavior => _behavior;
+        public InfectedLearningMemory Memory => _memory;
+        public Vector2 PatrolPause => _patrolPause;
+        public float WanderRadius => _wanderRadius;
+        public Vector3 HomePosition => _homePosition;
+        public Quaternion HomeRotation => _homeRotation;
         public float WalkSpeed => _walkSpeed;
         public float RunSpeed => _runSpeed;
         public float AttackRange => _attackRange;
         public float SabotageRadius => _sabotageRadius;
         public float TickInterval => _tickInterval;
         public LayerMask ObstacleMask => _obstacleMask;
+        public IInfectedState CurrentState => _currentState;
 
         public Vector3 LastNoisePos { get; private set; }
+        /// <summary>El último ruido fue fuerte o cercano: merece investigarse directamente (no solo mirar).</summary>
+        public bool LastNoiseAlarming { get; private set; }
         public Vector3 LastKnownPlayerPos { get; set; }
+        /// <summary>Dónde vio "algo" sin llegar a reconocer al jugador (detección gradual).</summary>
+        public Vector3 SuspicionPoint { get; private set; }
 
-        /// <summary>Resultado del sensor de vista calculado al inicio del tick actual.</summary>
+        /// <summary>Resultado del sensor de vista calculado al inicio del tick actual (jugador reconocido).</summary>
         public bool CanSeePlayer => _canSeePlayer;
+        /// <summary>Ve una silueta pero aún no la reconoce (nivel de alerta entre 0.25 y 1).</summary>
+        public bool SeesSomething => !_canSeePlayer && _hadSight && _awareness >= 0.25f;
+        /// <summary>Nivel de alerta visual acumulado (0-1).</summary>
+        public float Awareness => _awareness;
+        /// <summary>El guardia de navegación agotó sus intentos hacia el destino actual.</summary>
+        public bool NavigationBlocked => _navigation != null && _navigation.GaveUp;
+        public bool CanAttackNow => Time.time - _lastAttackTime >= _attackCooldown;
 
         public bool SabotageReady => _sabotageEnabled && Time.time - _lastSabotageTime >= _sabotageCooldown;
         public bool MimicryReady => _mimicryEnabled && _player != null && Time.time - _lastMimicryTime >= _mimicryCooldown;
@@ -141,23 +211,33 @@ namespace Nexo.AI.Infected
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
+            _navigation = new InfectedNavigationGuard(_agent);
             if (_animator == null) _animator = GetComponentInChildren<Animator>();
             if (_animator != null) _animator.applyRootMotion = false;
             if (_eyes == null) _eyes = transform;
             if (_visualRoot == null) _visualRoot = transform.Find("Body");
+            if (_reactions == null) _reactions = GetComponent<InfectedHitReactions>();
+            if (_memory == null) _memory = GetComponent<InfectedLearningMemory>();
             _health = _maxHealth;
+            _homePosition = transform.position;
+            _homeRotation = transform.rotation;
 
             _tickWait = new WaitForSeconds(_tickInterval);
+            _farTickWait = new WaitForSeconds(FarTickInterval);
 
             // Los cooldowns arrancan corriendo para que no sabotee ni imite nada más aparecer
             _lastSabotageTime = Time.time;
             _lastMimicryTime = Time.time;
 
             Patrol = new PatrolState(this);
+            Suspicious = new SuspiciousState(this);
             Investigate = new InvestigateNoiseState(this);
+            Search = new SearchState(this);
+            Chase = new ChaseState(this);
+            Attack = new AttackState(this);
+            Return = new ReturnState(this);
             Sabotage = new SabotageLightState(this);
             Mimicry = new MimicryAmbushState(this);
-            Chase = new ChaseState(this);
         }
 
         private void OnEnable()
@@ -209,6 +289,9 @@ namespace Nexo.AI.Infected
         {
             _player = player;
             _playerMovement = player != null ? player.GetComponent<PlayerMovement>() : null;
+            _playerFlashlight = player != null ? player.GetComponent<FlashlightSystem>() : null;
+            Camera aim = player != null ? player.GetComponentInChildren<Camera>() : null;
+            _aimCamera = aim != null ? aim.transform : null;
             if (patrolPoints != null && patrolPoints.Length > 0)
             {
                 _patrolPoints = patrolPoints;
@@ -218,33 +301,69 @@ namespace Nexo.AI.Infected
             {
                 _agent.Warp(transform.position);
             }
+            _homePosition = transform.position;
+            _homeRotation = transform.rotation;
+        }
+
+        /// <summary>
+        /// Ajustes por punto de aparición (perfil, sigilo, mimetismo...). Se aplica antes de que arranque la FSM.
+        /// </summary>
+        public void ApplyOverrides(InfectedSpawnOverrides overrides)
+        {
+            if (overrides == null || !overrides.Enabled) return;
+
+            _behavior = overrides.Behavior;
+            _gradedDetection = overrides.GradedDetection;
+            _mimicryEnabled = overrides.MimicryEnabled;
+            _sabotageEnabled = overrides.SabotageEnabled;
+            if (overrides.MimicMessages != null && overrides.MimicMessages.Length > 0) _mimicMessages = overrides.MimicMessages;
+            if (overrides.MaxHealth > 0) { _maxHealth = overrides.MaxHealth; _health = _maxHealth; }
+            if (overrides.SightDistance > 0f) _sightDistance = overrides.SightDistance;
+            if (overrides.HearingRange > 0f) _maxHearingRange = overrides.HearingRange;
+            if (overrides.MimicryCooldown > 0f) _mimicryCooldown = overrides.MimicryCooldown;
+            if (overrides.EnableLearning && _memory == null) _memory = gameObject.AddComponent<InfectedLearningMemory>();
         }
 
         private IEnumerator TickRoutine()
         {
             // Esperar un tick para que el agente quede colocado sobre el NavMesh
             yield return _tickWait;
+            _lastTickTime = Time.time;
 
             if (_currentState == null) ChangeState(Patrol);
 
             while (true)
             {
-                // Aturdido por un disparo o tumbado: no percibe ni decide
-                if (Time.time < _incapacitatedUntil)
+                float now = Time.time;
+                float dt = now - _lastTickTime;
+                _lastTickTime = now;
+
+                // Aturdido por un disparo, en el suelo o forcejeando: no percibe ni decide
+                if (now < _incapacitatedUntil)
                 {
                     UpdateAnimatorSpeed();
                     yield return _tickWait;
                     continue;
                 }
 
-                _canSeePlayer = EvaluateSight();
-                if (_canSeePlayer) LastKnownPlayerPos = _player.position;
+                _canSeePlayer = EvaluateSight(dt);
+                if (_canSeePlayer)
+                {
+                    LastKnownPlayerPos = _player.position;
+                    _memory?.RecordSighting(LastKnownPlayerPos);
+                }
 
+                _navigation.Tick(now);
+                _memory?.Tick(now);
                 _currentState?.Tick();
                 UpdateAnimatorSpeed();
-                UpdateProximity(DistanceToPlayer() <= _nearbyRadius);
 
-                yield return _tickWait;
+                float distance = DistanceToPlayer();
+                UpdateProximity(distance <= _nearbyRadius);
+
+                // Lejos del jugador y sin nada que hacer: piensa menos a menudo
+                bool idleFar = distance > FarTickDistance && (_currentState == Patrol || _currentState == Return);
+                yield return idleFar ? _farTickWait : _tickWait;
             }
         }
 
@@ -252,33 +371,41 @@ namespace Nexo.AI.Infected
 
         public bool IsDowned => _isDowned;
         public bool IsDead => _isDead;
+        public bool IsLimping => Time.time < _limpUntil;
 
         /// <summary>
-        /// Impacto de bala: aturde unos instantes y luego persigue con rabia hacia el origen del disparo.
-        /// Al agotar la salud cae al suelo durante _downedDuration y se levanta de nuevo (no muere).
+        /// Impacto de bala. La zona (cabeza, torso, piernas) se obtiene repitiendo el rayo de la cámara del jugador:
+        /// cabeza = más daño y aturdimiento, piernas = cojera. Reacciona con retroceso y persigue hacia el disparo.
         /// </summary>
         public void ApplyHit(Vector3 shotOrigin)
         {
             if (_isDowned || _isDead) return;
 
+            HitZone zone = _reactions != null ? _reactions.ResolveZone(_aimCamera) : HitZone.Torso;
+            int damage = zone == HitZone.Head ? _headDamage : zone == HitZone.Legs ? _legDamage : _torsoDamage;
+
             LastKnownPlayerPos = shotOrigin;
-            _health--;
+            _awareness = 1f;
+            _health -= Mathf.Max(1, damage);
             StopMoving();
             StopLookAround();
 
             if (_health <= 0)
             {
                 if (_reviveAfterDowned) _downedRoutine = StartCoroutine(DownedRoutine());
-                else Die();
+                else Die(shotOrigin);
                 return;
             }
 
-            _incapacitatedUntil = Time.time + _stunDuration;
+            float stun = zone == HitZone.Head ? _headStunDuration : zone == HitZone.Legs ? _legStunDuration : _stunDuration;
+            if (zone == HitZone.Legs) _limpUntil = Time.time + _limpDuration;
+            _incapacitatedUntil = Time.time + stun;
+            if (_reactions != null) _reactions.PlayHit(zone, shotOrigin, stun);
             ChangeState(Chase);
         }
 
-        /// <summary>Muerte definitiva: queda tendido, deja de percibir y de bloquear el paso.</summary>
-        private void Die()
+        /// <summary>Muerte definitiva: se desploma, deja de percibir y de bloquear el paso.</summary>
+        private void Die(Vector3 shotOrigin)
         {
             _isDead = true;
             _incapacitatedUntil = float.PositiveInfinity;
@@ -287,12 +414,28 @@ namespace Nexo.AI.Infected
             StopLookAround();
             SetAlerted(false);
             UpdateProximity(false);
-            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-88f, 0f, 0f);
             if (_animator != null) _animator.enabled = false;
-            if (_agent != null) _agent.enabled = false;
             foreach (Collider c in GetComponents<Collider>()) c.enabled = false;
             if (_voiceSource != null) _voiceSource.Stop();
+
+            if (_reactions != null)
+            {
+                // El agente se apaga al terminar la caída (la caída lo desliza sobre el NavMesh)
+                _reactions.PlayDeath(shotOrigin);
+                StartCoroutine(DisableAgentAfter(1.1f));
+            }
+            else
+            {
+                if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-88f, 0f, 0f);
+                if (_agent != null) _agent.enabled = false;
+            }
             Died?.Invoke(this);
+        }
+
+        private IEnumerator DisableAgentAfter(float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            if (_agent != null) _agent.enabled = false;
         }
 
         // ---------- Forcejeo con el jugador (QTE) ----------
@@ -308,8 +451,8 @@ namespace Nexo.AI.Infected
         }
 
         /// <summary>
-        /// Fin del forcejeo. Si el jugador lo empuja, sale despedido hacia atrás y queda tumbado unos segundos;
-        /// si el jugador falla, se queda un instante aturdido para que pueda huir.
+        /// Fin del forcejeo. Si el jugador lo empuja, cae de espaldas y se levanta unos segundos después
+        /// (sin teletransportarse); si el jugador falla, se queda un instante aturdido para que pueda huir.
         /// </summary>
         public void EndGrapple(bool pushedBack)
         {
@@ -321,16 +464,21 @@ namespace Nexo.AI.Infected
 
         private IEnumerator KnockbackRoutine()
         {
-            _incapacitatedUntil = Time.time + 2.8f;
-            Vector3 away = _player != null ? (transform.position - _player.position) : -transform.forward;
-            away.y = 0f;
-            if (NavMesh.SamplePosition(transform.position + away.normalized * 1.8f, out NavMeshHit hit, 1.5f, NavMesh.AllAreas) && _agent.enabled)
+            const float downTime = 2.8f;
+            _incapacitatedUntil = Time.time + downTime + 0.9f;
+            Vector3 pusher = _player != null ? _player.position : transform.position + transform.forward;
+
+            if (_reactions != null)
             {
-                _agent.Warp(hit.position);
+                _reactions.PlayKnockdown(pusher, downTime);
             }
-            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-80f, 0f, 0f);
-            yield return new WaitForSeconds(2.2f);
-            if (_visualRoot != null && !_isDead) _visualRoot.localRotation = Quaternion.identity;
+            else if (_visualRoot != null)
+            {
+                _visualRoot.localRotation = Quaternion.Euler(-80f, 0f, 0f);
+            }
+
+            yield return new WaitForSeconds(downTime + 0.9f);
+            if (_reactions == null && _visualRoot != null && !_isDead) _visualRoot.localRotation = Quaternion.identity;
             if (!_isDead) ChangeState(Chase);
         }
 
@@ -341,17 +489,19 @@ namespace Nexo.AI.Infected
             StopMoving();
             SetAlerted(false);
             UpdateProximity(false);
-            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-85f, 0f, 0f);
+            if (_reactions != null) _reactions.PlayKnockdown(LastKnownPlayerPos, _downedDuration);
+            else if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-85f, 0f, 0f);
 
             yield return new WaitForSeconds(_downedDuration);
 
-            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.identity;
+            if (_reactions == null && _visualRoot != null) _visualRoot.localRotation = Quaternion.identity;
             _health = _maxHealth;
             _isDowned = false;
             _incapacitatedUntil = 0f;
             _downedRoutine = null;
             TriggerScream();
-            ChangeState(Investigate);
+            Search.SetCenter(LastKnownPlayerPos);
+            ChangeState(Search);
         }
 
         public void ChangeState(IInfectedState next)
@@ -365,8 +515,9 @@ namespace Nexo.AI.Infected
 
         // ---------- Sensores ----------
 
-        private bool EvaluateSight()
+        private bool EvaluateSight(float dt)
         {
+            _hadSight = false;
             if (_player == null) return false;
 
             // Agachado: silueta más baja y más difícil de distinguir a distancia
@@ -379,20 +530,55 @@ namespace Nexo.AI.Infected
             Vector3 toPlayer = target - origin;
             float distance = toPlayer.magnitude;
 
-            if (distance > sightDistance) return false;
-            if (Vector3.Angle(transform.forward, toPlayer) > _sightAngle * 0.5f) return false;
+            bool inSight = distance <= sightDistance
+                && Vector3.Angle(transform.forward, toPlayer) <= _sightAngle * 0.5f
+                // La máscara excluye la capa Player: si no hay obstáculo en medio, hay línea de visión
+                && !Physics.Raycast(origin, toPlayer / distance, distance, _obstacleMask, QueryTriggerInteraction.Ignore);
 
-            // La máscara excluye la capa Player: si no hay obstáculo en medio, hay línea de visión
-            return !Physics.Raycast(origin, toPlayer / distance, distance, _obstacleMask, QueryTriggerInteraction.Ignore);
+            if (!inSight)
+            {
+                _awareness = Mathf.Max(0f, _awareness - dt * 0.5f);
+                return false;
+            }
+
+            _hadSight = true;
+            SuspicionPoint = _player.position;
+
+            if (!_gradedDetection || distance <= InstantSightDistance || _currentState == Chase || _currentState == Attack)
+            {
+                _awareness = 1f;
+                return true;
+            }
+
+            // Cerca se reconoce rápido; lejos, despacio. La linterna y correr delatan; agacharse ayuda.
+            float distanceFactor = Mathf.Lerp(2.4f, 0.45f, distance / Mathf.Max(0.01f, sightDistance));
+            float visibility = crouching ? 0.55f : 1f;
+            if (_playerFlashlight != null && _playerFlashlight.IsOn) visibility *= 1.5f;
+            if (_playerMovement != null && _playerMovement.IsSprinting) visibility *= 1.35f;
+
+            _awareness = Mathf.Min(1f, _awareness + dt * distanceFactor * visibility / Mathf.Max(0.1f, _detectionTime));
+            return _awareness >= 1f;
         }
 
         private void HandleNoiseEmitted(Vector3 position, float intensity)
         {
-            float range = Mathf.Clamp(intensity, 0f, 100f) / 100f * _maxHearingRange;
-            if ((position - transform.position).sqrMagnitude > range * range) return;
+            if (_isDead) return;
+
+            float multiplier = (_behavior == InfectedBehavior.Listener ? 1.5f : 1f) * (_memory != null ? _memory.HearingMultiplier : 1f);
+            float range = Mathf.Clamp(intensity, 0f, 100f) / 100f * _maxHearingRange * multiplier;
+            float sqrDistance = (position - transform.position).sqrMagnitude;
+            if (sqrDistance > range * range) return;
+
+            // Las paredes amortiguan el sonido: un ruido tras un muro solo se oye de cerca
+            Vector3 ears = _eyes != null ? _eyes.position : transform.position + Vector3.up * 1.6f;
+            bool occluded = Physics.Linecast(position + Vector3.up * 0.8f, ears, _obstacleMask, QueryTriggerInteraction.Ignore);
+            float effectiveRange = occluded ? range * _occludedHearingFactor : range;
+            if (sqrDistance > effectiveRange * effectiveRange) return;
 
             LastNoisePos = position;
+            LastNoiseAlarming = intensity >= 85f || sqrDistance <= (effectiveRange * 0.45f) * (effectiveRange * 0.45f);
             _heardNoise = true;
+            _memory?.RecordNoise(position, intensity);
         }
 
         /// <summary>
@@ -405,6 +591,50 @@ namespace Nexo.AI.Infected
             return true;
         }
 
+        /// <summary>
+        /// Reacción común de los estados tranquilos (patrulla y regreso) a lo que percibe.
+        /// Devuelve true si cambió de estado.
+        /// </summary>
+        public bool ReactToStimuli()
+        {
+            if (CanSeePlayer)
+            {
+                ChangeState(Chase);
+                return true;
+            }
+
+            if (SeesSomething)
+            {
+                Suspicious.SetTarget(SuspicionPoint);
+                ChangeState(Suspicious);
+                return true;
+            }
+
+            if (ConsumeHeardNoise())
+            {
+                if (LastNoiseAlarming || _behavior == InfectedBehavior.Listener)
+                {
+                    Investigate.SetTarget(LastNoisePos);
+                    ChangeState(Investigate);
+                }
+                else
+                {
+                    Suspicious.SetTarget(LastNoisePos);
+                    ChangeState(Suspicious);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>Al perder el rastro: registra el escondite probable y busca en los alrededores.</summary>
+        public void LoseTrackOfPlayer()
+        {
+            _memory?.RecordLostPlayer(LastKnownPlayerPos);
+            Search.SetCenter(LastKnownPlayerPos);
+            ChangeState(Search);
+        }
+
         // ---------- Utilidades para los estados ----------
 
         public void MoveTo(Vector3 destination, float speed)
@@ -412,12 +642,13 @@ namespace Nexo.AI.Infected
             if (_agent == null || !_agent.isOnNavMesh) return;
 
             _agent.isStopped = false;
-            _agent.speed = speed;
-            _agent.SetDestination(destination);
+            _agent.speed = IsLimping ? speed * _limpSpeedFactor : speed;
+            _navigation.SetDestination(destination);
         }
 
         public void StopMoving()
         {
+            _navigation?.Clear();
             if (_agent == null || !_agent.isOnNavMesh) return;
 
             _agent.isStopped = true;
@@ -427,6 +658,7 @@ namespace Nexo.AI.Infected
         public bool HasArrived(float tolerance = 0.3f)
         {
             if (_agent == null || !_agent.isOnNavMesh || _agent.pathPending) return false;
+            if (_navigation.IsOnDetour) return false;
             return _agent.remainingDistance <= _agent.stoppingDistance + tolerance;
         }
 
@@ -442,44 +674,68 @@ namespace Nexo.AI.Infected
 
         public void TriggerScream() => SetAnimatorTrigger(ScreamTriggerHash);
         public void TriggerSabotage() => SetAnimatorTrigger(SabotageTriggerHash);
+        public void TriggerAttackAnimation() => SetAnimatorTrigger(AttackTriggerHash);
 
         /// <summary>
         /// Lanza el ataque si el cooldown lo permite. Devuelve true si se ejecutó.
         /// </summary>
         public bool TryAttack()
         {
-            if (Time.time - _lastAttackTime < _attackCooldown) return false;
+            if (!CanAttackNow) return false;
 
-            _lastAttackTime = Time.time;
             FacePlayer();
-            SetAnimatorTrigger(AttackTriggerHash);
+            TriggerAttackAnimation();
+            DeliverAttack();
+            return true;
+        }
+
+        /// <summary>Conecta el golpe (tras la anticipación de AttackState): PlayerHealth decide forcejeo o daño.</summary>
+        public void DeliverAttack()
+        {
+            _lastAttackTime = Time.time;
             PlayerAttacked?.Invoke(this);
             // PlayerHealth decide: forcejeo (QTE), golpe acumulado o captura si se agota la vida
             GameEvents.RaisePlayerAttacked(transform);
-            return true;
         }
 
         public void FacePlayer()
         {
             if (_player == null) return;
+            FacePoint(_player.position);
+        }
 
-            Vector3 flat = _player.position - transform.position;
+        public void FacePoint(Vector3 point)
+        {
+            Vector3 flat = point - transform.position;
             flat.y = 0f;
             if (flat.sqrMagnitude > 0.001f) transform.rotation = Quaternion.LookRotation(flat);
+        }
+
+        /// <summary>True si el jugador está delante (para que el golpe no conecte por la espalda del infectado).</summary>
+        public bool IsPlayerInFront(float maxAngle = 70f)
+        {
+            if (_player == null) return false;
+            Vector3 flat = _player.position - transform.position;
+            flat.y = 0f;
+            return Vector3.Angle(transform.forward, flat) <= maxAngle;
         }
 
         public void MarkSabotageUsed() => _lastSabotageTime = Time.time;
         public void MarkMimicryUsed() => _lastMimicryTime = Time.time;
 
         /// <summary>
-        /// Reproduce la voz distorsionada y envía la notificación falsa (IsFake) al HUD.
+        /// Reproduce la voz distorsionada (más grave y con eco) y envía la notificación falsa (IsFake) al HUD.
         /// </summary>
         public void PlayMimicry()
         {
             if (_voiceSource != null && _mimicClips != null && _mimicClips.Length > 0)
             {
                 AudioClip clip = _mimicClips[Random.Range(0, _mimicClips.Length)];
-                if (clip != null) _voiceSource.PlayOneShot(clip);
+                if (clip != null)
+                {
+                    _voiceSource.pitch = _mimicPitch;
+                    _voiceSource.PlayOneShot(clip);
+                }
             }
 
             string message = _mimicMessages != null && _mimicMessages.Length > 0
@@ -496,6 +752,13 @@ namespace Nexo.AI.Infected
         {
             StopLookAround();
             _lookAroundRoutine = StartCoroutine(LookAroundRoutine(duration, degreesPerSecond));
+        }
+
+        /// <summary>Gira suavemente hasta encarar un punto (reacción de sospecha).</summary>
+        public void StartTurnTowards(Vector3 point, float degreesPerSecond = 180f)
+        {
+            StopLookAround();
+            _lookAroundRoutine = StartCoroutine(TurnTowardsRoutine(point, degreesPerSecond));
         }
 
         public void StopLookAround()
@@ -523,15 +786,48 @@ namespace Nexo.AI.Infected
             _lookAroundRoutine = null;
         }
 
+        private IEnumerator TurnTowardsRoutine(Vector3 point, float degreesPerSecond)
+        {
+            Vector3 flat = point - transform.position;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < 0.001f) { _lookAroundRoutine = null; yield break; }
+
+            Quaternion target = Quaternion.LookRotation(flat);
+            while (Quaternion.Angle(transform.rotation, target) > 1f)
+            {
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, target, degreesPerSecond * Time.deltaTime);
+                yield return null;
+            }
+            transform.rotation = target;
+            _lookAroundRoutine = null;
+        }
+
+        /// <summary>Busca un punto aleatorio del NavMesh alcanzable alrededor de un centro.</summary>
+        public bool TryGetRandomPoint(Vector3 center, float radius, out Vector3 point)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 offset = Random.insideUnitCircle * radius;
+                Vector3 candidate = center + new Vector3(offset.x, 0f, offset.y);
+                if (NavMesh.SamplePosition(candidate, out NavMeshHit hit, 1.5f, _agent.areaMask))
+                {
+                    point = hit.position;
+                    return true;
+                }
+            }
+            point = center;
+            return false;
+        }
+
         private void UpdateAnimatorSpeed()
         {
-            if (_animator == null || _agent == null) return;
-            _animator.SetFloat(SpeedHash, _agent.velocity.magnitude);
+            if (_animator == null || _agent == null || !_animator.enabled) return;
+            _animator.SetFloat(SpeedHash, _agent.enabled ? _agent.velocity.magnitude : 0f);
         }
 
         private void SetAnimatorTrigger(int hash)
         {
-            if (_animator != null) _animator.SetTrigger(hash);
+            if (_animator != null && _animator.enabled) _animator.SetTrigger(hash);
         }
 
 #if UNITY_EDITOR
