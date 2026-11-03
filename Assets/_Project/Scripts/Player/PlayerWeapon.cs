@@ -73,6 +73,9 @@ namespace Nexo.Player
         public int Magazine => _magazine;
         public int Reserve => _reserve;
 
+        /// <summary>Munición inicial de una partida nueva.</summary>
+        public void ResetToDefaults() => SetAmmo(_startingMagazine, _startingReserve);
+
         /// <summary>Restaura la munición (checkpoint de GameSession al recargar o cambiar de piso).</summary>
         public void SetAmmo(int magazine, int reserve)
         {

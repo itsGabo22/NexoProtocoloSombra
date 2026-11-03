@@ -98,6 +98,9 @@ namespace Nexo.Player
             for (int i = 0; i < remaining && !_isDown; i++) RegisterHit();
         }
 
+        /// <summary>Vida completa (partida nueva).</summary>
+        public void ResetFull() => SetState(_maxPoints, 0);
+
         public void SetState(int points, int hits)
         {
             _points = Mathf.Clamp(points, 1, _maxPoints);

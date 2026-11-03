@@ -42,6 +42,17 @@ namespace Nexo.Player
 
         private void HandleFloorChanged(int floor)
         {
+            if (GameSession.NewGamePending)
+            {
+                // JUGAR desde el menú: se descarta lo de la partida anterior
+                GameSession.NewGamePending = false;
+                GameSession.RestorePending = false;
+                if (_weapon != null) { _weapon.ResetToDefaults(); _weapon.enabled = true; }
+                if (_health != null) _health.ResetFull();
+                Save();
+                return;
+            }
+
             if (GameSession.RestorePending && GameSession.HasSnapshot)
             {
                 GameSession.RestorePending = false;
