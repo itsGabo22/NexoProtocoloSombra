@@ -62,6 +62,7 @@ namespace Nexo.EditorTools
             BuildNotesAndTerminal(interactables);
             BuildScares(story, audio);
             BuildInfected(waypoints);
+            BuildExpansion(audio, story, waypoints);
             BakeNavMesh(root);
 
             EditorSceneManager.MarkSceneDirty(_scene);
@@ -207,6 +208,269 @@ namespace Nexo.EditorTools
             o.FindPropertyRelative("MimicryEnabled").boolValue = false;
             o.FindPropertyRelative("SabotageEnabled").boolValue = false;
             o.FindPropertyRelative("HearingRange").floatValue = 18f;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        // ---------------- Ampliación: alas de servicio ----------------
+
+        private const string ExpansionRoot = "F01_Expansion";
+        private const string LevelMaterials = "Assets/_Project/Materials/Levels/";
+
+        /// <summary>
+        /// Amplía el vestíbulo con un circuito de servicio: pasillo norte (correo) → Sala de seguridad → pasillo este
+        /// (salida de emergencia sellada) → vuelta al vestíbulo, más la sala de descanso a oscuras.
+        /// La geometría va en su propia raíz F01_Expansion (no se apaga con el giro). Las paredes originales
+        /// Wall_North y Wall_East solo se DESACTIVAN y se sustituyen por versiones con hueco de puerta.
+        /// Infectados, sustos y audio de las alas cuelgan de F01_Ambience (se apagan al empezar el giro).
+        /// </summary>
+        private static void BuildExpansion(Transform audio, Transform story, Transform waypoints)
+        {
+            foreach (GameObject go in _scene.GetRootGameObjects()) if (go.name == ExpansionRoot) Object.DestroyImmediate(go);
+            var root = new GameObject(ExpansionRoot);
+            SceneManager.MoveGameObjectToScene(root, _scene);
+            Transform geo = Group(root, "Geometry");
+            Transform props = Group(root, "Props");
+            Transform lights = Group(root, "Lights");
+            Transform items = Group(root, "Interactables");
+
+            Material wall = LevelMaterial("M_Lvl_F01_Wall");
+            Material floor = LevelMaterial("M_Lvl_F01_Floor");
+            Material ceiling = LevelMaterial("M_Lvl_F01_Ceiling");
+            Material accent = LevelMaterial("M_Lvl_F01_Accent");
+            Material stone = LevelMaterial("M_Lvl_F01_Stone");
+
+            // Paredes originales: se ocultan (no se borran) para abrir las dos puertas nuevas
+            SetOriginalWallActive("Wall_East", false);
+            SetOriginalWallActive("Wall_North", false);
+
+            // Vestíbulo: pared este con puerta (z -1.2..1.2) y pared norte con puerta (x 10.8..13.2)
+            Box(geo, "Lobby_Wall_East_S", new Vector3(18f, 0f, -14f), new Vector3(18.3f, 6f, -1.2f), wall);
+            Box(geo, "Lobby_Wall_East_N", new Vector3(18f, 0f, 1.2f), new Vector3(18.3f, 6f, 14f), wall);
+            Box(geo, "Lobby_Wall_East_Lintel", new Vector3(18f, 3f, -1.2f), new Vector3(18.3f, 6f, 1.2f), accent);
+            Box(geo, "Lobby_Wall_North_W", new Vector3(-18.3f, 0f, 14f), new Vector3(10.8f, 6f, 14.3f), wall);
+            Box(geo, "Lobby_Wall_North_E", new Vector3(13.2f, 0f, 14f), new Vector3(18.3f, 6f, 14.3f), wall);
+            Box(geo, "Lobby_Wall_North_Lintel", new Vector3(10.8f, 3f, 14f), new Vector3(13.2f, 6f, 14.3f), accent);
+
+            // Pasillo este (x 18.3..34, z -2..2)
+            Box(geo, "EastCorr_Floor", new Vector3(18.3f, -0.3f, -2.3f), new Vector3(34.3f, 0f, 2.3f), floor);
+            Box(geo, "EastCorr_Ceiling", new Vector3(18.3f, 3.2f, -2.3f), new Vector3(34.3f, 3.5f, 2.3f), ceiling);
+            Box(geo, "EastCorr_Wall_N_A", new Vector3(18.3f, 0f, 2f), new Vector3(23f, 3.2f, 2.3f), wall);
+            Box(geo, "EastCorr_Wall_N_B", new Vector3(25f, 0f, 2f), new Vector3(34.3f, 3.2f, 2.3f), wall);
+            Box(geo, "EastCorr_Wall_N_Lintel", new Vector3(23f, 2.4f, 2f), new Vector3(25f, 3.2f, 2.3f), accent);
+            Box(geo, "EastCorr_Wall_S_A", new Vector3(18.3f, 0f, -2.3f), new Vector3(27f, 3.2f, -2f), wall);
+            Box(geo, "EastCorr_Wall_S_B", new Vector3(29f, 0f, -2.3f), new Vector3(34.3f, 3.2f, -2f), wall);
+            Box(geo, "EastCorr_Wall_S_Lintel", new Vector3(27f, 2.4f, -2.3f), new Vector3(29f, 3.2f, -2f), accent);
+            Box(geo, "EastCorr_Wall_End", new Vector3(34f, 0f, -2f), new Vector3(34.3f, 3.2f, 2f), wall);
+
+            // Sala de seguridad (x 18.3..30, z 2.3..14)
+            Box(geo, "Security_Floor", new Vector3(18.3f, -0.3f, 2.3f), new Vector3(30.3f, 0f, 14.3f), floor);
+            Box(geo, "Security_Ceiling", new Vector3(18.3f, 3.2f, 2.3f), new Vector3(30.3f, 3.5f, 14.3f), ceiling);
+            Box(geo, "Security_Wall_E", new Vector3(30f, 0f, 2.3f), new Vector3(30.3f, 3.2f, 14f), wall);
+            Box(geo, "Security_Wall_N_A", new Vector3(18.3f, 0f, 14f), new Vector3(24f, 3.2f, 14.3f), wall);
+            Box(geo, "Security_Wall_N_B", new Vector3(26f, 0f, 14f), new Vector3(30.3f, 3.2f, 14.3f), wall);
+            Box(geo, "Security_Wall_N_Lintel", new Vector3(24f, 2.4f, 14f), new Vector3(26f, 3.2f, 14.3f), accent);
+
+            // Pasillo norte de servicio (x 10.3..30, z 14.3..18)
+            Box(geo, "NorthCorr_Floor", new Vector3(10f, -0.3f, 14.3f), new Vector3(30.3f, 0f, 18.3f), floor);
+            Box(geo, "NorthCorr_Ceiling", new Vector3(10f, 3.2f, 14.3f), new Vector3(30.3f, 3.5f, 18.3f), ceiling);
+            Box(geo, "NorthCorr_Wall_N", new Vector3(10f, 0f, 18f), new Vector3(30.3f, 3.2f, 18.3f), wall);
+            Box(geo, "NorthCorr_Wall_W", new Vector3(10f, 0f, 14.3f), new Vector3(10.3f, 3.2f, 18f), wall);
+            Box(geo, "NorthCorr_Wall_E", new Vector3(30f, 0f, 14.3f), new Vector3(30.3f, 3.2f, 18f), wall);
+
+            // Sala de descanso (x 18.3..30, z -12..-2.3)
+            Box(geo, "Lounge_Floor", new Vector3(18.3f, -0.3f, -12.3f), new Vector3(30.3f, 0f, -2.3f), floor);
+            Box(geo, "Lounge_Ceiling", new Vector3(18.3f, 3.2f, -12.3f), new Vector3(30.3f, 3.5f, -2.3f), ceiling);
+            Box(geo, "Lounge_Wall_E", new Vector3(30f, 0f, -12f), new Vector3(30.3f, 3.2f, -2.3f), wall);
+            Box(geo, "Lounge_Wall_S", new Vector3(18.3f, 0f, -12.3f), new Vector3(30.3f, 3.2f, -12f), wall);
+
+            // ---- Mobiliario y cobertura ----
+            Material metal = SolidMaterial("MAT_F01_Metal", new Color(0.35f, 0.37f, 0.4f));
+            Material wood = SolidMaterial("MAT_F01_Wood", new Color(0.36f, 0.26f, 0.18f));
+            Material fabric = SolidMaterial("MAT_F01_Fabric", new Color(0.2f, 0.24f, 0.3f));
+            Material screen = EmissiveMaterial("MAT_F01_SecurityScreen", new Color(0.2f, 0.75f, 0.9f), 1.1f);
+            Material red = EmissiveMaterial("MAT_F01_ExitRed", new Color(1f, 0.1f, 0.05f), 1.6f);
+            Material vend = EmissiveMaterial("MAT_F01_Vending", new Color(0.35f, 0.9f, 1f), 0.9f);
+
+            // Correo: estanterías bajas contra la pared norte y cajas en el suelo (para esconderse tras ellas)
+            Box(props, "Mail_Shelf_A", new Vector3(13.5f, 0f, 17.4f), new Vector3(17.5f, 1.6f, 18f), metal);
+            Box(props, "Mail_Shelf_B", new Vector3(21f, 0f, 17.4f), new Vector3(25f, 1.6f, 18f), metal);
+            Box(props, "Mail_Crates_A", new Vector3(19.2f, 0f, 14.4f), new Vector3(20.2f, 1.1f, 15.3f), wood);
+            Box(props, "Mail_Crates_B", new Vector3(27f, 0f, 14.4f), new Vector3(28f, 0.9f, 15.2f), wood);
+
+            // Seguridad: mostrador, monitores en la pared este, archivadores
+            Box(props, "Security_Desk", new Vector3(21f, 0f, 7.5f), new Vector3(24.5f, 0.78f, 8.6f), metal);
+            Box(props, "Security_Cabinets", new Vector3(18.4f, 0f, 11f), new Vector3(19f, 1.9f, 13.6f), metal);
+            for (int i = 0; i < 3; i++)
+            {
+                Box(props, "Security_Monitor_" + i, new Vector3(29.92f, 1.3f, 5.2f + i * 2.1f), new Vector3(30f, 2.3f, 6.9f + i * 2.1f), screen);
+            }
+
+            // Descanso: sofá, mesa, máquina expendedora
+            Box(props, "Lounge_Couch", new Vector3(20f, 0f, -11.8f), new Vector3(23.5f, 0.75f, -10.8f), fabric);
+            Box(props, "Lounge_Table", new Vector3(21f, 0f, -9f), new Vector3(22.6f, 0.5f, -8f), wood);
+            Box(props, "Lounge_Vending", new Vector3(18.4f, 0f, -11.9f), new Vector3(19.4f, 1.95f, -10.9f), vend);
+
+            // Pasillo este: salida de emergencia sellada al fondo
+            Box(props, "EastCorr_EmergencyDoor", new Vector3(33.9f, 0f, -0.7f), new Vector3(34f, 2.2f, 0.7f), metal);
+            Box(props, "EastCorr_ExitSign", new Vector3(33.88f, 2.35f, -0.45f), new Vector3(33.95f, 2.65f, 0.45f), red);
+            Box(props, "EastCorr_Bench", new Vector3(20.5f, 0f, -1.95f), new Vector3(23f, 0.45f, -1.45f), wood);
+
+            // ---- Luces (máx. 4 por sala, tiempo real) ----
+            AddLight(lights, "EastCorr_Light_A", new Vector3(21.5f, 2.9f, 0f), new Color(0.95f, 0.92f, 0.85f), 1.3f, 7f);
+            AddLight(lights, "EastCorr_Light_B", new Vector3(31f, 2.9f, 0f), new Color(0.95f, 0.92f, 0.85f), 1.1f, 7f).gameObject.AddComponent<LightFlicker>();
+            AddLight(lights, "EastCorr_ExitGlow", new Vector3(33.4f, 2.4f, 0f), new Color(1f, 0.12f, 0.06f), 0.8f, 4f);
+            AddLight(lights, "NorthCorr_Light_A", new Vector3(13.5f, 2.9f, 16.2f), new Color(0.95f, 0.92f, 0.85f), 1.1f, 7f);
+            AddLight(lights, "NorthCorr_Light_B", new Vector3(26f, 2.9f, 16.2f), new Color(0.95f, 0.92f, 0.85f), 0.9f, 7f).gameObject.AddComponent<LightFlicker>();
+            AddLight(lights, "Security_DeskLamp", new Vector3(22.5f, 1.5f, 8.1f), new Color(1f, 0.85f, 0.6f), 1.2f, 6f);
+            AddLight(lights, "Security_MonitorGlow", new Vector3(29.2f, 1.8f, 7.3f), new Color(0.3f, 0.8f, 1f), 0.9f, 6f);
+            AddLight(lights, "Lounge_VendingGlow", new Vector3(19.8f, 1.2f, -11f), new Color(0.35f, 0.9f, 1f), 0.6f, 4f);
+            AddLight(lights, "Lounge_Emergency", new Vector3(29.6f, 2.7f, -11.6f), Emergency, 0.35f, 5f);
+
+            // ---- Notas, terminal, munición y escondite ----
+            Material paper = SolidMaterial("MAT_F01_Paper", new Color(0.92f, 0.92f, 0.86f));
+            Material board = SolidMaterial("MAT_F01_Board", new Color(0.93f, 0.95f, 0.95f));
+            Note(items, "F01_N4_Registro_Seguridad", new Vector3(22.2f, 0.8f, 8f), new Vector3(0f, 20f, 0f), new Vector3(0.24f, 0.01f, 0.32f), paper,
+                "REGISTRO DE SEGURIDAD · 02:14", "Dirección ordena mantener el vestíbulo sellado hasta validar a todo el personal en el escáner maestro.");
+            Note(items, "F01_N5_Pizarra_Personal", new Vector3(29.85f, 1.6f, -6.5f), new Vector3(0f, -90f, 0f), new Vector3(1.6f, 1f, 0.03f), board,
+                "PIZARRA DEL PERSONAL", "Simulacro de las 21:00 cancelado. NO uséis los ascensores. Si alguien os llama desde el pasillo, no contestéis.");
+            Note(items, "F01_N6_Salida_Sellada", new Vector3(33.85f, 1.5f, 1.2f), new Vector3(0f, -90f, 0f), new Vector3(0.6f, 0.4f, 0.03f), red,
+                "SALIDA DE EMERGENCIA", "BLOQUEADA POR PROTOCOLO SOMBRA. Validación biométrica obligatoria en el escáner maestro del vestíbulo.");
+
+            GameObject terminal = Primitive(PrimitiveType.Cube, items, "F01_Terminal_SecurityRoom", new Vector3(23.6f, 1.05f, 8.1f), new Vector3(0f, 180f, 0f), new Vector3(0.6f, 0.4f, 0.06f), screen, true);
+            var security = terminal.AddComponent<SecurityTerminal>();
+            var tso = new SerializedObject(security);
+            tso.FindProperty("_terminalId").stringValue = "F01_Terminal_SecurityRoom";
+            SetArray(tso.FindProperty("_feedCameras"), new List<Camera>());
+            SetArray(tso.FindProperty("_feedLabels"), new List<string>());
+            SetArray(tso.FindProperty("_doors"), new List<DoorController>());
+            tso.ApplyModifiedPropertiesWithoutUndo();
+
+            Ammo(items, "F01_Ammo_Security", new Vector3(21.6f, 0.86f, 7.9f), 7);
+            Ammo(items, "F01_Ammo_Lounge", new Vector3(21.8f, 0.56f, -8.5f), 7);
+            Locker(items, "F01_Locker_Lounge", new Vector3(29.4f, 0f, -4f), -90f, metal);
+
+            // ---- Sustos e infectados de las alas (cuelgan de F01_Ambience: se apagan con el giro) ----
+            AudioSource phone = AddSource(audio, "F01_Security_Phone", new Vector3(23f, 1f, 8f), null, 1f, false, 1f, 2f, 24f, "SFX");
+            Scare(story, "Scare_F01_Security_Phone", new Vector3(12f, 0.45f, 15.2f), new Vector3(2.4f, 0.9f, 1f), phone, Clip("SFX/SFX_F12_PhoneRing"), 0.8f,
+                "(Un teléfono suena en la sala de seguridad, al fondo del pasillo)", 30f);
+            AudioSource vending = AddSource(audio, "F01_Lounge_Vending", new Vector3(18.9f, 1f, -11.4f), null, 1f, false, 1f, 2f, 18f, "SFX");
+            Scare(story, "Scare_F01_Lounge_Vending", new Vector3(28f, 0.45f, -2.9f), new Vector3(2f, 0.9f, 0.8f), vending, Clip("SFX/SFX_F12_DistantBang"), 0.9f,
+                "(Algo golpea la máquina expendedora en la sala de descanso a oscuras)", 25f);
+            AudioSource corrHum = AddSource(audio, "F01_EastCorr_Hum", new Vector3(31f, 2.8f, 0f), Clip("Ambience/SFX_F06_ElectricHum_Loop"), 0.35f, true, 1f, 1f, 8f, "Ambience");
+            corrHum.playOnAwake = true;
+
+            SpawnInfected(waypoints, "Spawn_F01_NorthCorr_Patroller", new Vector3(28.5f, 0f, 16.2f), -90f, InfectedBehavior.Patroller,
+                new[] { new Vector3(28.5f, 0f, 16.2f), new Vector3(12.2f, 0f, 16.2f) });
+            SpawnInfected(waypoints, "Spawn_F01_Lounge_Crawler", new Vector3(25f, 0f, -8.5f), -90f, InfectedBehavior.Crawler, null);
+        }
+
+        private static void SetOriginalWallActive(string wallName, bool active)
+        {
+            foreach (GameObject go in _scene.GetRootGameObjects())
+            {
+                if (go.name != "Level_Geometry") continue;
+                foreach (Transform t in go.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.name == wallName) t.gameObject.SetActive(active);
+                }
+            }
+        }
+
+        /// <summary>Caja estática definida por sus esquinas mínima y máxima en el mundo.</summary>
+        private static GameObject Box(Transform parent, string name, Vector3 min, Vector3 max, Material material)
+        {
+            GameObject go = Primitive(PrimitiveType.Cube, parent, name, (min + max) * 0.5f, Vector3.zero, max - min, material, true);
+            GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.BatchingStatic | StaticEditorFlags.ContributeGI);
+            go.GetComponent<Renderer>().shadowCastingMode = ShadowCastingMode.On;
+            return go;
+        }
+
+        private static Material LevelMaterial(string name)
+        {
+            var material = AssetDatabase.LoadAssetAtPath<Material>(LevelMaterials + name + ".mat");
+            return material != null ? material : SolidMaterial("MAT_F01_Fallback", new Color(0.7f, 0.7f, 0.7f));
+        }
+
+        private static void Ammo(Transform parent, string name, Vector3 position, int rounds)
+        {
+            GameObject box = Primitive(PrimitiveType.Cube, parent, name, position, new Vector3(0f, 25f, 0f), new Vector3(0.18f, 0.1f, 0.12f), SolidMaterial("MAT_F01_AmmoBox", new Color(0.3f, 0.35f, 0.2f)), true);
+            box.layer = LayerMask.NameToLayer("Interactable");
+            box.GetComponent<BoxCollider>().size = new Vector3(2.5f, 3f, 3f);
+            var pickup = box.AddComponent<AmmoPickup>();
+            var so = new SerializedObject(pickup);
+            so.FindProperty("_rounds").intValue = rounds;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Armario hueco para esconderse (interior 0.95 x 0.9 m; ver HidingSpot).</summary>
+        private static void Locker(Transform parent, string name, Vector3 position, float yaw, Material metal)
+        {
+            var root = new GameObject(name);
+            root.transform.SetParent(parent, false);
+            root.transform.SetPositionAndRotation(position, Quaternion.Euler(0f, yaw, 0f));
+            LocalBox(root.transform, "Back", new Vector3(0f, 1.1f, -0.475f), new Vector3(1.05f, 2.2f, 0.05f), metal);
+            LocalBox(root.transform, "Left", new Vector3(-0.5f, 1.1f, 0f), new Vector3(0.05f, 2.2f, 1f), metal);
+            LocalBox(root.transform, "Right", new Vector3(0.5f, 1.1f, 0f), new Vector3(0.05f, 2.2f, 1f), metal);
+            LocalBox(root.transform, "Top", new Vector3(0f, 2.175f, 0f), new Vector3(1.05f, 0.05f, 1f), metal);
+            LocalBox(root.transform, "Door", new Vector3(0f, 1.1f, 0.475f), new Vector3(0.95f, 2.15f, 0.04f), metal);
+
+            var inside = new GameObject("InsidePoint");
+            inside.transform.SetParent(root.transform, false);
+            inside.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+            var exit = new GameObject("ExitPoint");
+            exit.transform.SetParent(root.transform, false);
+            exit.transform.localPosition = new Vector3(0f, 0.05f, 1.1f);
+
+            AudioSource door = AddSource(root.transform, "DoorAudio", root.transform.TransformPoint(new Vector3(0f, 1.2f, 0.5f)), null, 1f, false, 1f, 1.5f, 14f, "SFX");
+            AudioSource breathing = AddSource(root.transform, "PlayerBreathing", root.transform.position, Clip("Ambience/SFX_F06_Breathing_Loop"), 0.35f, true, 0f, 1f, 5f, "Voices");
+            var spot = root.AddComponent<HidingSpot>();
+            var so = new SerializedObject(spot);
+            so.FindProperty("_insidePoint").objectReferenceValue = inside.transform;
+            so.FindProperty("_exitPoint").objectReferenceValue = exit.transform;
+            so.FindProperty("_breathing").objectReferenceValue = breathing;
+            so.FindProperty("_doorSource").objectReferenceValue = door;
+            so.FindProperty("_doorClip").objectReferenceValue = Clip("SFX/SFX_F12_MetalCreak");
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static void LocalBox(Transform parent, string name, Vector3 localPosition, Vector3 scale, Material material)
+        {
+            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            go.name = name;
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = localPosition;
+            go.transform.localRotation = Quaternion.identity;
+            go.transform.localScale = scale;
+            go.GetComponent<Renderer>().sharedMaterial = material;
+        }
+
+        private static void SpawnInfected(Transform parent, string name, Vector3 position, float yaw, InfectedBehavior behavior, Vector3[] patrol)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.SetPositionAndRotation(position, Quaternion.Euler(0f, yaw, 0f));
+            var points = new List<Transform>();
+            if (patrol != null)
+            {
+                for (int i = 0; i < patrol.Length; i++)
+                {
+                    var p = new GameObject($"{name}_P{i}");
+                    p.transform.SetParent(go.transform, false);
+                    p.transform.position = patrol[i];
+                    points.Add(p.transform);
+                }
+            }
+            var spawn = go.AddComponent<InfectedSpawnPoint>();
+            var so = new SerializedObject(spawn);
+            so.FindProperty("_infectedPrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<SmartInfectedBrain>(InfectedPrefab);
+            SetArray(so.FindProperty("_patrolPoints"), points);
+            SerializedProperty o = so.FindProperty("_overrides");
+            o.FindPropertyRelative("Enabled").boolValue = true;
+            o.FindPropertyRelative("Behavior").enumValueIndex = (int)behavior;
+            o.FindPropertyRelative("GradedDetection").boolValue = true;
+            o.FindPropertyRelative("MimicryEnabled").boolValue = false;
+            o.FindPropertyRelative("SabotageEnabled").boolValue = false;
+            o.FindPropertyRelative("SightDistance").floatValue = 11f;
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
