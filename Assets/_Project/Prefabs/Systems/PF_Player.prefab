@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 5691835549515340450}
   - component: {fileID: 4623130270281869729}
   - component: {fileID: 6939384984380968025}
+  - component: {fileID: 4582414391936626458}
   m_Layer: 8
   m_Name: PF_Player
   m_TagString: Untagged
@@ -308,6 +309,22 @@ MonoBehaviour:
   _silenceDb: -42
   _shoutDb: -8
   _emitThreshold: 20
+--- !u!114 &4582414391936626458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691618561519237747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e22e02efbad47998f23b990ceeebd70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Player.ElenaVoiceInput
+  _playerMovement: {fileID: 1679263959686769015}
+  _noiseSensor: {fileID: 6939384984380968025}
+  _elenaConfig: {fileID: 11400000, guid: 6f804b67bd0db2744a8735f7d17a5507, type: 2}
+  _talkNoise: 35
 --- !u!1 &7159589432008154132
 GameObject:
   m_ObjectHideFlags: 0
