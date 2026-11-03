@@ -347,7 +347,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2561
   _shotNoise: 100
-  _aimLocalPosition: {x: 0, y: -0.1, z: 0.16}
+  _aimLocalPosition: {x: 0.006, y: -0.127, z: 0.13}
   _aimFov: 42
   _aimTransitionTime: 0.15
   _hipSpread: 3.5
@@ -494,9 +494,9 @@ Light:
   serializedVersion: 13
   m_Type: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 6
-  m_Range: 18
-  m_SpotAngle: 55
+  m_Intensity: 2.8
+  m_Range: 13
+  m_SpotAngle: 50
   m_InnerSpotAngle: 21.80208
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
