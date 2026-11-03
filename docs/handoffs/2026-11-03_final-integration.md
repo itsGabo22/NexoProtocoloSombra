@@ -72,3 +72,15 @@ Omitida a propósito: el modelo del infectado depende del pack `Pack_ZombieMale_
 - `CLAUDE.md` reescrito: 3 pisos, Built-in + Standard, sistemas de combate/vida/QTE/persistencia, propiedad Gabriel/Carlos (Piso 12 terminado), Elena y `_forceFallback`, regla de secretos, packs, Git, notas y límites de Unity MCP. Conserva los estándares de C# y UI Toolkit.
 - `docs/DESIGN_RATIONALE.md`: resueltas 5 marcas `[verificar]` (Okabe-Ito, arco estático, espacial, ayuda, BioScanner); quedan 2 (razones de contraste sin medir, mando físico). Nuevas secciones 11 (combate, vida, QTE, persistencia), 12 (audio e infectados) y 13 (Built-in frente a URP).
 - `README.md`: versión 6000.6.7f1, Built-in, `git lfs pull`, carpeta de packs y lista de packs, controles reales (de `NexoControls.inputactions` y del código).
+
+### Fase 7: verificación en vivo (hecha)
+
+- Tests EditMode: **35/35**.
+- Accesibilidad: desde el menú principal se abre Opciones › Accesibilidad; alto contraste y reducir movimiento se aplican en vivo (captura).
+- Captura en el Piso 12 → recarga → pantalla «SEÑAL PERDIDA / PISO 12 REINICIADO» en pausa (captura) → REINTENTAR → juego con el checkpoint restaurado.
+- **Recorrido 1:** 12 (munición 4/6 + 1 golpe, infectados eliminados) → 6 (persistencia OK; REINICIAR vuelve a 4/6; Elena [2] en fallback abre `F06_Door_Stairs` tras ~5 s) → 1 (pausa muestra «PISO 1 · VESTÍBULO»; REINICIAR OK) → BioScanner → giro (bloqueo, HUD corrupto, luces rojas, captura) → créditos → menú.
+- **Recorrido 2:** JUGAR desde cero (2/0, 3/3, índice 0) → REINICIAR en el 12 → 12 → 6 (3/3 conservado) → [2] → 1 → giro → créditos → menú (1 jugador, 1 HUD, 1 puente, `TwistHasPlayed` limpio) → JUGAR de nuevo desde cero.
+- Créditos: se veían encima del vestíbulo y del arma sin velo. Se añadió el `nx-scrim` del tema (hive) como primer hijo de `cr-root`; captura: texto legible en dos columnas.
+- Tecla de voz de Elena (V): `ElenaVoiceInput` activo y con binding; no se probó dictado real (requiere micrófono y reconocimiento de Windows) [verificar en el ensayo].
+- Consola: **0 errores**. Avisos repetidos: «Animator is not playing an AnimatorController» desde `SmartInfectedBrain.UpdateAnimatorSpeed` (el infectado no tiene modelo/avatar porque falta `Pack_ZombieMale_AAB`); avisos del pack de oficinas y de Unity AI.
+- Piso 12 (solo lectura): aparición, 2 infectados, `LevelExitGate` y `StairsExit_F12` → Piso 6 funcionan. No se modificó nada del Piso 12.
