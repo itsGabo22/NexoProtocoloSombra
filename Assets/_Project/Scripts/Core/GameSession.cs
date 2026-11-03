@@ -12,6 +12,8 @@ namespace Nexo.Core
     {
         public static bool HasSnapshot { get; private set; }
         public static bool RestorePending { get; set; }
+        /// <summary>El próximo piso que se cargue empieza una partida nueva (vida y munición iniciales).</summary>
+        public static bool NewGamePending { get; set; }
 
         public static int Magazine { get; private set; }
         public static int Reserve { get; private set; }
@@ -24,6 +26,7 @@ namespace Nexo.Core
         {
             HasSnapshot = false;
             RestorePending = false;
+            NewGamePending = false;
             HasWeapon = true;
         }
 

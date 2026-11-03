@@ -37,6 +37,14 @@ namespace Nexo.Core
         public void LoadFloor(string sceneName)
         {
             if (_isLoading || string.IsNullOrEmpty(sceneName)) return;
+
+            // Cargar el primer piso (JUGAR desde el menú) es una partida nueva: vida y munición iniciales
+            if (sceneName == _floorSceneName) GameSession.NewGamePending = true;
+            StartLoad(sceneName);
+        }
+
+        private void StartLoad(string sceneName)
+        {
             StartCoroutine(LoadFloorRoutine(sceneName));
         }
 
@@ -48,7 +56,9 @@ namespace Nexo.Core
             if (_isLoading) return false;
 
             string sceneName = string.IsNullOrEmpty(_loadedFloorScene) ? _floorSceneName : _loadedFloorScene;
-            LoadFloor(sceneName);
+            // Reiniciar (captura o menú REINICIAR): se vuelve al checkpoint con que se entró al piso
+            GameSession.RestorePending = GameSession.HasSnapshot;
+            StartLoad(sceneName);
             return true;
         }
 
