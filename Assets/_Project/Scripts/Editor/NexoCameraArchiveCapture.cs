@@ -79,6 +79,8 @@ namespace Nexo.EditorTools
             {
                 string file = $"{OutputFolder}/CAM_{feed.Id.Replace(' ', '_')}.png";
                 if (!captured.Contains(file)) continue;
+                // Un PNG recién creado puede no estar importado aún tras el Refresh: se fuerza su importación
+                AssetDatabase.ImportAsset(file, ImportAssetOptions.ForceSynchronousImport);
                 var importer = (TextureImporter)AssetImporter.GetAtPath(file);
                 if (importer != null)
                 {
