@@ -1,6 +1,6 @@
 # NEXO: PROTOCOLO SOMBRA
 
-Videojuego 3D de terror en primera persona desarrollado con **Unity 6 LTS, URP, C# y UI Toolkit**. NexoOS, la interfaz de las gafas de Alex, actúa como sistema de ayuda y como narrador no confiable.
+Videojuego 3D de terror en primera persona desarrollado con **Unity 6 (6000.6.7f1), pipeline Built-in, C# y UI Toolkit**. NexoOS, la interfaz de las gafas de Alex, actúa como sistema de ayuda y como narrador no confiable.
 
 **Equipo:** Gabriel — arquitectura C#, IA, UI Toolkit y Git · Carlos — Unity Editor, niveles, animación y audio.  
 **Entrega:** 15 de noviembre de 2026.  
@@ -8,8 +8,8 @@ Videojuego 3D de terror en primera persona desarrollado con **Unity 6 LTS, URP, 
 
 ## Decisiones fijadas
 
-- **Editor:** `6000.0.0f1`, declarado en `ProjectSettings/ProjectVersion.txt`. Ambos equipos deben usar exactamente la misma versión. Si deciden otra de la rama `6000.0.x`, actualizan ese archivo de forma coordinada.
-- **Render:** URP 17; navegación con AI Navigation; entrada con Input System.
+- **Editor:** `6000.6.7f1`, declarado en `ProjectSettings/ProjectVersion.txt`. Ambos equipos deben usar exactamente la misma versión.
+- **Render:** pipeline Built-in con materiales `Standard` (se descartó URP; ver `docs/DESIGN_RATIONALE.md`); navegación con AI Navigation; entrada con Input System.
 - **UI runtime:** exclusivamente UI Toolkit (`UIDocument`, UXML y USS), sin uGUI ni TextMeshPro.
 - **Comunicación:** eventos C# mediante `GameEvents`; escenas aditivas.
 - **IA de Elena:** proveedor remoto configurable con fallback local. Las claves nunca se versionan.
@@ -40,7 +40,7 @@ git config core.autocrlf false
 1. Añade la carpeta en Unity Hub y ábrela con la versión exacta indicada arriba.
 2. Espera a que Unity restaure los paquetes de `Packages/manifest.json`.
 3. Comprueba **Edit → Project Settings → Editor**: `Visible Meta Files` y `Force Text`.
-4. URP está declarado como dependencia. En la primera configuración, Gabriel debe crear el asset URP con su renderer y asignarlo en **Graphics** y **Quality**; después se versionan esos ajustes para que Carlos no tenga que repetirlos.
+4. El proyecto usa el **pipeline Built-in** (sin asset URP asignado) y materiales `Standard`. No asignes un asset URP: los materiales del proyecto están pensados para Built-in y los URP/Lit se ven rosas.
 5. Configura UnityYAMLMerge sustituyendo la ruta por tu instalación exacta:
 
 ```bash
@@ -52,9 +52,10 @@ git config merge.unityyamlmerge.driver 'C:/Program Files/Unity/Hub/Editor/6000.0
 
 ## Assets y secretos
 
-- Copia los packs compartidos en `Assets/_ThirdPartyAssets/` **con Unity cerrado y conservando sus `.meta`**. Esta ruta está ignorada por Git.
+- Ejecuta `git lfs install` y `git lfs pull` antes de abrir Unity (fuentes, audio y modelos propios están en LFS).
+- Extrae el zip de packs compartidos en `Assets/_ThirdPartyAssets/` (o `Assets/ThirdPartyAssets/`, ambas ignoradas; usa solo una) **con Unity cerrado y conservando sus `.meta`**. Packs necesarios: `Pack_Nokobot_Guns`, `Pack_OfficeBuilding`, `Pack_UnityLearnTemplate` y `Pack_ZombieMale_AAB` (sin este último el infectado no tiene modelo).
 - Registra cada pack y licencia en `docs/ASSETS.md`.
-- Cuando se implemente Elena, crea `ElenaSecrets.asset` mediante el menú de ScriptableObjects en `Assets/_Project/Data/Secrets/`. Esa carpeta está ignorada; sin el asset, el sistema debe funcionar en fallback.
+- Para Elena con Gemini, crea `ElenaSecrets.asset` mediante el menú de ScriptableObjects en `Assets/_Project/Data/Secrets/`. Esa carpeta está ignorada; sin el asset, el sistema debe funcionar en fallback.
 - No uses Git LFS para packs completos.
 
 ## Propiedad de carpetas
@@ -69,7 +70,9 @@ Una escena `.unity` tiene un único dueño. Todo cambio fuera de tu carpeta se s
 
 **Antes de proteger ramas:** sustituye el propietario provisional de las rutas de Carlos en `.github/CODEOWNERS` por su usuario real de GitHub.
 
-## Controles iniciales
+## Controles
+
+Tomados de `Input/NexoControls.inputactions` y de los bindings creados en código (`PlayerWeapon`, `ElenaVoiceInput`, `ObjectiveReminder`, `StruggleQTE`, `PlayerMovement`). En mando, Interactuar y Recargar comparten el botón oeste [verificar en mando físico].
 
 | Acción | Teclado/ratón | Mando |
 | --- | --- | --- |
@@ -77,10 +80,17 @@ Una escena `.unity` tiene un único dueño. Todo cambio fuera de tu carpeta se s
 | Cámara | Ratón | Stick derecho |
 | Correr | Shift izquierdo | Presionar stick izquierdo |
 | Interactuar | E | Botón oeste |
-| Visión térmica | F | Hombro derecho |
+| Visión térmica (linterna) | F | — (`FlashlightSystem` lee la tecla F directamente; la acción `ThermalVision` del mapa no está conectada) |
 | Rueda de órdenes | Mantener Q | Mantener hombro izquierdo |
-| Preguntas a Elena | 1, 2, 3 | Pendiente de diseño |
-| Pausa / cancelar | Esc | Start |
+| Preguntas rápidas a Elena | 1, 2, 3 | — |
+| Hablar con Elena (voz) | V | Botón norte |
+| Disparar | Clic izquierdo | Gatillo derecho |
+| Apuntar | Clic derecho | Gatillo izquierdo |
+| Recargar | R | Botón oeste |
+| Agacharse | Ctrl izquierdo o C | — |
+| Ver objetivo | Tab | Select |
+| Forcejeo (QTE) | Espacio | Botón sur |
+| Pausa / cancelar | Esc o P | Start |
 
 ## Flujo Git
 
