@@ -167,13 +167,18 @@ No existen: `gap`, `rem`, CSS Grid, `@keyframes`, `box-shadow`, degradados, `bac
 ### 10. Créditos (tema hive)
 - Left 160 / top 112: `MODO DEPURACIÓN ROOT` (`label`, color `accent`). Left 160 / top 152: `CRÉDITOS` (`title`, `ink`).
 - Panel biométrico (hive) en right 64 / top 64: `ESTADO BIOMÉTRICO` / `98.4% INFECTADO` / `FASE TERMINAL`.
-- Bloque en left 160 / top 288 / ancho 1000, pares etiqueta (`label` `ink-muted`, margen inferior 4) + valor (`body` `ink`, margen inferior 24):
-  - `DISEÑO Y DESARROLLO` / `Gabriel Esteban Paz Guerrero · Carlos Julian Benavides Burbano`
-  - `MATERIA` / `Diseño de Interfaces · Ingeniería de Software, 5.º semestre`
-  - `DIÁLOGOS DE ELENA` / `Gemini 2.5 Flash`
-  - `ARMA M1911` / `Nokobot, Modern Guns · Handgun v1.2 (Unity Asset Store) · Standard Unity Asset Store EULA`
-  - `PERSONAJE Y ANIMACIONES` / `Mixamo (Adobe)`
-  - `EDIFICIO DE OFICINAS Y ENTORNO` / `[Autor del pack y licencia]`
+- Bloque en left 160 / top 288 / ancho 1240, dos columnas de 580 (separación 80) para que todo quepa en 1080 px sin desplazamiento; pares etiqueta (`label` `ink-muted`, margen inferior 4) + valor (`body` `ink`, margen inferior 24):
+  - Columna izquierda:
+    - `DISEÑO Y DESARROLLO` / `Gabriel Esteban Paz Guerrero · Carlos Julian Benavides Burbano`
+    - `MATERIA` / `Diseño de Interfaces · Ingeniería de Software, 5.º semestre`
+    - `DIÁLOGOS DE ELENA` / `Gemini 2.5 Flash (Google)`
+    - `TIPOGRAFÍAS` / `Barlow Condensed (The Barlow Project Authors) · IBM Plex Sans e IBM Plex Mono (IBM Corp.) · SIL Open Font License 1.1`
+    - `EFECTOS DE SONIDO` / `Sonido procedural creado para el proyecto`
+  - Columna derecha:
+    - `ARMA M1911` / `Nokobot, Modern Guns · Handgun v1.2 (Unity Asset Store) · Standard Unity Asset Store EULA`
+    - `PERSONAJE Y ANIMACIONES` / `Mixamo (Adobe)`
+    - `ANIMACIONES DE LOCOMOCIÓN` / `Starter Assets, plantilla de Unity Learn (Unity Technologies) · Unity Companion License`
+    - `EDIFICIO DE OFICINAS Y ENTORNO` / `Polygon Office Building (Unity Asset Store) · Standard Unity Asset Store EULA` (el autor del pack no figura en el repo: no se acredita)
 - Pista `Vuelve al menú principal.`; KeyHint: `Esc` Atrás.
 
 ## 7. Pendientes que no cubre esta especificación
