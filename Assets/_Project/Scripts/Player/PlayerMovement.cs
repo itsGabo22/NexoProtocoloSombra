@@ -38,6 +38,7 @@ namespace Nexo.Player
         private static readonly int SpeedHash = Animator.StringToHash("Speed");
         private static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
         private static readonly int IsCrouchingHash = Animator.StringToHash("IsCrouching");
+        private static readonly int CeilingMask = (1 << 0) | (1 << 11); // Default | Environment
 
         private CharacterController _controller;
         private Vector3 _velocity;
@@ -172,7 +173,10 @@ namespace Nexo.Player
             {
                 if (_isCrouching)
                 {
-                    if (!Physics.Raycast(transform.position, Vector3.up, _standingHeight + 0.1f))
+                    // Solo bloquea un techo real (Default|Environment): sin máscara el rayo chocaba con el propio jugador
+                    Vector3 origin = transform.position + Vector3.up * (_crouchingHeight - 0.05f);
+                    float headroom = _standingHeight - _crouchingHeight + 0.15f;
+                    if (!Physics.Raycast(origin, Vector3.up, headroom, CeilingMask, QueryTriggerInteraction.Ignore))
                     {
                         _isCrouching = false;
                     }
