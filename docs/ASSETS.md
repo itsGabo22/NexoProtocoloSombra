@@ -31,6 +31,10 @@ Reconciliado el 2026-11-03 contra los packs presentes en la máquina de Gabriel.
 | `Audio/SFX/SFX_F12_DistantBang.wav`, `SFX_F12_MetalCreak.wav`, `SFX_F12_Whisper.wav` | Sonido procedural (commit f9f6d71) | Propio |
 | `Audio/SFX/SFX_M1911_Shot.wav`, `SFX_M1911_Empty.wav`, `SFX_M1911_Reload.wav` | Sonido procedural (commit 030cbea) | Propio |
 | `Audio/SFX/SFX_F12_ContainmentSiren.wav`, `SFX_F12_PhoneRing.wav`, `SFX_F12_TapeRecorder.wav` | Sonido procedural (commit 752cb8f) [verificar: el mensaje no dice «procedural»] | Propio [verificar] |
+| `Audio/SFX/SFX_F06_Thunder_01/02.wav`, `SFX_F06_DoorKnocks.wav`, `SFX_F06_ObjectFall.wav`, `SFX_Infected_Step_01-03.wav`, `SFX_Infected_HitFlesh.wav`, `SFX_Infected_Pain.wav` | Síntesis propia con `Scripts/Editor/NexoProceduralAudioGenerator.cs` (menú Nexo/Audio, semilla fija) | Propio |
+| `Audio/Ambience/SFX_F06_Breathing_Loop.wav`, `SFX_F06_ElectricHum_Loop.wav`, `SFX_F06_AlarmDistant_Loop.wav`, `SFX_F06_LabRoomTone_Loop.wav` | Síntesis propia con `NexoProceduralAudioGenerator.cs` | Propio |
+| `UI/Textures/CameraArchive/CAM_*.png` | Capturas de las escenas propias del proyecto generadas con `Scripts/Editor/NexoCameraArchiveCapture.cs` | Propio |
+| `Materials/Floor06/MAT_F06_*.mat` | Materiales Standard creados por `NexoFloor06Builder.cs` | Propio |
 | `Data/ElenaConfig.asset` → `gemini-2.5-flash` | Diálogos de Elena generados en tiempo real por Gemini 2.5 Flash (Google); sin conexión se usan los JSON de fallback escritos por el equipo | Términos de la API de Gemini |
 
 ## Protocolo para actualizar packs
