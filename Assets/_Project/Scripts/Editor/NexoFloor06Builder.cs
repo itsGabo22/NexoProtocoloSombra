@@ -386,7 +386,7 @@ namespace Nexo.EditorTools
             Scare(story, "Scare_F06_Storage_ElenaVoice", new Vector3(13f, 0.45f, -1.2f), new Vector3(1f, 0.9f, 1.4f), rig.StorageVoice, Clip("Voices/SFX_Mimic_Radio_01"), 0.8f,
                 "(Desde el almacén sellado, una voz idéntica a la de Elena: «Alex... estoy aquí»)", 0f);
             Scare(story, "Scare_F06_LabA_ShelfFall", new Vector3(-8f, 0.45f, 3f), new Vector3(2f, 0.9f, 0.8f), rig.ShelfFall, Clip("SFX/SFX_F06_ObjectFall"), 0.9f,
-                "(Algo metálico cae de una estantería al fondo del laboratorio)", 40f);
+                "(Algo metálico cae de una estantería al fondo del laboratorio)", 30f);
 
             // Silueta que solo aparece en la cámara del Laboratorio B y se esfuma al entrar
             Material shadow = SolidMaterial("MAT_F06_Silhouette", new Color(0.01f, 0.01f, 0.012f));
@@ -454,7 +454,7 @@ namespace Nexo.EditorTools
 
             // 5) Persecución corta: espera al fondo del Lab B y acude al ruido de la puerta de las escaleras
             Spawn(waypoints, prefab, "Spawn_F06_Stairs_Chaser", new Vector3(14.4f, 0f, 8.4f), 200f, null,
-                Overrides(InfectedBehavior.Listener, sight: 12f, hearing: 30f));
+                Overrides(InfectedBehavior.Listener, sight: 12f));
         }
 
         private static InfectedSpawnOverrides Overrides(InfectedBehavior behavior, bool learning = false, float sight = 0f, float hearing = 0f)

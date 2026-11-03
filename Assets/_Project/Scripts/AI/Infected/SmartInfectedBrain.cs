@@ -564,7 +564,7 @@ namespace Nexo.AI.Infected
         {
             if (_isDead) return;
 
-            float multiplier = (_behavior == InfectedBehavior.Listener ? 1.5f : 1f) * (_memory != null ? _memory.HearingMultiplier : 1f);
+            float multiplier = (_behavior == InfectedBehavior.Listener ? 1.3f : 1f) * (_memory != null ? _memory.HearingMultiplier : 1f);
             float range = Mathf.Clamp(intensity, 0f, 100f) / 100f * _maxHearingRange * multiplier;
             float sqrDistance = (position - transform.position).sqrMagnitude;
             if (sqrDistance > range * range) return;
