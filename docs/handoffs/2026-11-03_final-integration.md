@@ -84,3 +84,120 @@ Omitida a propósito: el modelo del infectado depende del pack `Pack_ZombieMale_
 - Tecla de voz de Elena (V): `ElenaVoiceInput` activo y con binding; no se probó dictado real (requiere micrófono y reconocimiento de Windows) [verificar en el ensayo].
 - Consola: **0 errores**. Avisos repetidos: «Animator is not playing an AnimatorController» desde `SmartInfectedBrain.UpdateAnimatorSpeed` (el infectado no tiene modelo/avatar porque falta `Pack_ZombieMale_AAB`); avisos del pack de oficinas y de Unity AI.
 - Piso 12 (solo lectura): aparición, 2 infectados, `LevelExitGate` y `StairsExit_F12` → Piso 6 funcionan. No se modificó nada del Piso 12.
+
+### Fase 8: build de Windows con Elena offline (hecha)
+
+- `ElenaConfig`: `_forceFallback` = true y `_secrets` = null solo para el build (los 3 JSON de fallback estaban en la lista). En esta máquina no existe `ElenaSecrets.asset` (la referencia ya estaba rota), así que ninguna clave pudo entrar al build. Después se restauró el asset con `git restore`: `_forceFallback: 0` y la referencia original, sin cambios en Git.
+- `BuildPipeline.BuildPlayer`, StandaloneWindows64, release, escenas en orden (Systems_Persistent primero). Resultado **Succeeded**, 0 errores, 3 min 20 s.
+- Salida: `Builds/NexoProtocoloSombra_Windows/` (**174,9 MB**) y `Builds/NexoProtocoloSombra_Windows.zip` (**62,8 MB**). `Builds/` está ignorado.
+- Ejecutado 60 s: no se cerró. `%USERPROFILE%\AppData\LocalLow\DefaultCompany\NexoProtocoloSombra\Player.log` sin excepciones; registra «[ElenaAIService] Sin API key configurada: operando en modo contingencia (fallback local).»
+- Avisos del build (no bloqueantes): shaders URP (`Universal Render Pipeline/Lit`, `FallbackError`) eliminados del build por no haber asset URP; scripts TMP ausentes en assets de `Pack_UnityLearnTemplate`; 144 mallas sin colisión precocinada (pack de oficinas).
+- `PlayerSettings.companyName` sigue siendo `DefaultCompany` (no se tocó ProjectSettings).
+
+### Fase 9: push y textos de PR (hecha)
+
+- `gh` no está instalado: los PR se entregan como texto (abajo).
+- PR 1: https://github.com/itsGabo22/NexoProtocoloSombra/compare/develop...feature/final-integration?expand=1
+- PR 2 (después del 1, **Create a merge commit**, nunca squash): https://github.com/itsGabo22/NexoProtocoloSombra/compare/main...develop?expand=1
+
+### Fase 10: guion de demo (hecha)
+
+- `docs/DEMO_SCRIPT.md`: guion de 6:30, controles verificados, mentiras del HUD frente a la verdad, plan de contingencia y limitaciones.
+
+## Informe final
+
+| Fase | Estado | Nota |
+| --- | --- | --- |
+| 0 Auditoría | Hecha | Falta `Pack_ZombieMale_AAB` |
+| 1 Base limpia | Hecha | No había duplicado; se reencuadró la pistola |
+| 2 Pisos 6 y 1 | Hecha | Pausa bloqueada en el giro; pantalla «Piso reiniciado» conectada |
+| 3 Pisos «de juego» | Omitida | MEDIA; sin modelo de zombi no se puede verificar un infectado nuevo |
+| 4 Térmica sin URP | Hecha | Capa UI Toolkit |
+| 5 Créditos y assets | Hecha | Dos columnas + velo |
+| 6 Docs | Hecha | CLAUDE.md, rationale, README |
+| 7 Verificación | Hecha | 35/35; 2 recorridos; 0 errores |
+| 8 Build | Hecha | 174,9 MB; zip 62,8 MB; 60 s sin excepciones |
+| 9 PR | Hecha (texto) | Sin `gh` |
+| 10 Demo | Hecha | `docs/DEMO_SCRIPT.md` |
+
+**Cambios en código de Carlos o en el Piso 12:** ninguno. El único cambio que toca su sistema es la posición del `Viewmodel_M1911` en `Systems_Persistent` (override de escena de Gabriel; `PlayerWeapon` no se modificó).
+
+**MISSING:** autor del pack de oficinas; fuente, autor y licencia de `Pack_ZombieMale_AAB`; origen de los clips `Infected/*.anim` y `Elena/*.anim`; confirmar que los clips de 752cb8f son procedurales.
+**`[verificar]` restantes:** razones de contraste sin medir; mando físico; dictado por voz de Elena.
+
+**Para Gabriel, a mano:**
+1. Abrir el PR 1 con el enlace de arriba (base `develop`, revisor `simviz12`) y pegar el texto. Mergearlo.
+2. Después, abrir el PR 2 `develop → main` y mergearlo con **Create a merge commit**.
+3. Pedir a Carlos `Pack_ZombieMale_AAB` y extraerlo en `Assets/ThirdPartyAssets/` con Unity cerrado.
+4. Enviar `Builds/NexoProtocoloSombra_Windows.zip` al equipo; si se rehace el build con el pack del zombi, repetir la fase 8.
+5. Ensayar con `docs/DEMO_SCRIPT.md`.
+
+## Textos de los PR
+## PR 1 · `feature/final-integration` → `develop`
+
+**Título:** `feat: integración final, visión térmica, créditos verificados y docs de entrega`
+
+**Revisor:** `simviz12`
+
+**Cuerpo:**
+
+## Resumen por fase
+
+- **Auditoría (fase 0):** rama creada desde `origin/develop` (a1328c4). Escaneo de secretos de todo el historial limpio. Tests de base 35/35. Falta `Pack_ZombieMale_AAB` en la máquina de Gabriel (ver «Problemas conocidos»).
+- **Base limpia (fase 1):** no había pistola duplicada: `PlayerWeapon` usa el `Viewmodel_M1911` de `Systems_Persistent` por nombre. Ese modelo quedaba fuera del encuadre en la posición de cadera: se movió a (0.13, -0.13, 0.20). La posición de apuntado no se tocó.
+- **Pisos 6 y 1 (fase 2):** persistencia 12 → 6 → 1, REINICIAR en los tres pisos, giro con el jugador bloqueado y vuelta al menú limpia, todo verificado. Arreglos: no se puede pausar durante el giro, y la pantalla «Piso reiniciado» ahora se abre tras una captura (REINTENTAR reanuda desde el checkpoint). **No se tocó código de Carlos ni el Piso 12.**
+- **Visión térmica sin URP (fase 4):** `ThermalOverlayController` + capa `hud-thermal-overlay` (tinte cian y viñeta) que se activa con la F. Respeta `.reduce-motion` y `.a11y-hc`.
+- **Créditos y assets (fase 5):** créditos en dos columnas solo con datos verificados, velo del tema detrás, licencias OFL junto a las fuentes y `docs/ASSETS.md` reconciliado.
+- **Docs (fase 6):** `CLAUDE.md` reescrito (3 pisos, Built-in, dos desarrolladores, MCP), `DESIGN_RATIONALE.md` con secciones de combate, persistencia, audio y Built-in frente a URP, y `README.md` con los pasos de instalación y los controles reales.
+- **Demo (fase 10):** `docs/DEMO_SCRIPT.md`.
+- Bitácora completa en `docs/handoffs/2026-11-03_final-integration.md`.
+
+## Cómo probar
+
+1. `git switch feature/final-integration`, `git lfs pull`, y packs en `Assets/_ThirdPartyAssets/` (incluido `Pack_ZombieMale_AAB`).
+2. Abre `Systems_Persistent.unity` y pulsa Play → JUGAR.
+3. Piso 12: elimina a los 2 infectados → escalera [E] → Piso 6: pulsa 2 (Elena abre la puerta) → escalera → Piso 1: BioScanner [E] → giro → créditos → Esc → JUGAR (empieza de cero).
+4. Pulsa F: tinte cian con viñeta. Esc → REINICIAR PISO en cada piso. Déjate atrapar: aparece «SEÑAL PERDIDA».
+5. Window › General › Test Runner › EditMode › Run All.
+
+## Problemas conocidos
+
+- Sin `Pack_ZombieMale_AAB` el infectado no tiene modelo y la consola repite «Animator is not playing an AnimatorController».
+- Al entrar en Play, Unity reescribe `Materials/Floor12/MAT_F12_ExitButton.mat`. No se versionó: descártalo con `git restore`.
+- Los clips de 752cb8f, el autor del pack de oficinas y la fuente del pack del zombi están pendientes en `docs/ASSETS.md`.
+
+## Tests
+
+EditMode **35/35**. Dos recorridos completos en Play con 0 errores en la consola.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+---
+
+## PR 2 · `develop` → `main` (solo texto; abrir DESPUÉS de mergear el PR 1)
+
+**Título:** `release: entrega final (develop → main)`
+
+**Cuerpo:**
+
+## Estado del juego
+
+`main` (1275d15) solo tiene la preparación del Piso 12. Este PR lleva a `main` el juego completo:
+
+- **3 pisos jugables:** 12 (oficinas, combate, 2 infectados, historia), 6 (laboratorios, Elena abre la escalera) y 1 (vestíbulo, BioScanner y giro final).
+- **Menús NexoOS en UI Toolkit:** arranque, menú, opciones de video y accesibilidad, pausa, piso reiniciado y créditos.
+- **Sistemas:** HUD biométrico que miente, Elena con Gemini 2.5 Flash y fallback offline, M1911, vida, forcejeo, persistencia entre pisos, visión térmica en Built-in, audio procedural e IA de infectados con FSM.
+- **Calidad:** 35/35 tests EditMode.
+- **Documentación:** `docs/DESIGN_RATIONALE.md`, `docs/DEMO_SCRIPT.md` y `docs/ASSETS.md`.
+
+## Checklist de entrega
+
+- [ ] PR `feature/final-integration` → `develop` mergeado.
+- [ ] Recorrido completo en `develop` (menú → 12 → 6 → 1 → créditos → menú).
+- [ ] Build de Windows con Elena en fallback (`Builds/NexoProtocoloSombra_Windows.zip`) probado en otra máquina.
+- [ ] Packs (incluido `Pack_ZombieMale_AAB`) en el zip compartido del equipo.
+- [ ] Ensayo de la demo con `docs/DEMO_SCRIPT.md`.
+
+**Importante:** mergear con **«Create a merge commit»**. Nunca «Squash»: aplastaría la historia sobre la que trabaja la rama de Carlos.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
