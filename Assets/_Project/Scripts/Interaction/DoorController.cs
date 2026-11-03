@@ -22,6 +22,8 @@ namespace Nexo.Interaction
         [SerializeField] private Transform _doorHinge;
         [SerializeField] private Vector3 _openOffset = new Vector3(0f, 0f, 1.4f);
         [SerializeField] private float _transitionSpeed = 5.0f;
+        [Tooltip("Ruido (0-100) al abrir o cerrar: lo oyen los infectados.")]
+        [SerializeField, Range(0f, 100f)] private float _moveNoise = 35f;
 
         private Vector3 _closedPosition;
         private Vector3 _targetPosition;
@@ -119,7 +121,10 @@ namespace Nexo.Interaction
         /// </summary>
         public void SetOpen(bool open)
         {
+            bool changed = _isOpen != open;
             _isOpen = open;
+            // Las puertas metálicas hacen ruido: los infectados cercanos pueden oírlas
+            if (changed && isActiveAndEnabled) GameEvents.RaiseNoiseEmitted(transform.position, _moveNoise);
             if (_doorHinge == null) return;
 
             _targetPosition = _isOpen ? _closedPosition + _openOffset : _closedPosition;
