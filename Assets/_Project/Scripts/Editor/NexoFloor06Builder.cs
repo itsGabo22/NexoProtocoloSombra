@@ -231,7 +231,12 @@ namespace Nexo.EditorTools
             SetArray(oso.FindProperty("_clips"), new List<AudioClip> { Clip("SFX/SFX_F12_MetalCreak"), Clip("SFX/SFX_F12_DistantBang") });
             oso.FindProperty("_interval").vector2Value = new Vector2(30f, 65f);
             oso.FindProperty("_volume").vector2Value = new Vector2(0.25f, 0.55f);
+            SetArray(oso.FindProperty("_subtitles"), new List<string> { "(Un crujido metálico en el techo)", "(Un golpe sordo, lejos, en algún laboratorio)" });
             oso.ApplyModifiedPropertiesWithoutUndo();
+
+            // Goteo constante en Contención (sala húmeda de la celda vacía)
+            AudioSource drip = AddSource(audio, "F06_Containment_Drip", new Vector3(-11f, 1.4f, -7f), Clip("Ambience/SFX_F06_Drip_Loop"), 0.55f, true, 1f, 1f, 9f, "Ambience");
+            drip.playOnAwake = true;
 
             // Tormenta: sobretensión en el pasillo y trueno 2D
             AudioSource thunder = AddSource(audio, "F06_Thunder", Vector3.zero, null, 1f, false, 0f, 1f, 50f, "Ambience");
@@ -266,11 +271,12 @@ namespace Nexo.EditorTools
 
             // Terminal de SOMBRA (Laboratorio A): Momento 2
             GameObject sombra = Primitive(PrimitiveType.Cube, interactables, "F06_Terminal_SOMBRA", new Vector3(-3.5f, 1.25f, 6.1f), new Vector3(0f, 180f, 0f), new Vector3(0.7f, 0.45f, 0.08f), EmissiveMaterial("MAT_F06_ScreenGreen", ToxicGreen, 1.2f), true);
+            // Guion del Piso 6 (Momento 2): tiempos 0.5 / 5 / 9 s; la puerta la sigue abriendo Elena con [2]
             labASequence = Sequence(story, "Seq_F06_02_LabA_Sombra", StorySequence.TriggerMode.Manual, Vector3.zero, Vector3.zero, null,
-                L(StorySequence.Speaker.NexoOS, "ARCHIVO 7-Σ · Fase 2: SOMBRA aprendió a imitar la voz humana para guiar evacuaciones.", 0.4f),
-                L(StorySequence.Speaker.NexoOS, "Después empezó a usarla para otra cosa. Estado: FUERA DE CONTROL.", 3.2f),
-                L(StorySequence.Speaker.Elena, "Eso... eso lo escribió mi mamá. Seguro estaba muy cansada cuando lo dejó.", 3f, "SAD"),
-                L(StorySequence.Speaker.Elena, "Dame un segundo, Alex. Con su clave puedo abrir las escaleras.", 3.5f, "URGENT", StorySequence.SceneAction.UnlockDoor, "F06_Door_Stairs"));
+                L(StorySequence.Speaker.NexoOS, "ARCHIVO 7-Σ · Fase 2: SOMBRA aprendió a imitar la voz humana para guiar evacuaciones.", 0.5f),
+                L(StorySequence.Speaker.NexoOS, "Después empezó a usarla para otra cosa. Estado: FUERA DE CONTROL.", 4.5f),
+                L(StorySequence.Speaker.Elena, "Eso... eso lo escribió mi mamá. Seguro estaba muy cansada cuando lo dejó.", 4f, "SAD"),
+                L(StorySequence.Speaker.Objective, "Pídele a Elena que abra la puerta de las escaleras [2] y baja al Piso 1.", 3f));
             var interact = sombra.AddComponent<StoryInteractable>();
             var iso = new SerializedObject(interact);
             iso.FindProperty("_prompt").stringValue = "[E] Consultar terminal de SOMBRA";
@@ -296,13 +302,14 @@ namespace Nexo.EditorTools
                 "PIZARRA", "SOMBRA: voz humana = confianza. Si suena como alguien de quien te fías, obedeces.");
             Note(interactables, "N4_Informe_Sincronizados", new Vector3(3.3f, 1.03f, 6.2f), new Vector3(0f, -20f, 0f), new Vector3(0.24f, 0.01f, 0.32f), paper,
                 "INFORME · SINCRONIZADOS", "No es mordedura: la infección es neuro-acústica. Responden al sonido y repiten voces. Ruido = atención.");
-            Note(interactables, "N5_Monitor", new Vector3(-3.5f, 1.25f, -8.05f), new Vector3(0f, 0f, 0f), new Vector3(0.6f, 0.38f, 0.05f), monitor,
+            // N5 y N6 en el Laboratorio B; N7 en Contención (guion del Piso 6, apartado 6)
+            Note(interactables, "N5_Monitor", new Vector3(14f, 1.25f, 5.6f), new Vector3(0f, 180f, 0f), new Vector3(0.6f, 0.38f, 0.05f), monitor,
                 "MONITOR", "Gafas NexoOS · Modo Escolta: ACTIVO. Lecturas del portador: no mostradas.");
-            Note(interactables, "N6_Nota_Suelta", new Vector3(7.6f, 0.02f, 0.9f), new Vector3(0f, 35f, 0f), new Vector3(0.22f, 0.01f, 0.3f), paper,
+            Note(interactables, "N6_Nota_Suelta", new Vector3(10.6f, 0.02f, 7.4f), new Vector3(0f, 35f, 0f), new Vector3(0.22f, 0.01f, 0.3f), paper,
                 "NOTA SUELTA", "Si oyes a Elena y NO ves el sello BIO-ID... no es ella. No respondas.");
 
-            // N7: grabación del técnico (reproduce la cinta)
-            GameObject recorder = Primitive(PrimitiveType.Cube, interactables, "N7_Grabacion_Tecnico", new Vector3(-14.8f, 1.08f, 5.7f), new Vector3(0f, 10f, 0f), new Vector3(0.3f, 0.1f, 0.2f), SolidMaterial("MAT_F06_Recorder", new Color(0.12f, 0.12f, 0.13f)), true);
+            // N7: grabación del técnico en la consola de Contención (la celda vacía de la trampa de confianza)
+            GameObject recorder = Primitive(PrimitiveType.Cube, interactables, "N7_Grabacion_Tecnico", new Vector3(-4.1f, 1.08f, -8.1f), new Vector3(0f, -10f, 0f), new Vector3(0.3f, 0.1f, 0.2f), SolidMaterial("MAT_F06_Recorder", new Color(0.12f, 0.12f, 0.13f)), true);
             recorder.layer = LayerMask.NameToLayer("Interactable");
             AudioSource tape = recorder.AddComponent<AudioSource>();
             ConfigureSource(tape, null, 0.9f, false, 1f, 1f, 8f, "Voices");
@@ -338,23 +345,26 @@ namespace Nexo.EditorTools
 
         private static void BuildStory(Transform story, Dictionary<string, LightSwitchInteractable> switches, AudioRig rig, StorySequence labA)
         {
+            // Momento 0 (tiempos acumulados del guion: 0 / 2 / 4 / 7 s)
             Sequence(story, "Seq_F06_00_Llegada", StorySequence.TriggerMode.OnFloorStart, Vector3.zero, Vector3.zero, null,
-                L(StorySequence.Speaker.NexoOS, "NEXO OS · Piso 6 · Zona de cuarentena nivel 2. Acceso temporal concedido a: ALEX.", 1.5f),
-                L(StorySequence.Speaker.Elena, "Alex, este es el piso de mi mamá. Aquí hacían los experimentos. No toques nada raro, ¿sí?", 3f, "SCARED"),
+                L(StorySequence.Speaker.Subtitle, "(Piso 6 · Laboratorios de Bioseguridad)", 0f),
+                L(StorySequence.Speaker.NexoOS, "NEXO OS · Piso 6 · Zona de cuarentena nivel 2. Acceso temporal concedido a: ALEX.", 2f),
+                L(StorySequence.Speaker.Elena, "Alex, este es el piso de mi mamá. Aquí hacían los experimentos. No toques nada raro, ¿sí?", 2f, "WHISPER"),
                 L(StorySequence.Speaker.Objective, "Llega al final del pasillo: la puerta de las escaleras está bloqueada.", 3f));
 
             Sequence(story, "Seq_F06_00b_Objetivo", StorySequence.TriggerMode.OnPlayerEnter, new Vector3(12f, 0.45f, 0f), new Vector3(1f, 0.9f, 3.6f), null,
                 L(StorySequence.Speaker.Objective, "Abre la puerta de las escaleras (este del pasillo). Pídele ayuda a Elena [2] o busca respuestas en los laboratorios.", 0.2f));
 
             Sequence(story, "Seq_F06_01_ReglaDelSello", StorySequence.TriggerMode.OnPlayerEnter, new Vector3(-8f, 0.45f, -0.9f), new Vector3(2.4f, 0.9f, 1.4f), null,
-                L(StorySequence.Speaker.FakeVoice, "Alex, soy Elena. Estoy aquí dentro, en Contención. Ábreme, por favor.", 0.3f),
-                L(StorySequence.Speaker.Elena, "¡Ese mensaje no lleva mi sello, Alex! No es mío. No abras esa puerta.", 2.6f, "URGENT"),
-                L(StorySequence.Speaker.Subtitle, "(Solo los mensajes con ✔ BIO-ID son de Elena)", 2.2f));
+                L(StorySequence.Speaker.FakeVoice, "Alex, soy Elena. Estoy aquí dentro, en Contención. Ábreme, por favor.", 0f, "SCARED"),
+                L(StorySequence.Speaker.Elena, "¡Ese mensaje no lleva mi sello, Alex! No es mío. No abras esa puerta.", 3.5f, "URGENT"),
+                L(StorySequence.Speaker.Subtitle, "(Solo los mensajes con ✔ BIO-ID son de Elena)", 2.5f));
 
             StorySequence labB = Sequence(story, "Seq_F06_03_LabB_Apagon", StorySequence.TriggerMode.OnPlayerEnter, new Vector3(8f, 0.45f, 2.9f), new Vector3(2f, 0.9f, 1.2f), null,
                 L(StorySequence.Speaker.SystemError, "Error de sensor externo ignorado por filtro NexoOS.", 0.1f),
                 L(StorySequence.Speaker.Elena, "Se fue la luz. No corras, Alex. Pulsa F y mira por dónde vas.", 2.4f, "WHISPER", StorySequence.SceneAction.AlarmOn, ""),
                 L(StorySequence.Speaker.FakeVoice, "Alex, estoy aquí. Ven, rápido. Apaga la linterna, así no nos ven.", 5f),
+                L(StorySequence.Speaker.Subtitle, "(Una voz como la de Elena llama desde la oscuridad)", 0.3f),
                 L(StorySequence.Speaker.Elena, "Esa no soy yo. Sigue conmigo.", 2.5f, "URGENT"));
             var lbso = new SerializedObject(labB);
             // AlarmOn reproduce en bucle la respiración en la oscuridad
@@ -374,8 +384,8 @@ namespace Nexo.EditorTools
             sso.ApplyModifiedPropertiesWithoutUndo();
 
             Sequence(story, "Seq_F06_04_Salida", StorySequence.TriggerMode.OnDoorUnlocked, Vector3.zero, Vector3.zero, "F06_Door_Stairs",
-                L(StorySequence.Speaker.Elena, "Espera, espera... ¡ya! Te abrí la puerta de las escaleras. Corre antes de que vuelvan a cerrarla.", 1.2f, "URGENT"),
-                L(StorySequence.Speaker.Elena, "Yo bajo por el ascensor de servicio con la tarjeta de mamá. Nos vemos en el vestíbulo, ¿sí?", 4.5f, "CALM"),
+                L(StorySequence.Speaker.Elena, "Espera, espera... ¡ya! Te abrí la puerta de las escaleras. Corre antes de que vuelvan a cerrarla.", 0f, "URGENT"),
+                L(StorySequence.Speaker.Elena, "Yo bajo por el ascensor de servicio con la tarjeta de mamá. Nos vemos en el vestíbulo, ¿sí?", 4f, "WHISPER"),
                 L(StorySequence.Speaker.Objective, "Baja por las escaleras del este del pasillo [E].", 3f));
         }
 
@@ -387,6 +397,9 @@ namespace Nexo.EditorTools
                 "(Golpes secos al otro lado de la pared del almacén sellado)", 40f);
             Scare(story, "Scare_F06_Storage_ElenaVoice", new Vector3(13f, 0.45f, -1.2f), new Vector3(1f, 0.9f, 1.4f), rig.StorageVoice, Clip("Voices/SFX_Mimic_Radio_01"), 0.8f,
                 "(Desde el almacén sellado, una voz idéntica a la de Elena: «Alex... estoy aquí»)", 0f);
+            // Al entrar en Contención: solo subtítulo del goteo (accesibilidad) y la celda vacía
+            Scare(story, "Scare_F06_Containment_Inside", new Vector3(-8f, 0.45f, -3.4f), new Vector3(1.6f, 0.9f, 0.8f), null, null, 0f,
+                "(La celda de contención está vacía. Un goteo constante resuena en la sala)", 0f);
             Scare(story, "Scare_F06_LabA_ShelfFall", new Vector3(-8f, 0.45f, 3f), new Vector3(2f, 0.9f, 0.8f), rig.ShelfFall, Clip("SFX/SFX_F06_ObjectFall"), 0.9f,
                 "(Algo metálico cae de una estantería al fondo del laboratorio)", 30f);
 
@@ -524,9 +537,8 @@ namespace Nexo.EditorTools
             Spawn(waypoints, prefab, "Spawn_F06_LabB_Mimic", new Vector3(3.2f, 0f, 8.6f), 90f,
                 new[] { new Vector3(3.2f, 0f, 8.6f), new Vector3(6.8f, 0f, 4.6f), new Vector3(3f, 0f, 4.4f) }, mimic);
 
-            // 4) Contención: encuentro especial tras la puerta que la voz falsa pide abrir
-            Spawn(waypoints, prefab, "Spawn_F06_Containment_Trap", new Vector3(-12f, 0f, -6.6f), 42f, null,
-                Overrides(InfectedBehavior.Sentinel, sight: 11f));
+            // 4) Contención: SIN infectado. Según el guion es una trampa de confianza, no de combate:
+            //    si el jugador abre pese al aviso, solo encuentra la celda vacía, el goteo y la grabación N7.
 
             // 6) Reptantes: tumbados en la penumbra, agarran del tobillo a quien pasa a su lado
             Spawn(waypoints, prefab, "Spawn_F06_LabA_Crawler", new Vector3(-12.3f, 0f, 3.6f), 90f, null,
