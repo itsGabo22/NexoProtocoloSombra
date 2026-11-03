@@ -2,6 +2,7 @@ using Nexo.AI.Elena;
 using Nexo.Core;
 using Nexo.Interaction;
 using Nexo.Player;
+using Nexo.UI.Menus;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -33,6 +34,7 @@ namespace Nexo.UI
 
         private SecurityTerminal _terminal;
         private bool _isCaptured;
+        private int _trackedFloor;
 
         public bool IsOpen => _terminal != null;
 
@@ -91,7 +93,9 @@ namespace Nexo.UI
             _terminal = terminal;
             _terminal.SetFeedsActive(true);
 
-            if (_title != null) _title.text = terminal.TerminalId.Replace('_', ' ').ToUpperInvariant();
+            // Título en español con el piso activo (FloorMetadata) o el último publicado; por defecto el 12
+            int metadataFloor = FloorMetadata.Active != null ? FloorMetadata.Active.FloorNumber : 0;
+            if (_title != null) _title.text = FloorLabels.TerminalTitle(FloorLabels.Resolve(metadataFloor, _trackedFloor));
             SetStatus(string.Empty);
 
             BuildFeeds();
@@ -130,6 +134,7 @@ namespace Nexo.UI
         private void HandleFloorChanged(int floor)
         {
             _isCaptured = false;
+            _trackedFloor = floor;
         }
 
         private void HandleClosePerformed(InputAction.CallbackContext context)
@@ -147,6 +152,8 @@ namespace Nexo.UI
         {
             if (_feeds == null) return;
             _feeds.Clear();
+            // Con una sola cámara la vista previa usa todo el ancho de la columna
+            _feeds.EnableInClassList("terminal-feeds--single", _terminal.FeedCount == 1);
 
             for (int i = 0; i < _terminal.FeedCount; i++)
             {
@@ -188,7 +195,7 @@ namespace Nexo.UI
                 var info = new VisualElement();
                 info.AddToClassList("flex-col");
 
-                var idLabel = new Label(door.DoorId);
+                var idLabel = new Label(DoorDisplayNames.Label(door.DoorId));
                 idLabel.AddToClassList("text-sm");
                 idLabel.AddToClassList("text-main");
 
@@ -229,7 +236,8 @@ namespace Nexo.UI
             DoorController door = _terminal.GetDoor(doorIndex);
             if (_terminal.TryToggleDoor(doorIndex) && door != null)
             {
-                SetStatus($"> {door.DoorId}: {(door.IsOpen ? "APERTURA" : "CIERRE")} REMOTO EJECUTADO");
+                string name = DoorDisplayNames.Label(door.DoorId).ToUpperInvariant();
+                SetStatus($"> {name}: {(door.IsOpen ? "APERTURA REMOTA EJECUTADA" : "CIERRE REMOTO EJECUTADO")}");
             }
             BuildDoors();
         }
