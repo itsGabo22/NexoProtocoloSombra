@@ -75,6 +75,8 @@ namespace Nexo.EditorTools
             BuildNotes(interactables, story);
             BuildStory(story, switches, rig, labASequence);
             BuildScares(story, props, rig);
+            BuildHidingSpots(interactables);
+            BuildBreaker(interactables, switches["F06_LabB"]);
             BuildInfected(waypoints);
             PrepareDoorsForNavigation();
             BakeNavMesh(root);
@@ -418,6 +420,80 @@ namespace Nexo.EditorTools
             so.ApplyModifiedPropertiesWithoutUndo();
         }
 
+        // ---------------- Escondites y diferencial ----------------
+
+        /// <summary>
+        /// Armarios de material huecos (interior 0.95 x 0.9 m: cabe el CharacterController de 0.35 m de radio).
+        /// Paredes y puerta en la capa Default: tallan el NavMesh y tapan la vista de los infectados.
+        /// </summary>
+        private static void BuildHidingSpots(Transform interactables)
+        {
+            Locker(interactables, "F06_Locker_Corridor", new Vector3(4f, 0f, 1.35f), 180f);
+            Locker(interactables, "F06_Locker_LabA", new Vector3(-15.4f, 0f, 7.2f), 90f);
+            Locker(interactables, "F06_Locker_LabB", new Vector3(8.6f, 0f, 9.4f), 180f);
+        }
+
+        private static void Locker(Transform parent, string name, Vector3 position, float yaw)
+        {
+            Material metal = SolidMaterial("MAT_F06_Locker", new Color(0.32f, 0.38f, 0.36f));
+            var root = new GameObject(name);
+            root.transform.SetParent(parent, false);
+            root.transform.SetPositionAndRotation(position, Quaternion.Euler(0f, yaw, 0f));
+
+            // Local: +z = frente (puerta). Medidas exteriores 1.05 x 2.2 x 1.0
+            Primitive(PrimitiveType.Cube, root.transform, "Back", new Vector3(0f, 1.1f, -0.475f), Vector3.zero, new Vector3(1.05f, 2.2f, 0.05f), metal, true, true);
+            Primitive(PrimitiveType.Cube, root.transform, "Left", new Vector3(-0.5f, 1.1f, 0f), Vector3.zero, new Vector3(0.05f, 2.2f, 1f), metal, true, true);
+            Primitive(PrimitiveType.Cube, root.transform, "Right", new Vector3(0.5f, 1.1f, 0f), Vector3.zero, new Vector3(0.05f, 2.2f, 1f), metal, true, true);
+            Primitive(PrimitiveType.Cube, root.transform, "Top", new Vector3(0f, 2.175f, 0f), Vector3.zero, new Vector3(1.05f, 0.05f, 1f), metal, true, true);
+            GameObject door = Primitive(PrimitiveType.Cube, root.transform, "Door", new Vector3(0f, 1.1f, 0.475f), Vector3.zero, new Vector3(0.95f, 2.15f, 0.04f), metal, true, true);
+            // Rendijas de ventilación: se intuye el exterior desde dentro
+            for (int i = 0; i < 4; i++)
+            {
+                Primitive(PrimitiveType.Cube, door.transform, "Slit" + i, new Vector3(0f, 0.28f - i * 0.035f, 0.6f), Vector3.zero, new Vector3(0.6f, 0.012f, 0.2f), SolidMaterial("MAT_F06_LockerSlit", new Color(0.02f, 0.02f, 0.02f)), false);
+            }
+
+            var inside = new GameObject("InsidePoint");
+            inside.transform.SetParent(root.transform, false);
+            inside.transform.localPosition = new Vector3(0f, 0.05f, 0f);
+            inside.transform.localRotation = Quaternion.identity; // mira hacia la puerta
+            var exit = new GameObject("ExitPoint");
+            exit.transform.SetParent(root.transform, false);
+            exit.transform.localPosition = new Vector3(0f, 0.05f, 1.1f);
+            exit.transform.localRotation = Quaternion.identity;
+
+            AudioSource doorSource = AddSource(root.transform, "DoorAudio", root.transform.TransformPoint(new Vector3(0f, 1.2f, 0.5f)), null, 1f, false, 1f, 1.5f, 14f, "SFX");
+            AudioSource breathing = AddSource(root.transform, "PlayerBreathing", root.transform.position, Clip("Ambience/SFX_F06_Breathing_Loop"), 0.35f, true, 0f, 1f, 5f, "Voices");
+
+            var spot = root.AddComponent<HidingSpot>();
+            var so = new SerializedObject(spot);
+            so.FindProperty("_insidePoint").objectReferenceValue = inside.transform;
+            so.FindProperty("_exitPoint").objectReferenceValue = exit.transform;
+            so.FindProperty("_breathing").objectReferenceValue = breathing;
+            so.FindProperty("_doorSource").objectReferenceValue = doorSource;
+            so.FindProperty("_doorClip").objectReferenceValue = Clip("SFX/SFX_F12_MetalCreak");
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        /// <summary>Diferencial del Lab B en el pasillo: tras el apagón, el interruptor del Lab B queda sin corriente.</summary>
+        private static void BuildBreaker(Transform interactables, LightSwitchInteractable labB)
+        {
+            GameObject panel = Primitive(PrimitiveType.Cube, interactables, "F06_Breaker_LabB", new Vector3(10.5f, 1.35f, -1.83f), Vector3.zero, new Vector3(0.55f, 0.75f, 0.14f), SolidMaterial("MAT_F06_BreakerPanel", new Color(0.55f, 0.5f, 0.2f)), true);
+            GameObject lamp = Primitive(PrimitiveType.Cube, panel.transform, "StatusLamp", new Vector3(0f, 0.38f, 0.55f), Vector3.zero, new Vector3(0.15f, 0.08f, 0.3f), EmissiveMaterial("MAT_F06_BreakerLamp", new Color(0.2f, 1f, 0.45f), 2f), false);
+            Primitive(PrimitiveType.Cube, panel.transform, "Lever", new Vector3(0.25f, -0.05f, 0.7f), Vector3.zero, new Vector3(0.12f, 0.35f, 0.5f), SolidMaterial("MAT_F06_Switch", new Color(0.82f, 0.85f, 0.8f)), false);
+            AudioSource source = panel.AddComponent<AudioSource>();
+            ConfigureSource(source, null, 1f, false, 1f, 2f, 25f, "SFX");
+
+            var breaker = panel.AddComponent<PowerBreaker>();
+            var so = new SerializedObject(breaker);
+            so.FindProperty("_target").objectReferenceValue = labB;
+            so.FindProperty("_roomName").stringValue = "el laboratorio B";
+            so.FindProperty("_source").objectReferenceValue = source;
+            so.FindProperty("_crankClip").objectReferenceValue = Clip("SFX/SFX_F12_MetalCreak");
+            so.FindProperty("_restoreClip").objectReferenceValue = Clip("SFX/SFX_F12_DistantBang");
+            so.FindProperty("_statusLamp").objectReferenceValue = lamp.GetComponent<Renderer>();
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         // ---------------- Infectados ----------------
 
         private static void BuildInfected(Transform waypoints)
@@ -451,6 +527,12 @@ namespace Nexo.EditorTools
             // 4) Contención: encuentro especial tras la puerta que la voz falsa pide abrir
             Spawn(waypoints, prefab, "Spawn_F06_Containment_Trap", new Vector3(-12f, 0f, -6.6f), 42f, null,
                 Overrides(InfectedBehavior.Sentinel, sight: 11f));
+
+            // 6) Reptantes: tumbados en la penumbra, agarran del tobillo a quien pasa a su lado
+            Spawn(waypoints, prefab, "Spawn_F06_LabA_Crawler", new Vector3(-12.3f, 0f, 3.6f), 90f, null,
+                Overrides(InfectedBehavior.Crawler));
+            Spawn(waypoints, prefab, "Spawn_F06_Corridor_Crawler", new Vector3(2f, 0f, -1.35f), 90f, null,
+                Overrides(InfectedBehavior.Crawler));
 
             // 5) Persecución corta: espera al fondo del Lab B y acude al ruido de la puerta de las escaleras
             Spawn(waypoints, prefab, "Spawn_F06_Stairs_Chaser", new Vector3(14.4f, 0f, 8.4f), 200f, null,
