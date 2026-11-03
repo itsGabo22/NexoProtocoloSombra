@@ -26,13 +26,16 @@ namespace Nexo.AI.Infected
             _brain = brain;
         }
 
+        /// <summary>Centinelas y reptantes esperan en su puesto en lugar de patrullar.</summary>
+        private bool IsStationary => _brain.Behavior == InfectedBehavior.Sentinel || _brain.Behavior == InfectedBehavior.Crawler;
+
         public void Enter()
         {
             _brain.SetAlerted(false);
             _pausing = false;
             _nextSentinelLook = Time.time + Random.Range(2f, SentinelLookInterval);
 
-            if (_brain.Behavior == InfectedBehavior.Sentinel) GoHome();
+            if (IsStationary) GoHome();
             else GoToNextPoint();
         }
 
@@ -54,7 +57,7 @@ namespace Nexo.AI.Infected
                 return;
             }
 
-            if (_brain.Behavior == InfectedBehavior.Sentinel)
+            if (IsStationary)
             {
                 TickSentinel();
                 return;

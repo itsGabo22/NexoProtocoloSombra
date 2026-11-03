@@ -322,6 +322,57 @@ namespace Nexo.AI.Infected
             if (overrides.HearingRange > 0f) _maxHearingRange = overrides.HearingRange;
             if (overrides.MimicryCooldown > 0f) _mimicryCooldown = overrides.MimicryCooldown;
             if (overrides.EnableLearning && _memory == null) _memory = gameObject.AddComponent<InfectedLearningMemory>();
+            if (_behavior == InfectedBehavior.Crawler) ConfigureCrawler();
+        }
+
+        /// <summary>
+        /// Perfil reptante: tumba el modelo boca abajo sobre el agente (sin animación de arrastre propia: el ciclo de
+        /// andar con los brazos del Blend Tree hace de reptado), baja ojos y colisión, y lo vuelve lento pero
+        /// traicionero a corta distancia.
+        /// </summary>
+        private void ConfigureCrawler()
+        {
+            _walkSpeed *= 0.35f;
+            _runSpeed = 1.5f;
+            _attackRange = 1.3f;
+            _sightDistance = Mathf.Min(_sightDistance, 8f);
+            _sightAngle = 120f;
+            _playerTargetHeight = 0.6f;
+            _sabotageEnabled = false;
+            _mimicryEnabled = false;
+
+            if (_eyes != null) _eyes.localPosition = new Vector3(0f, 0.35f, 0.9f);
+
+            // El cuerpo gira sobre los pies: se adelanta media altura para que quede centrado sobre el agente
+            if (_visualRoot != null)
+            {
+                Quaternion prone = Quaternion.Euler(82f, 0f, 0f);
+                Vector3 offset = new Vector3(0f, 0.12f, -0.85f);
+                _visualRoot.localRotation = prone;
+                _visualRoot.localPosition = offset;
+                if (_reactions != null) _reactions.SetRestPose(prone, offset);
+            }
+
+            // Colisión baja y alargada: los disparos deben apuntar al suelo
+            var capsule = GetComponent<CapsuleCollider>();
+            if (capsule != null)
+            {
+                capsule.direction = 2;
+                capsule.radius = 0.32f;
+                capsule.height = 1.8f;
+                capsule.center = new Vector3(0f, 0.32f, 0f);
+            }
+            if (_agent != null)
+            {
+                _agent.height = 0.7f;
+                _agent.angularSpeed = 160f;
+            }
+        }
+
+        /// <summary>Aviso diegético del agarre del reptante (una vez por ataque).</summary>
+        private void AnnounceCrawlerGrab()
+        {
+            if (_behavior == InfectedBehavior.Crawler) GameEvents.RaiseSubtitle("(¡Algo te agarra del tobillo desde el suelo!)");
         }
 
         private IEnumerator TickRoutine()
@@ -530,6 +581,13 @@ namespace Nexo.AI.Infected
             Vector3 toPlayer = target - origin;
             float distance = toPlayer.magnitude;
 
+            // Escondido: solo lo sigue viendo quien ya lo estaba viendo al esconderse (y de cerca)
+            if (PlayerHiding.IsHidden && !(_canSeePlayer && distance <= 6f))
+            {
+                _awareness = Mathf.Max(0f, _awareness - dt * 0.5f);
+                return false;
+            }
+
             bool inSight = distance <= sightDistance
                 && Vector3.Angle(transform.forward, toPlayer) <= _sightAngle * 0.5f
                 // La máscara excluye la capa Player: si no hay obstáculo en medio, hay línea de visión
@@ -693,6 +751,7 @@ namespace Nexo.AI.Infected
         public void DeliverAttack()
         {
             _lastAttackTime = Time.time;
+            AnnounceCrawlerGrab();
             PlayerAttacked?.Invoke(this);
             // PlayerHealth decide: forcejeo (QTE), golpe acumulado o captura si se agota la vida
             GameEvents.RaisePlayerAttacked(transform);

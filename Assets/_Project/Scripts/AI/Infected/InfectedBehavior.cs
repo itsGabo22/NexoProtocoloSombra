@@ -16,6 +16,12 @@ namespace Nexo.AI.Infected
         Wanderer = 2,
 
         /// <summary>Oído muy fino: investiga cualquier ruido con más alcance y antes que los demás.</summary>
-        Listener = 3
+        Listener = 3,
+
+        /// <summary>
+        /// Se arrastra por el suelo: lento y bajo (difícil de ver en la penumbra), espera inmóvil y agarra del tobillo
+        /// a quien pasa a su lado.
+        /// </summary>
+        Crawler = 4
     }
 }

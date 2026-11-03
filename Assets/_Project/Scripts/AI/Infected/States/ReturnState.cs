@@ -31,7 +31,7 @@ namespace Nexo.AI.Infected
 
             if (_brain.HasArrived(0.6f) || _brain.NavigationBlocked || Time.time - _enterTime > GiveUpTime)
             {
-                if (_brain.Behavior == InfectedBehavior.Sentinel) _brain.transform.rotation = _brain.HomeRotation;
+                if (_brain.Behavior == InfectedBehavior.Sentinel || _brain.Behavior == InfectedBehavior.Crawler) _brain.transform.rotation = _brain.HomeRotation;
                 _brain.ChangeState(_brain.Patrol);
             }
         }
@@ -42,7 +42,7 @@ namespace Nexo.AI.Infected
 
         private Vector3 FindPost()
         {
-            if (_brain.Behavior == InfectedBehavior.Sentinel || _brain.Behavior == InfectedBehavior.Wanderer) return _brain.HomePosition;
+            if (_brain.Behavior != InfectedBehavior.Patroller && _brain.Behavior != InfectedBehavior.Listener) return _brain.HomePosition;
 
             Transform[] points = _brain.PatrolPoints;
             if (points == null || points.Length == 0) return _brain.HomePosition;

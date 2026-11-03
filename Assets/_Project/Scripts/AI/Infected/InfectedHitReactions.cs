@@ -100,6 +100,13 @@ namespace Nexo.AI.Infected
             Restart(KnockdownRoutine(FlatDirectionFrom(pusherPosition), downTime));
         }
 
+        /// <summary>Cambia la postura de reposo (p. ej. el reptante boca abajo): las reacciones vuelven a ella.</summary>
+        public void SetRestPose(Quaternion rotation, Vector3 position)
+        {
+            _restRotation = rotation;
+            _restPosition = position;
+        }
+
         /// <summary>Deja la pieza visual en pie al instante (reinicio de piso o reaparición).</summary>
         public void ResetPose()
         {
