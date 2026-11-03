@@ -168,7 +168,8 @@ namespace Nexo.UI
                     image.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(texture));
                 }
 
-                var label = new Label(_terminal.GetFeedLabel(i));
+                // Etiquetas escritas en la escena: se traducen por si contienen ids
+                var label = new Label(HudTextSanitizer.Humanize(_terminal.GetFeedLabel(i)));
                 label.AddToClassList("terminal-feed__label");
 
                 feed.Add(image);
@@ -195,7 +196,7 @@ namespace Nexo.UI
                 var info = new VisualElement();
                 info.AddToClassList("flex-col");
 
-                var idLabel = new Label(DoorDisplayNames.Label(door.DoorId));
+                var idLabel = new Label(HudTextSanitizer.Humanize(DoorDisplayNames.Label(door.DoorId)));
                 idLabel.AddToClassList("text-sm");
                 idLabel.AddToClassList("text-main");
 
@@ -244,7 +245,7 @@ namespace Nexo.UI
 
         private void SetStatus(string text)
         {
-            if (_status != null) _status.text = text;
+            if (_status != null) _status.text = HudTextSanitizer.Humanize(text);
         }
     }
 }
