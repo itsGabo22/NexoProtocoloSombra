@@ -34,7 +34,7 @@ namespace Nexo.Player
 
         [Header("Posición del arma (sobre la del viewmodel)")]
         [Tooltip("Desplazamiento del pivote del arma respecto a la cámara: acerca el arma al cuerpo.")]
-        [SerializeField] private Vector3 _weaponOffset = new Vector3(-0.015f, -0.01f, 0.02f);
+        [SerializeField] private Vector3 _weaponOffset = new Vector3(-0.01f, 0.015f, 0f);
 
         [Header("Retroceso de cámara")]
         [SerializeField] private float _hipKick = 2.6f;
@@ -48,11 +48,11 @@ namespace Nexo.Player
         [SerializeField] private float _bobFrequency = 1.9f;
         [SerializeField] private float _bobPitch = 0.55f;
         [SerializeField] private float _bobYaw = 0.35f;
-        [SerializeField] private float _weaponBob = 0.012f;
+        [SerializeField] private float _weaponBob = 0.006f;
 
         [Header("Inercia del arma")]
-        [SerializeField] private float _swayAmount = 0.0018f;
-        [SerializeField] private float _swayMax = 0.035f;
+        [SerializeField] private float _swayAmount = 0.0005f;
+        [SerializeField] private float _swayMax = 0.012f;
         [SerializeField] private float _swaySmooth = 10f;
 
         [Header("Golpes y forcejeo")]
