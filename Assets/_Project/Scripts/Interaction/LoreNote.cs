@@ -12,6 +12,8 @@ namespace Nexo.Interaction
     {
         [SerializeField] private string _author = "NOTA";
         [SerializeField, TextArea(2, 5)] private string _body = "...";
+        [Tooltip("Reacción opcional (p. ej. Elena comenta la nota).")]
+        [SerializeField] private StorySequence _followUp;
 
         private bool _read;
 
@@ -21,6 +23,7 @@ namespace Nexo.Interaction
         {
             _read = true;
             GameEvents.RaiseNotification(new HudNotification(_author, _body, false));
+            if (_followUp != null) _followUp.Play();
         }
     }
 }
