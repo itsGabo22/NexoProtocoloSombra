@@ -1,6 +1,7 @@
 using System.Collections;
 using Nexo.AI.Elena;
 using Nexo.Core;
+using Nexo.UI;
 using UnityEngine;
 
 namespace Nexo.Interaction
@@ -22,6 +23,8 @@ namespace Nexo.Interaction
         [SerializeField] private Transform _doorHinge;
         [SerializeField] private Vector3 _openOffset = new Vector3(0f, 0f, 1.4f);
         [SerializeField] private float _transitionSpeed = 5.0f;
+        [Tooltip("Ruido (0-100) al abrir o cerrar: lo oyen los infectados.")]
+        [SerializeField, Range(0f, 100f)] private float _moveNoise = 35f;
 
         private Vector3 _closedPosition;
         private Vector3 _targetPosition;
@@ -30,6 +33,9 @@ namespace Nexo.Interaction
         public string DoorId => _doorId;
         public bool IsLocked => _isLocked;
         public bool IsOpen => _isOpen;
+
+        /// <summary>Se emite al abrirse (true) o cerrarse (false) la puerta (p. ej. DoorNavMeshLink).</summary>
+        public event System.Action<bool> OpenChanged;
 
         public string Prompt
         {
@@ -72,7 +78,7 @@ namespace Nexo.Interaction
             {
                 if (_remoteUnlockBlocked)
                 {
-                    GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"{_doorId}: apertura denegada. Presencia hostil activa en el piso.", false));
+                    GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"{DoorDisplayNames.Label(_doorId)}: apertura denegada. Presencia hostil activa en el piso.", false));
                     return;
                 }
                 UnlockAndOpen();
@@ -83,7 +89,7 @@ namespace Nexo.Interaction
         {
             if (_isLocked)
             {
-                GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"Acceso denegado: {_doorId} requiere desbloqueo de Elena.", false));
+                GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"Acceso denegado: {DoorDisplayNames.Destination(_doorId)} requiere desbloqueo de Elena.", false));
                 return;
             }
 
@@ -94,7 +100,7 @@ namespace Nexo.Interaction
         {
             _isLocked = false;
             SetOpen(true);
-            GameEvents.RaiseNotification(new HudNotification("ELENA", $"Puerta {_doorId} desbloqueada remotamente.", false));
+            GameEvents.RaiseNotification(new HudNotification("ELENA", $"{DoorDisplayNames.Label(_doorId)} desbloqueada remotamente.", false));
         }
 
         /// <summary>
@@ -119,7 +125,11 @@ namespace Nexo.Interaction
         /// </summary>
         public void SetOpen(bool open)
         {
+            bool changed = _isOpen != open;
             _isOpen = open;
+            // Las puertas metálicas hacen ruido: los infectados cercanos pueden oírlas
+            if (changed && isActiveAndEnabled) GameEvents.RaiseNoiseEmitted(transform.position, _moveNoise);
+            if (changed) OpenChanged?.Invoke(open);
             if (_doorHinge == null) return;
 
             _targetPosition = _isOpen ? _closedPosition + _openOffset : _closedPosition;

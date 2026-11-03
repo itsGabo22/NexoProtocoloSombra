@@ -14,6 +14,8 @@ namespace Nexo.Interaction
         [SerializeField] private AudioClip[] _clips;
         [SerializeField] private Vector2 _interval = new Vector2(18f, 45f);
         [SerializeField] private Vector2 _volume = new Vector2(0.35f, 0.8f);
+        [Tooltip("Subtítulo de cada clip (mismo índice que _clips; vacío = sin subtítulo). Accesibilidad.")]
+        [SerializeField] private string[] _subtitles;
 
         private Coroutine _routine;
 
@@ -41,11 +43,16 @@ namespace Nexo.Interaction
                 yield return new WaitForSeconds(Random.Range(_interval.x, _interval.y));
 
                 AudioSource emitter = _emitters[Random.Range(0, _emitters.Length)];
-                AudioClip clip = _clips[Random.Range(0, _clips.Length)];
+                int index = Random.Range(0, _clips.Length);
+                AudioClip clip = _clips[index];
                 if (emitter != null && clip != null)
                 {
                     emitter.pitch = Random.Range(0.85f, 1.1f);
                     emitter.PlayOneShot(clip, Random.Range(_volume.x, _volume.y));
+                    if (_subtitles != null && index < _subtitles.Length && !string.IsNullOrEmpty(_subtitles[index]))
+                    {
+                        Nexo.Core.GameEvents.RaiseSubtitle(_subtitles[index]);
+                    }
                 }
             }
         }

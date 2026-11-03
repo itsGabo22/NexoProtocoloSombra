@@ -3,8 +3,9 @@ using UnityEngine;
 namespace Nexo.AI.Infected
 {
     /// <summary>
-    /// Grita (ScreamTrigger), persigue al jugador a RunSpeed y ataca dentro de AttackRange.
-    /// Si pierde de vista al jugador durante 4s, investiga su última posición conocida.
+    /// Grita (ScreamTrigger) y persigue al jugador a RunSpeed mientras lo ve. Sin visión va a la última posición
+    /// conocida; si lo pierde de vista durante 4 s, lo busca por la zona (SearchState).
+    /// Dentro de AttackRange pasa a AttackState.
     /// </summary>
     public sealed class ChaseState : IInfectedState
     {
@@ -35,7 +36,7 @@ namespace Nexo.AI.Infected
         {
             if (_brain.Player == null)
             {
-                _brain.ChangeState(_brain.Patrol);
+                _brain.ChangeState(_brain.Return);
                 return;
             }
 
@@ -46,20 +47,20 @@ namespace Nexo.AI.Infected
             {
                 _lastSeenTime = Time.time;
             }
-            else if (Time.time - _lastSeenTime >= LoseSightTime)
+            else if (Time.time - _lastSeenTime >= LoseSightTime || _brain.NavigationBlocked)
             {
-                _brain.Investigate.SetTarget(_brain.LastKnownPlayerPos);
-                _brain.ChangeState(_brain.Investigate);
+                _brain.LoseTrackOfPlayer();
                 return;
             }
 
             // El ruido escuchado durante la persecución no cambia el estado
             _brain.ConsumeHeardNoise();
 
-            if (_brain.DistanceToPlayer() <= _brain.AttackRange)
+            if (_brain.CanSeePlayer && _brain.DistanceToPlayer() <= _brain.AttackRange)
             {
                 _brain.StopMoving();
-                _brain.TryAttack();
+                _brain.FacePlayer();
+                if (_brain.CanAttackNow) _brain.ChangeState(_brain.Attack);
                 return;
             }
 
