@@ -18,7 +18,7 @@ namespace Nexo.Interaction
     {
         public enum TriggerMode { OnFloorStart, OnPlayerEnter, OnDoorUnlocked, Manual }
         public enum Speaker { Elena, NexoOS, Recording, FakeVoice, Subtitle, Objective, SystemError }
-        public enum SceneAction { None, UnlockDoor, LockDoor, Blackout, AlarmOn, PlayClip, ElenaAnimTrigger }
+        public enum SceneAction { None, UnlockDoor, LockDoor, Blackout, AlarmOn, PlayClip, ElenaAnimTrigger, ElenaFollow }
 
         [Serializable]
         public sealed class Line
@@ -46,6 +46,8 @@ namespace Nexo.Interaction
         [SerializeField] private AudioClip _clip;
         [SerializeField] private GameObject[] _alarmObjects;
         [SerializeField] private Animator _elenaAnimator;
+        [SerializeField] private ElenaCompanion _elenaCompanion;
+        [SerializeField] private Transform _elenaExitPoint;
 
         private bool _started;
 
@@ -170,6 +172,9 @@ namespace Nexo.Interaction
                     break;
                 case SceneAction.ElenaAnimTrigger:
                     if (_elenaAnimator != null && !string.IsNullOrEmpty(line.ActionParam)) _elenaAnimator.SetTrigger(line.ActionParam);
+                    break;
+                case SceneAction.ElenaFollow:
+                    if (_elenaCompanion != null) _elenaCompanion.StartFollowing(_elenaExitPoint);
                     break;
             }
         }
