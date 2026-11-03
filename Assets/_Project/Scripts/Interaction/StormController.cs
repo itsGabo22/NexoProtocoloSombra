@@ -21,6 +21,9 @@ namespace Nexo.Interaction
         [SerializeField] private Light _flashLight;
         [SerializeField] private Vector2 _interval = new Vector2(35f, 70f);
         [SerializeField] private float _firstDelay = 18f;
+        [Tooltip("Subtítulo de los truenos (accesibilidad).")]
+        [SerializeField] private string _closeSubtitle = "(Un trueno retumba sobre el edificio y las luces vacilan)";
+        [SerializeField] private string _farSubtitle = "(Un trueno lejano)";
 
         private float[] _baseIntensities;
         private Coroutine _routine;
@@ -81,6 +84,8 @@ namespace Nexo.Interaction
             AudioClip clip = _thunderClips[Random.Range(0, _thunderClips.Length)];
             _thunderSource.pitch = Random.Range(0.92f, 1.04f);
             _thunderSource.PlayOneShot(clip, close ? _volume : _volume * 0.7f);
+            string subtitle = close ? _closeSubtitle : _farSubtitle;
+            if (!string.IsNullOrEmpty(subtitle)) Nexo.Core.GameEvents.RaiseSubtitle(subtitle);
         }
 
         private void SetSurge(float factor, bool flash)
