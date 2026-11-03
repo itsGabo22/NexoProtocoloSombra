@@ -369,6 +369,8 @@ MonoBehaviour:
   _clip: {fileID: 0}
   _alarmObjects: []
   _elenaAnimator: {fileID: 0}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!65 &7641599
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -425,6 +427,7 @@ Transform:
   - {fileID: 1807939427}
   - {fileID: 1339285811}
   - {fileID: 55985547}
+  - {fileID: 328327775}
   m_Father: {fileID: 987535144}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &15365898 stripped
@@ -5438,6 +5441,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4866154646728850, guid: c928f883aa7cdcf41a6faa362ed971bc, type: 3}
   m_PrefabInstance: {fileID: 327538772}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &328327774
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 328327775}
+  m_Layer: 0
+  m_Name: ElenaExitPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &328327775
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328327774}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.5999964, y: -1.8899994, z: -19.415997}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9636690}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &328690820
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8743,6 +8777,8 @@ MonoBehaviour:
   - {fileID: 1426886095}
   - {fileID: 1572078307}
   _elenaAnimator: {fileID: 1361963696}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!4 &563760676
 Transform:
   m_ObjectHideFlags: 0
@@ -8828,11 +8864,34 @@ MonoBehaviour:
     Glitch: 0
     Action: 0
     ActionParam: 
+  - Speaker: 4
+    Text: (Un panel del cristal se desliza. Elena sale de la sala de servidores)
+    Delay: 3
+    Emotion: calm
+    Glitch: 0
+    Action: 7
+    ActionParam: 
+  - Speaker: 0
+    Text: "No pienso dejarte solo ah\xED fuera. Voy contigo."
+    Delay: 2
+    Emotion: calm
+    Glitch: 0
+    Action: 0
+    ActionParam: 
+  - Speaker: 5
+    Text: "Elena te acompa\xF1a. Mant\xE9n [V] para hablarle con tu voz."
+    Delay: 2.5
+    Emotion: calm
+    Glitch: 0
+    Action: 0
+    ActionParam: 
   _doorsToLock: []
   _audioSource: {fileID: 0}
   _clip: {fileID: 0}
   _alarmObjects: []
   _elenaAnimator: {fileID: 0}
+  _elenaCompanion: {fileID: 1361963697}
+  _elenaExitPoint: {fileID: 328327775}
 --- !u!65 &567300382
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8881,8 +8940,8 @@ Transform:
   m_GameObject: {fileID: 571140776}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.62, z: 0}
-  m_LocalScale: {x: 0.42, y: 0.5, z: 0.32}
+  m_LocalPosition: {x: 0, y: 1.12, z: 0}
+  m_LocalScale: {x: 0.38, y: 0.36, z: 0.26}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1361963695}
@@ -18578,6 +18637,8 @@ MonoBehaviour:
   _clip: {fileID: 8300000, guid: 9de1467ba5f2ed94b8abe06adc2a9bde, type: 3}
   _alarmObjects: []
   _elenaAnimator: {fileID: 0}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!65 &1134283797
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -19039,6 +19100,8 @@ MonoBehaviour:
   _clip: {fileID: 0}
   _alarmObjects: []
   _elenaAnimator: {fileID: 0}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!65 &1167716755
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -21102,6 +21165,8 @@ MonoBehaviour:
   _clip: {fileID: 8300000, guid: 10605edda88664d4896ad5597d2fc396, type: 3}
   _alarmObjects: []
   _elenaAnimator: {fileID: 1361963696}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!1 &1331664531
 GameObject:
   m_ObjectHideFlags: 0
@@ -21482,6 +21547,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1361963695}
   - component: {fileID: 1361963696}
+  - component: {fileID: 1361963698}
+  - component: {fileID: 1361963697}
   m_Layer: 0
   m_Name: Elena_Placeholder
   m_TagString: Untagged
@@ -21529,6 +21596,47 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1361963697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361963694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0793f2406b847719363536db25cd6a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.AI.Elena.ElenaCompanion
+  _animator: {fileID: 1361963696}
+  _tickInterval: 0.2
+  _followDistance: 2.2
+  _runDistance: 6
+  _teleportDistance: 25
+  _walkSpeed: 2.2
+  _runSpeed: 4.6
+--- !u!195 &1361963698
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1361963694}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.3
+  m_Speed: 2.2
+  m_Acceleration: 10
+  avoidancePriority: 50
+  m_AngularSpeed: 540
+  m_StoppingDistance: 0.4
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 1.7
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 1
 --- !u!1 &1363706698 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100180, guid: 18cd780e6948a554a850b2d047ebf8fb, type: 3}
@@ -21878,7 +21986,7 @@ MonoBehaviour:
     Action: 0
     ActionParam: 
   - Speaker: 5
-    Text: "Llega a la sala de servidores (suroeste). Ag\xE1chate [C] para no ser visto."
+    Text: "Llega a la sala de servidores (suroeste). Ag\xE1chate [C] para no ser visto. Mant\xE9n [V] para hablar con Elena."
     Delay: 3
     Emotion: calm
     Glitch: 0
@@ -21889,6 +21997,8 @@ MonoBehaviour:
   _clip: {fileID: 0}
   _alarmObjects: []
   _elenaAnimator: {fileID: 0}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!4 &1380507743
 Transform:
   m_ObjectHideFlags: 0
@@ -28024,6 +28134,8 @@ MonoBehaviour:
   _clip: {fileID: 0}
   _alarmObjects: []
   _elenaAnimator: {fileID: 0}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!65 &1726781036
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -33671,9 +33783,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2090029653}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.64278764, y: 0, z: 0, w: 0.7660445}
-  m_LocalPosition: {x: 0, y: 0.2, z: 0.32}
-  m_LocalScale: {x: 0.36, y: 0.32, z: 0.22}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.45, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.45, z: 0.22}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1361963695}
@@ -34110,6 +34222,8 @@ MonoBehaviour:
   _clip: {fileID: 0}
   _alarmObjects: []
   _elenaAnimator: {fileID: 0}
+  _elenaCompanion: {fileID: 0}
+  _elenaExitPoint: {fileID: 0}
 --- !u!1 &2122037596 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100638, guid: 18cd780e6948a554a850b2d047ebf8fb, type: 3}
@@ -34234,8 +34348,8 @@ Transform:
   m_GameObject: {fileID: 2122399818}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.22, z: 0.04}
-  m_LocalScale: {x: 0.24, y: 0.24, z: 0.24}
+  m_LocalPosition: {x: 0, y: 1.62, z: 0.02}
+  m_LocalScale: {x: 0.22, y: 0.22, z: 0.22}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1361963695}
