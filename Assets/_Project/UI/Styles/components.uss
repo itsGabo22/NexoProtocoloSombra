@@ -19,6 +19,8 @@
 .emotion-urgent { border-color: var(--c-danger); }
 .emotion-sad { border-color: var(--c-muted); }
 .emotion-whisper { border-color: var(--c-muted); opacity: 0.8; }
+/* Retrato real (Resources/Elena/portrait.png): recorte circular por border-radius; el borde de emoción se mantiene */
+.radio-portrait--image { -unity-background-scale-mode: scale-and-crop; }
 
 .radio-trust-track { height: 4px; background-color: var(--c-accent-dim); border-radius: 2px; }
 .radio-trust-fill { height: 100%; width: 0; background-color: var(--c-accent); border-radius: 2px; transition-property: width; transition-duration: 400ms; }
@@ -86,6 +88,9 @@
 .terminal-door--open .terminal-door__state { color: var(--c-ok); }
 .terminal-door--locked .terminal-door__state { color: var(--c-danger); }
 .terminal-door__button { width: 90px; }
+/* Una sola cámara: la vista previa ocupa el ancho libre de la columna (16:9) en lugar de dejar un hueco */
+.terminal-feeds--single .terminal-feed { width: 100%; margin-right: 0; }
+.terminal-feeds--single .terminal-feed__image { width: 100%; height: 320px; }
 
 /* ---------- Rueda de órdenes ---------- */
 .order-wheel-overlay { background-color: rgba(0, 0, 0, 0.35); align-items: center; justify-content: center; }
@@ -126,3 +131,47 @@
 
 .thermal-overlay.thermal-on { opacity: 1; }
 .a11y-hc .thermal-overlay { background-color: rgba(34, 211, 238, 0.08); }
+
+/* ---------- Panel de arma y munición (abajo derecha, sobre la batería térmica) ---------- */
+.hud-weapon { transition-property: border-color, scale; transition-duration: 250ms; }
+.hud-weapon__ammo { color: var(--c-text); }
+.hud-weapon__status { color: var(--c-muted); }
+.hud-weapon__pickup { opacity: 0; transition-property: opacity; transition-duration: 300ms; }
+.hud-weapon__pickup.hud-weapon__pickup--visible { opacity: 1; }
+.hud-weapon-cell { width: 18px; height: 8px; margin-right: 4px; border-width: 1px; border-color: var(--c-accent); border-radius: 1px; background-color: rgba(0, 0, 0, 0); }
+.hud-weapon-cell--filled { background-color: var(--c-accent); }
+/* Estados: además del color cambian el texto (RECARGAR [R], SIN MUNICIÓN), así no dependen solo del color */
+.hud-weapon--low .hud-weapon__ammo, .hud-weapon--low .hud-weapon__status { color: var(--c-warn); }
+.hud-weapon--low .hud-weapon-cell { border-color: var(--c-warn); }
+.hud-weapon--low .hud-weapon-cell--filled { background-color: var(--c-warn); }
+.hud-weapon--empty, .hud-weapon--depleted { border-color: var(--c-danger); }
+.hud-weapon--empty .hud-weapon__ammo, .hud-weapon--empty .hud-weapon__status,
+.hud-weapon--depleted .hud-weapon__ammo, .hud-weapon--depleted .hud-weapon__status { color: var(--c-danger); }
+.hud-weapon--empty .hud-weapon-cell, .hud-weapon--depleted .hud-weapon-cell { border-color: var(--c-danger); }
+.hud-weapon--reloading .hud-weapon__ammo { color: var(--c-muted); }
+.hud-weapon--reloading .hud-weapon__status { color: var(--c-accent); }
+/* Pulso breve al recoger munición (HUDController no lo aplica con reducir movimiento) */
+.hud-weapon.hud-weapon--pulse { border-color: var(--c-ok); scale: 1.04 1.04; }
+
+/* ---------- Feedback de daño: viñeta roja en los bordes ---------- */
+.damage-vignette {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("../Textures/T_ThermalVignette.png");
+    -unity-background-image-tint-color: var(--c-danger);
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 220ms;
+}
+.damage-vignette.damage-vignette--low { opacity: 0.3; transition-duration: 900ms; }
+.damage-vignette.damage-vignette--low-peak { opacity: 0.55; transition-duration: 900ms; }
+.damage-vignette.damage-vignette--hit { opacity: 0.9; transition-duration: 60ms; }
+
+/* ---------- Ayuda de controles (una vez por sesión) ---------- */
+.hud-controls-hint { left: 50%; top: 16px; translate: -50% 0; padding: 6px 14px; white-space: nowrap; background-color: var(--c-surface); border-color: var(--c-accent-dim); border-width: 1px; border-radius: 4px; opacity: 0; transition-property: opacity; transition-duration: 400ms; }
+.hud-controls-hint.hud-controls-hint--visible { opacity: 1; }
+.a11y-hc .hud-controls-hint { border-color: var(--c-text); }
