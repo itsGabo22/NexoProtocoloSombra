@@ -87,6 +87,18 @@ namespace Nexo.UI
         private Texture2D _noiseTexture;
         private Color32[] _noisePixels;
         private Texture2D _scanlineTexture;
+        private Texture2D _ghostTexture;
+
+        // Loop "vivo" del enlace diferido: paneo, barra de interferencia, silueta y reloj de reproducción
+        private VisualElement _rollBar;
+        private VisualElement _ghost;
+        private IVisualElementScheduledItem _archiveLoop;
+        private float _archiveStart;
+        private float _nextGhostTime;
+        private float _ghostStart = -1f;
+        private float _ghostFrom;
+        private float _ghostTo;
+        private const float GhostDuration = 2.8f;
         private IVisualElementScheduledItem _watcher;
         private IVisualElementScheduledItem _clockTicker;
         private IVisualElementScheduledItem _archiveFlicker;
@@ -149,6 +161,7 @@ namespace Nexo.UI
 
             if (_static != null && _noiseTexture != null) _static.style.backgroundImage = new StyleBackground(_noiseTexture);
             if (_scanlines != null && _scanlineTexture != null) _scanlines.style.backgroundImage = new StyleBackground(_scanlineTexture);
+            BuildArchiveOverlays();
 
             _launcher?.AddToClassList(HiddenClass);
             _overlay?.AddToClassList(HiddenClass);
@@ -197,6 +210,7 @@ namespace Nexo.UI
             if (_liveCamera != null) Destroy(_liveCamera.gameObject);
             if (_noiseTexture != null) Destroy(_noiseTexture);
             if (_scanlineTexture != null) Destroy(_scanlineTexture);
+            if (_ghostTexture != null) Destroy(_ghostTexture);
         }
 
         // ---------- Terminal y apertura ----------
@@ -255,6 +269,7 @@ namespace Nexo.UI
             ReleaseLiveTexture();
             _clockTicker?.Pause();
             _archiveFlicker?.Pause();
+            StopArchiveLoop();
             ClearList();
             _overlay?.AddToClassList(HiddenClass);
             _upAction.Disable();
@@ -409,6 +424,7 @@ namespace Nexo.UI
             foreach (VisualElement item in _list.Children()) item.EnableInClassList(SelectedItemClass, i++ == index);
 
             _archiveFlicker?.Pause();
+            StopArchiveLoop();
             PlayStaticBurst();
             StopLive();
 
@@ -434,9 +450,10 @@ namespace Nexo.UI
                 case FeedMode.Archive:
                     _image.style.backgroundImage = new StyleBackground(feed.ArchiveFrame);
                     _image.AddToClassList("netcam-image--archive");
-                    SetOsd(_feedStatus, "◌ ENLACE DIFERIDO", "netcam-osd--archive");
-                    SetStatus($"> Piso {feed.Floor} fuera de alcance: última imagen sincronizada a las {DisplayTimestamp(feed)}.");
+                    SetOsd(_feedStatus, "◌ ENLACE DIFERIDO · REPRODUCCIÓN", "netcam-osd--archive");
+                    SetStatus($"> Piso {feed.Floor} fuera de alcance: reproduciendo la grabación desde las {DisplayTimestamp(feed)}.");
                     _archiveFlicker = _root.schedule.Execute(FlickerArchive).Every(160);
+                    StartArchiveLoop();
                     break;
                 default:
                     ShowNoSignal($"> CAM {feed.Id}: sin señal ni archivo disponible.");
@@ -461,7 +478,105 @@ namespace Nexo.UI
             if (_feedClock == null || _selectedFeed == null) return;
             _feedClock.text = _selectedFeed.Floor == _currentFloor
                 ? DateTime.Now.ToString("HH:mm:ss") + "  REC"
-                : "ÚLT. SINCRONÍA " + DisplayTimestamp(_selectedFeed);
+                : "▶ " + PlaybackTime(_selectedFeed);
+        }
+
+        /// <summary>Hora de la grabación: parte de la última sincronía y avanza en un bucle de 45 s.</summary>
+        private string PlaybackTime(CameraFeedDefinition feed)
+        {
+            if (!TimeSpan.TryParse(feed.ArchiveTimestamp, out TimeSpan start)) return DisplayTimestamp(feed);
+            float elapsed = (Time.unscaledTime - _archiveStart) % 45f;
+            return (start + TimeSpan.FromSeconds(Mathf.Floor(elapsed))).ToString(@"hh\:mm\:ss");
+        }
+
+        // ---------- Loop "vivo" del enlace diferido ----------
+
+        private void BuildArchiveOverlays()
+        {
+            VisualElement screen = _root.Q<VisualElement>("netcam-screen");
+            if (screen == null || _rollBar != null) return;
+
+            _ghost = new VisualElement { pickingMode = PickingMode.Ignore };
+            _ghost.style.position = Position.Absolute;
+            _ghost.style.width = Length.Percent(9f);
+            _ghost.style.height = Length.Percent(42f);
+            _ghost.style.top = Length.Percent(44f);
+            _ghost.style.backgroundImage = new StyleBackground(_ghostTexture);
+            _ghost.style.display = DisplayStyle.None;
+
+            _rollBar = new VisualElement { pickingMode = PickingMode.Ignore };
+            _rollBar.style.position = Position.Absolute;
+            _rollBar.style.left = 0;
+            _rollBar.style.right = 0;
+            _rollBar.style.height = Length.Percent(10f);
+            _rollBar.style.backgroundColor = new Color(1f, 1f, 1f, 0.07f);
+            _rollBar.style.display = DisplayStyle.None;
+
+            // Encima de la imagen y por debajo del ruido y del OSD
+            int index = screen.IndexOf(_image) + 1;
+            screen.Insert(index, _ghost);
+            screen.Insert(index + 1, _rollBar);
+        }
+
+        private void StartArchiveLoop()
+        {
+            if (_rollBar == null) return;
+            _archiveStart = Time.unscaledTime;
+            _nextGhostTime = _archiveStart + Random.Range(3f, 7f);
+            _ghostStart = -1f;
+            _rollBar.style.display = DisplayStyle.Flex;
+            _archiveLoop = _root.schedule.Execute(TickArchiveLoop).Every(40);
+        }
+
+        private void StopArchiveLoop()
+        {
+            _archiveLoop?.Pause();
+            _archiveLoop = null;
+            if (_rollBar != null) _rollBar.style.display = DisplayStyle.None;
+            if (_ghost != null) _ghost.style.display = DisplayStyle.None;
+            if (_image != null)
+            {
+                _image.style.scale = StyleKeyword.Null;
+                _image.style.translate = StyleKeyword.Null;
+            }
+        }
+
+        private void TickArchiveLoop()
+        {
+            float t = Time.unscaledTime - _archiveStart;
+
+            // Paneo y zoom muy lentos: la cámara "respira" como una PTZ real
+            _image.style.scale = new Scale(new Vector3(1.07f, 1.07f, 1f));
+            _image.style.translate = new Translate(Length.Percent(Mathf.Sin(t * 0.13f) * 1.6f), Length.Percent(Mathf.Cos(t * 0.09f) * 1.1f));
+
+            // Barra de interferencia que recorre la imagen cada 6 s
+            _rollBar.style.top = Length.Percent(((t / 6f) % 1f) * 110f - 10f);
+
+            // Silueta que cruza el encuadre de vez en cuando
+            float now = Time.unscaledTime;
+            if (_ghostStart < 0f && now >= _nextGhostTime)
+            {
+                _ghostStart = now;
+                bool leftToRight = Random.value < 0.5f;
+                _ghostFrom = leftToRight ? 12f : 78f;
+                _ghostTo = leftToRight ? 78f : 12f;
+                _ghost.style.display = DisplayStyle.Flex;
+            }
+            if (_ghostStart >= 0f)
+            {
+                float k = (now - _ghostStart) / GhostDuration;
+                if (k >= 1f)
+                {
+                    _ghostStart = -1f;
+                    _ghost.style.display = DisplayStyle.None;
+                    _nextGhostTime = now + Random.Range(9f, 16f);
+                }
+                else
+                {
+                    _ghost.style.left = Length.Percent(Mathf.Lerp(_ghostFrom, _ghostTo, k));
+                    _ghost.style.opacity = Mathf.Sin(k * Mathf.PI) * 0.6f;
+                }
+            }
         }
 
         private static string DisplayTimestamp(CameraFeedDefinition feed) => string.IsNullOrEmpty(feed.ArchiveTimestamp) ? "--:--:--" : feed.ArchiveTimestamp;
@@ -618,6 +733,31 @@ namespace Nexo.UI
             _scanlineTexture = new Texture2D(1, 4, TextureFormat.RGBA32, false) { filterMode = FilterMode.Point, wrapMode = TextureWrapMode.Repeat, name = "NetCam_Scanlines" };
             _scanlineTexture.SetPixels32(new[] { new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 0), new Color32(0, 0, 0, 150), new Color32(0, 0, 0, 40) });
             _scanlineTexture.Apply();
+            _ghostTexture = BuildGhostTexture();
+        }
+
+        /// <summary>Silueta humana borrosa (cabeza, hombros y torso) generada en código: sin assets externos.</summary>
+        private static Texture2D BuildGhostTexture()
+        {
+            const int w = 48, h = 128;
+            var texture = new Texture2D(w, h, TextureFormat.RGBA32, false) { name = "NetCam_Ghost", wrapMode = TextureWrapMode.Clamp };
+            var pixels = new Color32[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = 0; x < w; x++)
+                {
+                    float u = (x - w * 0.5f) / (w * 0.5f);
+                    float v = y / (float)h; // 0 abajo, 1 arriba
+                    float headDist = new Vector2(u * 1.6f, (v - 0.88f) * 4.2f).magnitude;
+                    float bodyHalf = v > 0.78f ? 0f : Mathf.Lerp(0.55f, 0.95f, Mathf.Clamp01((v - 0.1f) / 0.6f));
+                    float alpha = Mathf.Max(Mathf.Clamp01((1f - headDist) * 3f), Mathf.Clamp01((bodyHalf - Mathf.Abs(u)) * 4f));
+                    alpha *= Mathf.Clamp01(v * 6f); // pies difuminados
+                    pixels[y * w + x] = new Color32(6, 8, 10, (byte)(alpha * 235f));
+                }
+            }
+            texture.SetPixels32(pixels);
+            texture.Apply();
+            return texture;
         }
 
         private void RegenerateNoise()
