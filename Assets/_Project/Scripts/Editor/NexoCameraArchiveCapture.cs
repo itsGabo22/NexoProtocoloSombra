@@ -49,6 +49,9 @@ namespace Nexo.EditorTools
                 Scene scene = SceneManager.GetSceneByPath(scenePath);
                 bool openedHere = !scene.isLoaded;
                 if (openedHere) scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                Scene previousActive = SceneManager.GetActiveScene();
+                // La escena activa define el ambiente y la niebla: debe ser la del piso que se captura
+                SceneManager.SetActiveScene(scene);
 
                 try
                 {
@@ -66,6 +69,7 @@ namespace Nexo.EditorTools
                 }
                 finally
                 {
+                    if (previousActive.IsValid() && previousActive.isLoaded && previousActive != scene) SceneManager.SetActiveScene(previousActive);
                     if (openedHere) EditorSceneManager.CloseScene(scene, true);
                 }
             }
@@ -134,6 +138,8 @@ namespace Nexo.EditorTools
             }
             finally
             {
+                Camera temp = go.GetComponent<Camera>();
+                if (temp != null) temp.targetTexture = null;
                 rt.Release();
                 UnityEngine.Object.DestroyImmediate(rt);
                 UnityEngine.Object.DestroyImmediate(go);
