@@ -77,6 +77,8 @@ namespace Nexo.AI.Infected
         [SerializeField] private float _downedDuration = 20f;
         [Tooltip("Pieza visual que se tumba al caer (por defecto el hijo 'Body').")]
         [SerializeField] private Transform _visualRoot;
+        [Tooltip("Si está activo, al agotar la salud cae y se levanta tras _downedDuration; si no, muere definitivamente.")]
+        [SerializeField] private bool _reviveAfterDowned = false;
 
         [Header("Sigilo del jugador")]
         [Tooltip("Multiplicador del alcance de vista cuando el jugador está agachado.")]
@@ -89,6 +91,10 @@ namespace Nexo.AI.Infected
         private float _incapacitatedUntil;
         private bool _isDowned;
         private Coroutine _downedRoutine;
+        private bool _isDead;
+
+        /// <summary>Se emite cuando un infectado muere definitivamente (LevelExitGate cuenta las bajas).</summary>
+        public static event Action<SmartInfectedBrain> Died;
         private IInfectedState _currentState;
         private Coroutine _tickRoutine;
         private Coroutine _lookAroundRoutine;
@@ -179,6 +185,7 @@ namespace Nexo.AI.Infected
         private static void ResetStatics()
         {
             NearbyInfected.Clear();
+            Died = null;
         }
 
         /// <summary>
@@ -244,6 +251,7 @@ namespace Nexo.AI.Infected
         // ---------- Daño ----------
 
         public bool IsDowned => _isDowned;
+        public bool IsDead => _isDead;
 
         /// <summary>
         /// Impacto de bala: aturde unos instantes y luego persigue con rabia hacia el origen del disparo.
@@ -251,7 +259,7 @@ namespace Nexo.AI.Infected
         /// </summary>
         public void ApplyHit(Vector3 shotOrigin)
         {
-            if (_isDowned) return;
+            if (_isDowned || _isDead) return;
 
             LastKnownPlayerPos = shotOrigin;
             _health--;
@@ -260,12 +268,70 @@ namespace Nexo.AI.Infected
 
             if (_health <= 0)
             {
-                _downedRoutine = StartCoroutine(DownedRoutine());
+                if (_reviveAfterDowned) _downedRoutine = StartCoroutine(DownedRoutine());
+                else Die();
                 return;
             }
 
             _incapacitatedUntil = Time.time + _stunDuration;
             ChangeState(Chase);
+        }
+
+        /// <summary>Muerte definitiva: queda tendido, deja de percibir y de bloquear el paso.</summary>
+        private void Die()
+        {
+            _isDead = true;
+            _incapacitatedUntil = float.PositiveInfinity;
+            StopMoving();
+            if (_tickRoutine != null) { StopCoroutine(_tickRoutine); _tickRoutine = null; }
+            StopLookAround();
+            SetAlerted(false);
+            UpdateProximity(false);
+            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-88f, 0f, 0f);
+            if (_animator != null) _animator.enabled = false;
+            if (_agent != null) _agent.enabled = false;
+            foreach (Collider c in GetComponents<Collider>()) c.enabled = false;
+            if (_voiceSource != null) _voiceSource.Stop();
+            Died?.Invoke(this);
+        }
+
+        // ---------- Forcejeo con el jugador (QTE) ----------
+
+        /// <summary>El infectado agarra al jugador: queda inmóvil frente a él mientras dura el forcejeo.</summary>
+        public void BeginGrapple()
+        {
+            if (_isDead) return;
+            _incapacitatedUntil = float.PositiveInfinity;
+            StopMoving();
+            StopLookAround();
+            FacePlayer();
+        }
+
+        /// <summary>
+        /// Fin del forcejeo. Si el jugador lo empuja, sale despedido hacia atrás y queda tumbado unos segundos;
+        /// si el jugador falla, se queda un instante aturdido para que pueda huir.
+        /// </summary>
+        public void EndGrapple(bool pushedBack)
+        {
+            if (_isDead) return;
+            _lastAttackTime = Time.time;
+            if (pushedBack) StartCoroutine(KnockbackRoutine());
+            else _incapacitatedUntil = Time.time + 1.5f;
+        }
+
+        private IEnumerator KnockbackRoutine()
+        {
+            _incapacitatedUntil = Time.time + 2.8f;
+            Vector3 away = _player != null ? (transform.position - _player.position) : -transform.forward;
+            away.y = 0f;
+            if (NavMesh.SamplePosition(transform.position + away.normalized * 1.8f, out NavMeshHit hit, 1.5f, NavMesh.AllAreas) && _agent.enabled)
+            {
+                _agent.Warp(hit.position);
+            }
+            if (_visualRoot != null) _visualRoot.localRotation = Quaternion.Euler(-80f, 0f, 0f);
+            yield return new WaitForSeconds(2.2f);
+            if (_visualRoot != null && !_isDead) _visualRoot.localRotation = Quaternion.identity;
+            if (!_isDead) ChangeState(Chase);
         }
 
         private IEnumerator DownedRoutine()
@@ -388,7 +454,8 @@ namespace Nexo.AI.Infected
             FacePlayer();
             SetAnimatorTrigger(AttackTriggerHash);
             PlayerAttacked?.Invoke(this);
-            GameEvents.RaisePlayerCaught(); // PlayerCaptureHandler (Systems_Persistent) reinicia el piso
+            // PlayerHealth decide: forcejeo (QTE), golpe acumulado o captura si se agota la vida
+            GameEvents.RaisePlayerAttacked(transform);
             return true;
         }
 
