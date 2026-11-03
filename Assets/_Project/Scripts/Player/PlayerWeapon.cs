@@ -81,6 +81,8 @@ namespace Nexo.Player
         {
             _magazine = Mathf.Clamp(magazine, 0, _magazineSize);
             _reserve = Mathf.Clamp(reserve, 0, _maxReserve);
+            // hud-polish: publica la munición al panel de arma del HUD
+            GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize);
         }
 
         private void Awake()
@@ -125,6 +127,8 @@ namespace Nexo.Player
                 _viewmodelRestPos = _viewmodel.localPosition;
                 _viewmodelRestRot = _viewmodel.localRotation;
             }
+            // hud-polish: publica la munición al panel de arma del HUD (Start corre tras el OnEnable del HUD)
+            GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize);
         }
 
         private void OnEnable()
@@ -140,6 +144,8 @@ namespace Nexo.Player
             GameEvents.OnAmmoPicked += HandleAmmoPicked;
             GameEvents.OnPlayerCaught += HandlePlayerCaught;
             GameEvents.OnFloorChanged += HandleFloorChanged;
+            // hud-polish: publica la munición al panel de arma del HUD
+            GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize);
         }
 
         private void OnDisable()
@@ -156,6 +162,7 @@ namespace Nexo.Player
             GameEvents.OnAmmoPicked -= HandleAmmoPicked;
             GameEvents.OnPlayerCaught -= HandlePlayerCaught;
             GameEvents.OnFloorChanged -= HandleFloorChanged;
+            if (_isReloading) GameEvents.RaiseWeaponReloadChanged(false); // hud-polish: la corrutina de recarga se corta al deshabilitar
             _isReloading = false;
         }
 
@@ -172,7 +179,12 @@ namespace Nexo.Player
             SetAimImmediate(false);
         }
 
-        private void HandleFloorChanged(int floor) => _isCaptured = false;
+        private void HandleFloorChanged(int floor)
+        {
+            _isCaptured = false;
+            // hud-polish: publica la munición al panel de arma del HUD tras cambiar o reiniciar el piso
+            GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize);
+        }
 
         private bool CanAct()
         {
@@ -197,6 +209,7 @@ namespace Nexo.Player
             }
 
             _magazine--;
+            GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize);
             PlayClip(_shotClip, 1f);
             GameEvents.RaiseNoiseEmitted(transform.position, _shotNoise);
             ShowMuzzleFlash();
@@ -316,6 +329,7 @@ namespace Nexo.Player
         private IEnumerator ReloadRoutine()
         {
             _isReloading = true;
+            GameEvents.RaiseWeaponReloadChanged(true); // hud-polish: estado RECARGANDO del panel de arma
             SetAiming(false);
             PlayClip(_reloadClip, 0.9f);
             if (_viewmodel != null) _viewmodel.localRotation = _viewmodelRestRot * Quaternion.Euler(25f, -20f, 0f);
@@ -328,12 +342,15 @@ namespace Nexo.Player
             _reserve -= moved;
             if (_viewmodel != null) _viewmodel.localRotation = _viewmodelRestRot;
             _isReloading = false;
+            GameEvents.RaiseWeaponReloadChanged(false); // hud-polish
+            GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize);
             AnnounceAmmo();
         }
 
         private void HandleAmmoPicked(int rounds)
         {
             _reserve = Mathf.Min(_maxReserve, _reserve + rounds);
+            GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize); // hud-polish
             AnnounceAmmo();
         }
 

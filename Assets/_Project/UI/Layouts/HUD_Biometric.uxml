@@ -10,13 +10,18 @@
         <!-- Visión térmica en Built-in (sin Volume URP): primer hijo, los paneles se dibujan encima. La activa ThermalOverlayController -->
         <ui:VisualElement picking-mode='Ignore' name='hud-thermal-overlay' class='thermal-overlay pointer-none' />
 
+        <!-- Feedback de daño: viñeta roja en los bordes (destello al recibir un golpe, pulso lento con salud baja). La controla HUDController -->
+        <ui:VisualElement picking-mode='Ignore' name='hud-damage' class='damage-vignette pointer-none' />
+
         <!-- Columna izquierda: vitales y, 16px debajo, las notificaciones (el flujo flex evita que se solapen a cualquier escala) -->
         <ui:VisualElement picking-mode='Ignore' name='hud-left-column' class='absolute top-4 left-4 flex-col items-start pointer-none'>
             <!-- Vitales (arriba izquierda) -->
             <ui:VisualElement picking-mode='Ignore' name='hud-vitals' class='hud-panel w-64 flex-col p-3 pointer-none'>
                 <ui:Label text='ESTADO BIOMÉTRICO' class='text-xs text-muted tracking-wide' />
-                <ui:Label name='hud-vitals-value' text='99% SANO' class='text-xl text-ok font-bold mt-1' />
-                <ui:Label name='hud-vitals-status' text='NO INFECTADO' class='text-sm text-main' />
+                <ui:Label name='hud-vitals-value' text='100% ILESO' class='text-xl text-ok font-bold mt-1' />
+                <!-- La mentira del HUD: siempre «NO INFECTADO» hasta que el giro final lo sustituye -->
+                <ui:Label name='hud-vitals-infection' text='NO INFECTADO' class='hud-vitals-infection text-sm text-ok font-bold tracking-wide' />
+                <ui:Label name='hud-vitals-status' text='VIDA 3/3 · GOLPES 0/4' class='text-sm text-main mt-1' />
                 <ui:Label name='hud-bpm' text='♥ 72 BPM' class='text-xs text-muted mt-2' />
             </ui:VisualElement>
 
@@ -55,16 +60,39 @@
             <ui:VisualElement name='hud-spectrogram' class='spectrogram flex-row items-end h-16 mt-1' />
         </ui:VisualElement>
 
-        <!-- Batería de visión térmica (abajo derecha) -->
-        <ui:VisualElement picking-mode='Ignore' name='hud-battery' class='hud-panel absolute bottom-4 right-4 w-64 flex-col p-3 pointer-none'>
-            <ui:VisualElement class='flex-row justify-between'>
-                <ui:Label text='VISIÓN TÉRMICA' class='text-xs text-muted tracking-wide' />
-                <ui:Label name='hud-battery-value' text='100%' class='text-xs text-accent' />
+        <!-- Columna inferior derecha: arma encima de la batería térmica (el flujo flex evita solapes a cualquier escala) -->
+        <ui:VisualElement picking-mode='Ignore' name='hud-right-column' class='absolute bottom-4 right-4 flex-col items-end pointer-none'>
+            <!-- Arma y munición: oculto hasta el primer GameEvents.OnAmmoChanged -->
+            <ui:VisualElement picking-mode='Ignore' name='hud-weapon' class='hud-panel hud-weapon hidden w-64 flex-col p-3 mb-2 pointer-none'>
+                <ui:VisualElement class='flex-row items-center justify-between'>
+                    <ui:Label name='hud-weapon-name' text='M1911' class='text-xs text-muted tracking-wide' />
+                    <ui:Label name='hud-weapon-pickup' text='' class='hud-weapon__pickup text-sm text-ok font-bold' />
+                </ui:VisualElement>
+                <ui:VisualElement class='flex-row items-end mt-1'>
+                    <ui:Label name='hud-weapon-ammo' text='2 / 0' class='hud-weapon__ammo text-2xl font-bold' />
+                    <ui:Label name='hud-weapon-status' text='' class='hud-weapon__status text-xs font-bold tracking-wide ml-2 mb-1' />
+                </ui:VisualElement>
+                <!-- Celdas del cargador: las crea HUDController según el tamaño del cargador -->
+                <ui:VisualElement picking-mode='Ignore' name='hud-weapon-cells' class='flex-row mt-2 pointer-none' />
             </ui:VisualElement>
-            <ui:VisualElement class='battery-track mt-1'>
-                <ui:VisualElement name='hud-battery-fill' class='battery-fill' />
+
+            <!-- Batería de visión térmica -->
+            <ui:VisualElement picking-mode='Ignore' name='hud-battery' class='hud-panel w-64 flex-col p-3 pointer-none'>
+                <ui:VisualElement class='flex-row justify-between'>
+                    <ui:Label text='VISIÓN TÉRMICA' class='text-xs text-muted tracking-wide' />
+                    <ui:VisualElement class='flex-row'>
+                        <ui:Label name='hud-battery-state' text='APAGADA' class='text-xs text-muted mr-2' />
+                        <ui:Label name='hud-battery-value' text='100%' class='text-xs text-accent' />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class='battery-track mt-1'>
+                    <ui:VisualElement name='hud-battery-fill' class='battery-fill' />
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+
+        <!-- Ayuda de controles: una vez por sesión al empezar a jugar (arriba al centro, entre vitales y radio) -->
+        <ui:Label picking-mode='Ignore' name='hud-controls-hint' text='' class='hud-controls-hint hidden absolute text-sm text-main pointer-none' />
 
         <!-- Centro libre: mira y prompt de interacción -->
         <ui:VisualElement picking-mode='Ignore' name='hud-crosshair' class='crosshair absolute pointer-none' />

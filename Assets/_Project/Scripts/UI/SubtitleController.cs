@@ -53,7 +53,8 @@ namespace Nexo.UI
                 return;
             }
 
-            _label.text = text;
+            // Ids internos traducidos solo en pantalla (el texto del evento no se modifica)
+            _label.text = HudTextSanitizer.Humanize(text);
             _label.RemoveFromClassList(HiddenClass);
 
             float seconds = Mathf.Clamp(_minDuration + text.Length * _secondsPerCharacter, _minDuration, _maxDuration);
