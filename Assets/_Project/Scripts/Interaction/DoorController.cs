@@ -15,6 +15,8 @@ namespace Nexo.Interaction
         [SerializeField] private string _doorId = "F12_Door_Stairs";
         [SerializeField] private bool _isLocked = true;
         [SerializeField] private bool _isOpen = false;
+        [Tooltip("Si está activo, Elena no puede desbloquearla (p. ej. hasta despejar el piso).")]
+        [SerializeField] private bool _remoteUnlockBlocked = false;
 
         [Header("Animación / Transform de Hoja de Puerta")]
         [SerializeField] private Transform _doorHinge;
@@ -68,6 +70,11 @@ namespace Nexo.Interaction
         {
             if (action == ElenaUiAction.UnlockDoor && string.Equals(targetId, _doorId, System.StringComparison.OrdinalIgnoreCase))
             {
+                if (_remoteUnlockBlocked)
+                {
+                    GameEvents.RaiseNotification(new HudNotification("NEXOOS", $"{_doorId}: apertura denegada. Presencia hostil activa en el piso.", false));
+                    return;
+                }
                 UnlockAndOpen();
             }
         }
@@ -98,6 +105,9 @@ namespace Nexo.Interaction
             _isLocked = true;
             SetOpen(false);
         }
+
+        /// <summary>Bloquea o permite el desbloqueo remoto (Elena / guion).</summary>
+        public void BlockRemoteUnlock(bool blocked) => _remoteUnlockBlocked = blocked;
 
         public void ToggleDoor()
         {

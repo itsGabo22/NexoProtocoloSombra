@@ -57,6 +57,13 @@ namespace Nexo.Interaction
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics() => CurrentObjective = "";
 
+        /// <summary>Actualiza y anuncia el objetivo actual desde otros sistemas (p. ej. LevelExitGate).</summary>
+        public static void SetObjective(string text)
+        {
+            CurrentObjective = text;
+            GameEvents.RaiseNotification(new HudNotification("OBJETIVO", text, false));
+        }
+
         public bool HasStarted => _started;
         public bool HasFinished { get; private set; }
 
