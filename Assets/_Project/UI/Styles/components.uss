@@ -150,6 +150,9 @@
 .hud-weapon--empty .hud-weapon__ammo, .hud-weapon--empty .hud-weapon__status,
 .hud-weapon--depleted .hud-weapon__ammo, .hud-weapon--depleted .hud-weapon__status { color: var(--c-danger); }
 .hud-weapon--empty .hud-weapon-cell, .hud-weapon--depleted .hud-weapon-cell { border-color: var(--c-danger); }
+/* Vacío: la etiqueta pasa a «chip» rojo con texto oscuro; así se distingue del ámbar de MUNICIÓN BAJA aunque los tonos se parezcan (hive, daltonismo) */
+.hud-weapon--empty .hud-weapon__status, .hud-weapon--depleted .hud-weapon__status { color: var(--c-bg); background-color: var(--c-danger); padding: 1px 6px; border-radius: 2px; }
+.a11y-hc .hud-weapon--empty, .a11y-hc .hud-weapon--depleted { border-width: 3px; }
 .hud-weapon--reloading .hud-weapon__ammo { color: var(--c-muted); }
 .hud-weapon--reloading .hud-weapon__status { color: var(--c-accent); }
 /* Pulso breve al recoger munición (HUDController no lo aplica con reducir movimiento) */
