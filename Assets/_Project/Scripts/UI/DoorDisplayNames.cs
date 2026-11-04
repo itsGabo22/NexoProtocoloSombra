@@ -3,7 +3,8 @@ namespace Nexo.UI
     /// <summary>
     /// Nombres en español de los ids internos (puertas, salas y objetos) para los textos que ve el jugador
     /// (lógica pura, probada en EditMode). Los ids técnicos nunca deben aparecer en pantalla.
-    /// Ids reales del repositorio: puertas F12_Door_Stairs, F12_Door_Meeting, F06_Door_Stairs, F06_Door_Lab;
+    /// Ids reales del repositorio: puertas F12_Door_Stairs, F12_Door_Meeting, F06_Door_Stairs, F06_Door_Lab (en el Piso 6
+    /// reconstruido es la puerta de Contención);
     /// salas (RoomId) F12_Cubicles, F12_Cubicles_East, F12_ServerRoom; F01_BioScanner y F12_Terminal_Security.
     /// </summary>
     public static class DoorDisplayNames
@@ -38,7 +39,7 @@ namespace Nexo.UI
                     name = "la puerta de las escaleras";
                     return true;
                 case "f06_door_lab":
-                    name = "el laboratorio";
+                    name = "la sala de contención";
                     return true;
                 case "f12_door_meeting":
                     name = "la sala de reuniones";
@@ -76,7 +77,7 @@ namespace Nexo.UI
                 case "f06_door_stairs":
                     return "de las escaleras";
                 case "f06_door_lab":
-                    return "del laboratorio";
+                    return "de Contención";
                 case "f12_door_meeting":
                     return "de la sala de reuniones";
                 default:
@@ -93,7 +94,7 @@ namespace Nexo.UI
                 case "f06_door_stairs":
                     return "Puerta de las escaleras";
                 case "f06_door_lab":
-                    return "Puerta del laboratorio";
+                    return "Puerta de Contención";
                 case "f12_door_meeting":
                     return "Sala de reuniones";
                 default:

@@ -34,7 +34,7 @@ namespace Nexo.Tests
 
         [TestCase("F12_Door_Stairs", "la puerta de las escaleras")]
         [TestCase("F06_Door_Stairs", "la puerta de las escaleras")]
-        [TestCase("F06_Door_Lab", "el laboratorio")]
+        [TestCase("F06_Door_Lab", "la sala de contención")]
         [TestCase("F12_Door_Meeting", "la sala de reuniones")]
         [TestCase(" f12_door_stairs ", "la puerta de las escaleras")]
         [TestCase("F99_Door_Unknown", DoorDisplayNames.UnknownDestination)]
@@ -46,7 +46,7 @@ namespace Nexo.Tests
         }
 
         [TestCase("F12_Door_Stairs", "Puerta de las escaleras")]
-        [TestCase("F06_Door_Lab", "Puerta del laboratorio")]
+        [TestCase("F06_Door_Lab", "Puerta de Contención")]
         [TestCase("F12_Door_Meeting", "Sala de reuniones")]
         [TestCase("F01_BioScanner", DoorDisplayNames.UnknownLabel)]
         public void DoorLabel_NeverShowsTheTechnicalId(string doorId, string expected)
