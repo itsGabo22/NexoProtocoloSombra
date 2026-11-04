@@ -3,8 +3,9 @@ using UnityEngine.UIElements;
 namespace Nexo.UI.Menus
 {
     /// <summary>
-    /// Menú principal (hub): JUGAR, OPCIONES, CRÉDITOS, SALIR. La accesibilidad vive en la pestaña de OPCIONES.
-    /// Mueve la regla y la línea de foco a la fila enfocada y cambia la pista inferior por ítem (spec §6.4).
+    /// Menú principal: NUEVA PARTIDA, OPCIONES, CRÉDITOS, SALIR (solo texto; el ítem enfocado se ilumina y se subraya).
+    /// La accesibilidad vive en la pestaña de OPCIONES. Cambia la pista inferior por ítem y anima el fondo con MenuBackdrop.
+    /// Teclado (W/S, flechas, Intro, Esc) y ratón vía MenuNavigator.
     /// </summary>
     public sealed class MainMenuController : IMenuScreen, IMenuNavigationHandler
     {
@@ -33,6 +34,7 @@ namespace Nexo.UI.Menus
         };
 
         private readonly MenuNavigator _navigator;
+        private readonly MenuBackdrop _backdrop = new MenuBackdrop();
         private readonly VisualElement[] _items = new VisualElement[ItemNames.Length];
         private MenuFlowController _flow;
         private Label _hint;
@@ -60,11 +62,13 @@ namespace Nexo.UI.Menus
             }
 
             _navigator.Attach(root, _items, _lastIndex);
+            _backdrop.Attach(root);
         }
 
         public void Unbind()
         {
             _navigator.Detach();
+            _backdrop.Detach();
             _hint = null;
             _ruleFocus = null;
             _focusLine = null;
