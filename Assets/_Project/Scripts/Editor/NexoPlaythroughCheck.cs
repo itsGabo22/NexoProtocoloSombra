@@ -224,7 +224,19 @@ namespace Nexo.EditorTools
         {
             Log("== Arranque ==");
             yield return WaitFor(() => Menu() != null && Loader() != null, 30, "Systems_Persistent cargada (menú y SceneLoader)");
-            yield return WaitFor(() => Menu() != null && Menu().Current == ScreenId.MainMenu, 60, "secuencia de arranque → menú principal");
+            // Menú de inicio: «PRESIONA [ENTER]» → Intro (evento de navegación real de UI Toolkit) → menú principal
+            yield return WaitFor(() => Menu() != null && Menu().Current == ScreenId.BootAwakening, 30, "arranque → pantalla «PRESIONA [ENTER] PARA CONTINUAR»");
+            VisualElement splash = MenuRoot()?.Q<VisualElement>("boot-root");
+            Label prompt = splash?.Q<Label>("splash-prompt");
+            Check(prompt != null && prompt.text == "PRESIONA [ENTER] PARA CONTINUAR", "aviso «PRESIONA [ENTER] PARA CONTINUAR» visible");
+            yield return WaitSeconds(1.5);
+            Check(Menu().Current == ScreenId.BootAwakening, "la pantalla de inicio espera al jugador (no avanza sola)");
+            SendSubmit(splash);
+            yield return WaitFor(() => Menu().Current == ScreenId.MainMenu, 5, "[Intro] en la pantalla de inicio → menú principal");
+            VisualElement mainMenu = MenuRoot()?.Q<VisualElement>("mm-root");
+            Check(mainMenu != null && mainMenu.Q<Label>("mm-item-play")?.text == "NUEVA PARTIDA" && mainMenu.Q<Label>("mm-item-options") != null &&
+                  mainMenu.Q<Label>("mm-item-credits") != null && mainMenu.Q<Label>("mm-item-quit") != null, "menú principal: NUEVA PARTIDA / OPCIONES / CRÉDITOS / SALIR");
+            Check(mainMenu != null && mainMenu.Q<Label>("mm-item-play").ClassListContains("is-focused"), "NUEVA PARTIDA enfocada al abrir el menú");
             yield return WaitFor(() => FloorLoaded("Floor12_Offices") && !Loader().IsLoading, 60, "Piso 12 cargado detrás del menú");
             Check(Count<CinematicService>() == 1, "un único CinematicService (DontDestroyOnLoad)");
             Check(!NarrativeEvents.TwistHasPlayed, "TwistHasPlayed limpio al arrancar");
@@ -251,7 +263,10 @@ namespace Nexo.EditorTools
             Log("== JUGAR (intro) ==");
             CinematicLog.Clear();
             _hudHiddenBeforeTrigger = false; // MenuGameFlowBridge muestra el HUD (ShowScreen(None)) antes de la intro
-            MenuEvents.RaisePlayRequested();
+            // MenuNavigator ignora la entrada 0,2 s tras abrir el menú (el mismo Intro del splash no inicia la partida)
+            yield return WaitSeconds(0.5);
+            SendSubmit(MenuRoot()?.Q<VisualElement>("mm-root")); // [Intro] sobre NUEVA PARTIDA (camino real del menú)
+            yield return WaitFor(() => Menu().Current != ScreenId.MainMenu || CinematicService.IsPlaying, 3, "[Intro] sobre NUEVA PARTIDA inicia la partida");
             if (hasIntro)
             {
                 Check(CinematicService.IsPlaying && CinematicService.CurrentId == CinematicIds.Intro, "JUGAR inicia la cinemática intro");
@@ -265,6 +280,7 @@ namespace Nexo.EditorTools
             yield return WaitFor(() => FloorLoaded("Floor12_Offices") && !Loader().IsLoading && Menu().Current == ScreenId.None, 30, "Piso 12 cargado tras JUGAR");
             yield return WaitSeconds(2.5);
             CheckFloor("Floor12_Offices", 12);
+            yield return HudVisibleCheck("Floor12_Offices");
             CheckNewGame("JUGAR (1.ª partida)");
             yield return ElenaQuickQuestions(12);
 
@@ -295,6 +311,7 @@ namespace Nexo.EditorTools
             yield return WaitFor(() => FloorLoaded("Floor06_Labs") && !FloorLoaded("Floor12_Offices") && !FloorProgression.Active.IsBusy, 40, "Piso 6 cargado y Piso 12 descargado");
             yield return WaitSeconds(2.5);
             CheckFloor("Floor06_Labs", 6);
+            yield return HudVisibleCheck("Floor06_Labs");
             yield return Floor06Checks();
             yield return ElenaQuickQuestions(6);
 
@@ -330,6 +347,7 @@ namespace Nexo.EditorTools
             Check(!PlayerHiding.IsHidden, "al descargar el piso con el jugador escondido se libera el escondite");
             yield return WaitSeconds(2.5);
             CheckFloor("Floor01_Lobby", 1);
+            yield return HudVisibleCheck("Floor01_Lobby");
             Check(!Movement().IsInputLocked, "control devuelto tras bajar escondido");
 
             yield return ElenaQuickQuestions(1);
@@ -371,6 +389,7 @@ namespace Nexo.EditorTools
             yield return WaitFor(() => FloorLoaded("Floor12_Offices") && !Loader().IsLoading && Menu().Current == ScreenId.None, 30, "Piso 12 cargado (2.ª partida)");
             yield return WaitSeconds(2f);
             CheckFloor("Floor12_Offices", 12);
+            yield return HudVisibleCheck("Floor12_Offices");
             CheckNewGame("JUGAR (2.ª partida)");
             Check(FloorProgression.Active != null && FloorProgression.Active.CurrentIndex == 0, "índice de piso reiniciado a 0");
 
@@ -602,14 +621,14 @@ namespace Nexo.EditorTools
                 reader.Close();
                 Check(NoteJournal.Count == afterFirst, "releer la misma nota no la duplica en el diario");
                 UnityEngine.Cursor.lockState = CursorLockMode.Locked; // en juego el cursor está bloqueado; en batchmode hay que pedirlo
-                bool cursorLocked = UnityEngine.Cursor.lockState == CursorLockMode.Locked;
+                bool skipCursor = Application.isBatchMode && UnityEngine.Cursor.lockState != CursorLockMode.Locked;
                 reader.ShowJournal();
                 yield return WaitSeconds(0.2);
-                if (cursorLocked) Check(reader.IsJournalOpen, $"el diario [J] se abre ({NoteJournal.Count} notas)");
+                if (!skipCursor) Check(reader.IsJournalOpen, $"el diario [J] se abre ({NoteJournal.Count} notas)");
                 else
                 {
-                    // En batchmode no hay ventana con foco y el cursor no se puede bloquear: es el caso «menú o modal abierto»
-                    Log("NOTA: cursor sin bloquear (batchmode); [J] se comprueba en su guarda y en la prueba manual");
+                    // Solo en batchmode: sin ventana con foco el cursor no se puede bloquear (caso «menú o modal abierto»)
+                    Log("[J] skipped: no cursor lock (batchmode); se comprueba su guarda");
                     Check(!reader.IsJournalOpen, "con el cursor libre (menú o modal abierto) [J] no abre el diario");
                 }
                 reader.CloseJournal();
@@ -624,7 +643,7 @@ namespace Nexo.EditorTools
             {
                 int responses = _elenaResponses;
                 UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-                if (UnityEngine.Cursor.lockState == CursorLockMode.Locked)
+                if (!(Application.isBatchMode && UnityEngine.Cursor.lockState != CursorLockMode.Locked))
                 {
                     Check(typed.DebugOpenWith("¿Por dónde salgo?"), "[T] abre la caja de texto para Elena");
                     Check(typed.IsOpen, "caja de texto abierta");
@@ -632,7 +651,7 @@ namespace Nexo.EditorTools
                 }
                 else
                 {
-                    Log("NOTA: cursor sin bloquear (batchmode); [T] se prueba enviando el texto como lo hace la caja (GameEvents.OnPlayerSpoke)");
+                    Log("[T] skipped: no cursor lock (batchmode); se comprueba su guarda y el texto va por GameEvents.OnPlayerSpoke como en la caja");
                     Check(!typed.DebugOpenWith("¿Por dónde salgo?"), "con el cursor libre (menú o modal abierto) [T] no abre la caja");
                     GameEvents.RaisePlayerSpoke("¿Por dónde salgo?");
                 }
@@ -1056,9 +1075,6 @@ namespace Nexo.EditorTools
             Check(Count<PlayerMovement>() == 1, $"[{sceneName}] un único jugador ({Count<PlayerMovement>()})");
             Check(Count<HUDController>() == 1, $"[{sceneName}] un único HUD ({Count<HUDController>()})");
             Check(!HudHidden(), $"[{sceneName}] HUD visible");
-            string hudIssue = HudCoverageIssue(out string documents);
-            Log($"[{sceneName}] UIDocuments: {documents}");
-            Check(hudIssue == null, $"[{sceneName}] HUD visible de verdad (tamaño real) y ningún UIDocument lo tapa ni lo bloquea" + (hudIssue != null ? ": " + hudIssue : string.Empty));
             Check(Time.timeScale == 1f && !AudioListener.pause, $"[{sceneName}] tiempo y audio normales");
             Check(!Movement().IsInputLocked, $"[{sceneName}] jugador con control");
 
@@ -1274,6 +1290,60 @@ namespace Nexo.EditorTools
             return root.style.display == DisplayStyle.None || hudRoot.style.display == DisplayStyle.None;
         }
 
+        private static UIDocument _floor12HudDoc;
+        private static bool _hudGeometryChanged;
+        private static void HandleHudGeometryChanged(GeometryChangedEvent evt) => _hudGeometryChanged = true;
+
+        /// <summary>
+        /// Aserción del HUD al empezar cada piso. Si la primera medida falla, se vuelve a medir tras 3 fotogramas y un
+        /// GeometryChangedEvent de hud-root (máx. 1 s) para separar un artefacto de medición (layout sin asentar) de un fallo
+        /// real; registra el estado del UIDocument del HUD y si es la misma instancia que en el Piso 12.
+        /// </summary>
+        private static IEnumerator HudVisibleCheck(string sceneName)
+        {
+            string issue = HudCoverageIssue(out string documents);
+            Log($"[{sceneName}] UIDocuments activos (panel/documento sortingOrder): {documents}");
+            if (issue != null)
+            {
+                Log($"[{sceneName}] 1.ª medida del HUD: {issue}");
+                VisualElement root = HudRootElement();
+                _hudGeometryChanged = false;
+                root?.RegisterCallback<GeometryChangedEvent>(HandleHudGeometryChanged);
+                for (int i = 0; i < 3; i++) yield return null;
+                double until = Now + 1.0;
+                while (!_hudGeometryChanged && Now < until) yield return null;
+                root?.UnregisterCallback<GeometryChangedEvent>(HandleHudGeometryChanged);
+                issue = HudCoverageIssue(out documents);
+                Log($"[{sceneName}] re-medida tras 3 fotogramas" + (_hudGeometryChanged ? " y GeometryChangedEvent" : " (sin GeometryChangedEvent en 1 s: layout asentado)") +
+                    ": " + (issue == null ? "OK → era un ARTEFACTO de medición" : "sigue igual → fallo REAL"));
+            }
+            Log($"[{sceneName}] HUD: {HudDiagnostics(sceneName)}");
+            Check(issue == null, $"[{sceneName}] HUD visible de verdad (tamaño real) y ningún UIDocument lo tapa ni lo bloquea" + (issue != null ? ": " + issue : string.Empty));
+        }
+
+        private static VisualElement HudRootElement()
+        {
+            HUDController hud = Object.FindAnyObjectByType<HUDController>();
+            UIDocument doc = hud != null ? hud.GetComponent<UIDocument>() : null;
+            return doc != null && doc.rootVisualElement != null ? doc.rootVisualElement.Q<VisualElement>("hud-root") : null;
+        }
+
+        private static string HudDiagnostics(string sceneName)
+        {
+            HUDController hud = Object.FindAnyObjectByType<HUDController>();
+            UIDocument doc = hud != null ? hud.GetComponent<UIDocument>() : null;
+            if (doc == null) return "sin UIDocument del HUD";
+            // ReferenceEquals: el == de Unity da true con un objeto destruido (tras recargar Systems_Persistent) y ocultaría el cambio
+            if (sceneName == "Floor12_Offices" && ReferenceEquals(_floor12HudDoc, null)) _floor12HudDoc = doc;
+            VisualElement root = HudRootElement();
+            string style = root == null ? "sin hud-root" :
+                $"resolved display={root.resolvedStyle.display}, visibility={root.resolvedStyle.visibility}, opacity={root.resolvedStyle.opacity:0.00}, " +
+                $"inline display={root.style.display.value}/{root.style.display.keyword}, tamaño={root.worldBound.width:0}x{root.worldBound.height:0}";
+            return $"documento «{doc.name}» (escena {doc.gameObject.scene.name}), enabled={doc.enabled}, activo={doc.isActiveAndEnabled}, " +
+                   $"panelSettings={(doc.panelSettings != null ? doc.panelSettings.name + " (sortingOrder " + doc.panelSettings.sortingOrder.ToString("0") + ")" : "ninguno")}, " +
+                   $"sortingOrder={doc.sortingOrder:0}, misma instancia que en el Piso 12 (1.ª partida)={ReferenceEquals(doc, _floor12HudDoc)}; {style}";
+        }
+
         /// <summary>
         /// Comprueba que el HUD se dibuja de verdad: hud-root con tamaño real (el fallo de la presentación fue una raíz de 0 px
         /// anidada en un UIDocument vacío) y ningún elemento visible fuera del HUD, pintado ENCIMA, lo cubre (≥ 80 %) con fondo
@@ -1392,6 +1462,28 @@ namespace Nexo.EditorTools
                 opacity *= st.opacity;
             }
             return opacity;
+        }
+
+        private static VisualElement MenuRoot()
+        {
+            MenuFlowController menu = Menu();
+            UIDocument doc = menu != null ? menu.GetComponent<UIDocument>() : null;
+            return doc != null ? doc.rootVisualElement : null;
+        }
+
+        /// <summary>Envía un NavigationSubmitEvent (Intro / botón sur) a un elemento, como hace el EventSystem de UI Toolkit.</summary>
+        private static void SendSubmit(VisualElement target)
+        {
+            if (target == null)
+            {
+                Fail("no hay elemento al que enviar [Intro]");
+                return;
+            }
+            using (NavigationSubmitEvent evt = NavigationSubmitEvent.GetPooled())
+            {
+                evt.target = target;
+                target.SendEvent(evt);
+            }
         }
 
         private static T OverlayQ<T>(string name) where T : VisualElement
