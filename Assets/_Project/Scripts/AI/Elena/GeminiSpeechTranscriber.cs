@@ -12,7 +12,7 @@ namespace Nexo.AI.Elena
     /// </summary>
     public static class GeminiSpeechTranscriber
     {
-        private const string Prompt = "Transcribe exactamente lo que dice la persona en este audio, en el idioma en que habla. " +
+        private const string Prompt = "Transcribe exactamente lo que dice la persona en este audio. El idioma es español (es-ES / es-MX / es-CO). " +
                                       "Responde solo con el texto transcrito, sin comillas ni comentarios. Si no se entiende nada, responde vacío.";
 
         [Serializable] private sealed class Part { public string text; public bool thought; }
@@ -34,8 +34,8 @@ namespace Nexo.AI.Elena
             if (config == null || config.Secrets == null || !config.Secrets.HasApiKey || samples == null || samples.Length == 0) return null;
 
             string audio = Convert.ToBase64String(VoicePcm.EncodeWav(samples, sampleRate));
-            var models = new List<string> { config.SpeechToTextModel };
-            foreach (string m in config.FallbackModelNames) if (!string.IsNullOrWhiteSpace(m) && !models.Contains(m.Trim())) models.Add(m.Trim());
+            // Primero el modelo de transcripción (por defecto gemini-2.5-flash, fiable en ~1-2 s) y luego las reservas
+            List<string> models = GeminiModelOrder.Speech(config.SpeechToTextModel, config.FallbackModelNames);
 
             // Subir el audio tarda más que un texto: el plazo total es el de Elena + 2 s
             float budget = config.TimeoutSeconds + 2f;
@@ -44,7 +44,8 @@ namespace Nexo.AI.Elena
             {
                 float remaining = budget - (Time.realtimeSinceStartup - start);
                 if (remaining < 1.5f) break;
-                float attempt = i < models.Count - 1 ? Mathf.Min(remaining, budget * 0.6f) : remaining;
+                // El audio tarda algo más en subir que un texto: +1,5 s sobre el plazo por modelo
+                float attempt = i < models.Count - 1 ? Mathf.Min(remaining, config.PerModelTimeoutSeconds + 1.5f) : remaining;
 
                 using var request = new UnityWebRequest(config.BuildEndpointUrl(models[i]), UnityWebRequest.kHttpVerbPOST);
                 request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(BuildBody(models[i], config.ThinkingLevel, audio)));

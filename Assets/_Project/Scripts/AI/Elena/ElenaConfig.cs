@@ -9,7 +9,11 @@ namespace Nexo.AI.Elena
     [CreateAssetMenu(fileName = "ElenaConfig", menuName = "Nexo/AI/Elena Config")]
     public sealed class ElenaConfig : ScriptableObject
     {
-        public const string DefaultDialogModel = "gemini-3.8-flash";
+        // Medido el 2026-11-04 con la clave del proyecto (5 llamadas por modelo): gemini-2.5-flash (thinkingBudget 0) 5/5 en
+        // 0,9-2,1 s; gemini-3.5-flash-lite 3/5 en 3,8-8,1 s; gemini-3.8-flash 429 (cuota) y la familia 3.x con 503 frecuentes.
+        // Por eso el principal es el que responde de forma fiable y los 3.x quedan como reservas (fallan rápido con 503/429).
+        public const string DefaultDialogModel = "gemini-2.5-flash";
+        public static readonly string[] DefaultFallbackModels = { "gemini-3.5-flash-lite", "gemini-3.8-flash" };
         /// <summary>La variante lite responde en ~2 s (la normal ~3,7 s): cabe en el timeout de la voz dinámica.</summary>
         public const string DefaultTtsModel = "gemini-3.8-flash-lite-tts";
         public const string DefaultTtsVoice = "Leda";
@@ -19,7 +23,7 @@ namespace Nexo.AI.Elena
         [Tooltip("Modelo de diálogo de Elena.")]
         [SerializeField] private string _modelName = DefaultDialogModel;
         [Tooltip("Modelos de reserva si el principal responde 503/429/404 (se prueban en orden dentro del mismo timeout).")]
-        [SerializeField] private string[] _fallbackModelNames = { "gemini-3.5-flash-lite" };
+        [SerializeField] private string[] _fallbackModelNames = { "gemini-3.5-flash-lite", "gemini-3.8-flash" };
         [Tooltip("Modelo que transcribe la voz del jugador ([V] sin dictado de Windows). Vacío = el de diálogo.")]
         [SerializeField] private string _speechToTextModel = DefaultDialogModel;
         [Tooltip("Modelo de síntesis de voz (respuestas dinámicas sin clip pregrabado y Nexo › Elena › Generate Voice).")]
@@ -30,7 +34,10 @@ namespace Nexo.AI.Elena
         [Header("Latencia")]
         [Tooltip("Nivel de razonamiento (thinkingConfig.thinkingLevel): low es el mínimo que acepta gemini-3.8-flash. Vacío = no se envía.")]
         [SerializeField] private string _thinkingLevel = "low";
-        [SerializeField] private float _timeoutSeconds = 5.0f;
+        [Tooltip("Plazo TOTAL de una respuesta (todos los modelos). Agotado, entra el respaldo offline.")]
+        [SerializeField] private float _timeoutSeconds = 8.0f;
+        [Tooltip("Plazo máximo de cada modelo mientras queden reservas por probar.")]
+        [SerializeField] private float _perModelTimeoutSeconds = 4.5f;
         [Tooltip("Voz en tiempo real para respuestas dinámicas sin clip (si no llega a tiempo, solo subtítulo).")]
         [SerializeField] private bool _runtimeTts = true;
         [SerializeField] private float _ttsTimeoutSeconds = 4.0f;
@@ -53,6 +60,7 @@ namespace Nexo.AI.Elena
         public string EndpointTemplate => string.IsNullOrWhiteSpace(_endpointTemplate) ? DefaultEndpoint : _endpointTemplate;
         public string ThinkingLevel => _thinkingLevel == null ? string.Empty : _thinkingLevel.Trim();
         public float TimeoutSeconds => _timeoutSeconds;
+        public float PerModelTimeoutSeconds => _perModelTimeoutSeconds > 0f ? _perModelTimeoutSeconds : 4.5f;
         public bool RuntimeTts => _runtimeTts;
         public float TtsTimeoutSeconds => _ttsTimeoutSeconds;
         public int MaxHistoryTurns => _maxHistoryTurns;

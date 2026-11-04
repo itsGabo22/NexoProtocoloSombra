@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee0cfa89a334244db6e5d02bcf61fe2, type: 3}
   m_Name: ElenaConfig
   m_EditorClassIdentifier: Nexo::Nexo.AI.Elena.ElenaConfig
-  _modelName: gemini-3.8-flash
+  _modelName: gemini-2.5-flash
   _endpointTemplate: https://generativelanguage.googleapis.com/v1beta/models/{0}:generateContent
-  _timeoutSeconds: 5
+  _timeoutSeconds: 8
   _maxHistoryTurns: 6
   _temperature: 0.7
   _forceFallback: 0
