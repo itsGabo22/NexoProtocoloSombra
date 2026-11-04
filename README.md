@@ -1,140 +1,69 @@
 # NEXO: PROTOCOLO SOMBRA
 
-Videojuego 3D de terror en primera persona desarrollado con **Unity 6 (6000.6.7f1), pipeline Built-in, C# y UI Toolkit**. NexoOS, la interfaz de las gafas de Alex, actúa como sistema de ayuda y como narrador no confiable.
+Videojuego 3D de terror en primera persona hecho con **Unity 6 (6000.6.7f1), pipeline Built-in, C# y UI Toolkit**. Alex despierta en la torre NexoCorp y baja tres pisos guiado por Elena, una niña de 9 años que le habla por la radio de sus gafas. NexoOS, la interfaz de esas gafas, es a la vez el HUD y el narrador no fiable: dice «NO INFECTADO» hasta que el BioScanner del vestíbulo revela la verdad.
 
-**Equipo:** Gabriel — arquitectura C#, IA, UI Toolkit y Git · Carlos — Unity Editor, niveles, animación y audio.  
-**Entrega:** 15 de noviembre de 2026.  
-**Estado actual:** estructura base del repositorio; todavía no contiene escenas, prefabs ni gameplay completo.
+**Equipo:** Gabriel Esteban Paz Guerrero (`itsGabo22`) — arquitectura C#, IA de Elena, UI Toolkit, narrativa y pisos 6 y 1 · Carlos Julian Benavides Burbano (`simviz12`) — Piso 12, jugador, combate, IA de infectados y audio.
+**Materia:** Diseño de Interfaces · Ingeniería de Software, 5.º semestre. **Entrega y demo:** 4 de noviembre de 2026.
 
-## Decisiones fijadas
+## Qué hay en el juego
 
-- **Editor:** `6000.6.7f1`, declarado en `ProjectSettings/ProjectVersion.txt`. Ambos equipos deben usar exactamente la misma versión.
-- **Render:** pipeline Built-in con materiales `Standard` (se descartó URP; ver `docs/DESIGN_RATIONALE.md`); navegación con AI Navigation; entrada con Input System.
-- **UI runtime:** exclusivamente UI Toolkit (`UIDocument`, UXML y USS), sin uGUI ni TextMeshPro.
-- **Comunicación:** eventos C# mediante `GameEvents`; escenas aditivas.
-- **IA de Elena:** proveedor remoto configurable con fallback local. Las claves nunca se versionan.
-- **Assets:** packs completos por Drive; binarios propios curados con Git LFS.
+- **3 pisos** cargados de forma aditiva sobre `Scenes/Persistent/Systems_Persistent.unity`: Piso 12 (oficinas, combate), Piso 6 (laboratorios, apagón, escondites, reptantes) y Piso 1 (vestíbulo, BioScanner y giro final) → créditos.
+- **Elena** con Gemini 2.5 Flash (JSON estricto validado) y fallback offline por piso; preguntas rápidas [1]-[3], voz [V] y rueda de órdenes [Q]. Retrato holográfico generado en Unity.
+- **HUD biométrico NexoOS**, notificaciones reales/falsas, terminales de seguridad y red de cámaras de 3 pisos [C], visión térmica [F].
+- **Accesibilidad:** escala de UI, alto contraste, daltonismo (Okabe-Ito), reducir movimiento y subtítulos.
+- **Cinemáticas** opcionales (`intro`, `floor_transition`, `ending`) en `Assets/StreamingAssets/Cinematics/` (no versionadas); si faltan, el juego sigue sin ellas.
 
-## Qué incluye esta base
+Cómo ejecutar el build: [`docs/LEEME_EJECUCION.md`](docs/LEEME_EJECUCION.md). Guion de la demo: [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md). Créditos y licencias: [`docs/ASSETS.md`](docs/ASSETS.md) y la pantalla de créditos del juego.
 
-- Árbol de carpetas y separación de propiedad entre Gabriel y Carlos.
-- Manifiesto de paquetes, capas iniciales, namespace raíz y serialización Force Text.
-- Assembly definitions para runtime y pruebas EditMode.
-- `NexoControls.inputactions` con teclado/ratón y mando.
-- Utilidades USS, temas Nexo/Colmena y componentes visuales base.
-- Reglas de Antigravity, CODEOWNERS, plantilla de PR y documentación del proyecto.
-- La biblia técnica original en `docs/TECHNICAL_BIBLE.md`.
-
-No incluye Library, builds, assets de terceros, secretos, escenas `.unity`, prefabs, modelos, audio ni implementación completa de sistemas. Unity generará los `.meta` al primer arranque; deben commitearse junto con sus archivos.
-
-## Primer arranque
+## Abrir el proyecto
 
 ```bash
 git clone https://github.com/itsGabo22/NexoProtocoloSombra.git
 cd NexoProtocoloSombra
 git lfs install
-git lfs pull
+git lfs pull            # modelos, PNG y audio propios están en Git LFS
 git config core.autocrlf false
 ```
 
-1. Añade la carpeta en Unity Hub y ábrela con la versión exacta indicada arriba.
-2. Espera a que Unity restaure los paquetes de `Packages/manifest.json`.
-3. Comprueba **Edit → Project Settings → Editor**: `Visible Meta Files` y `Force Text`.
-4. El proyecto usa el **pipeline Built-in** (sin asset URP asignado) y materiales `Standard`. No asignes un asset URP: los materiales del proyecto están pensados para Built-in y los URP/Lit se ven rosas.
-5. Configura UnityYAMLMerge sustituyendo la ruta por tu instalación exacta:
+1. **Packs de terceros** (no están en Git, el repo es público): pide el zip al equipo y extráelo **con Unity cerrado y con sus `.meta`** en `Assets/ThirdPartyAssets/` (o `Assets/_ThirdPartyAssets/`; usa solo una). Packs: `Pack_Nokobot_Guns`, `Pack_OfficeBuilding`, `Pack_UnityLearnTemplate` y `Pack_ZombieMale_AAB`. Si falta alguno, Unity muestra «Missing Nested Prefab»: no «arregles» el prefab, consigue el pack.
+2. Abre la carpeta en Unity Hub con **exactamente 6000.6.7f1** y espera a que restaure los paquetes.
+3. Escena de arranque: `Assets/_Project/Scenes/Persistent/Systems_Persistent.unity` → Play.
+4. **Elena con Gemini (opcional):** crea `ElenaSecrets.asset` en `Assets/_Project/Data/Secrets/` (carpeta ignorada) y asígnalo en `Data/ElenaConfig.asset`. Sin clave, Elena usa el fallback offline sin errores.
+5. Pipeline **Built-in** con materiales `Standard`: no asignes un asset URP (los materiales URP/Lit se ven rosas).
 
-```bash
-git config merge.unityyamlmerge.name 'Unity SmartMerge'
-git config merge.unityyamlmerge.driver 'C:/Program Files/Unity/Hub/Editor/6000.0.0f1/Editor/Data/Tools/UnityYAMLMerge.exe merge -p %O %B %A %P'
-```
+## Herramientas del Editor (menú Nexo)
 
-6. Abre y cierra Unity sin tocar contenido: `git status` solo debería mostrar los `.meta` iniciales y la configuración que Unity complete. Revisa esos cambios antes de commitearlos; no aceptes reserializaciones masivas inesperadas.
-
-## Assets y secretos
-
-- Ejecuta `git lfs install` y `git lfs pull` antes de abrir Unity (fuentes, audio y modelos propios están en LFS).
-- Extrae el zip de packs compartidos en `Assets/_ThirdPartyAssets/` (o `Assets/ThirdPartyAssets/`, ambas ignoradas; usa solo una) **con Unity cerrado y conservando sus `.meta`**. Packs necesarios: `Pack_Nokobot_Guns`, `Pack_OfficeBuilding`, `Pack_UnityLearnTemplate` y `Pack_ZombieMale_AAB` (sin este último el infectado no tiene modelo).
-- Registra cada pack y licencia en `docs/ASSETS.md`.
-- Para Elena con Gemini, crea `ElenaSecrets.asset` mediante el menú de ScriptableObjects en `Assets/_Project/Data/Secrets/`. Esa carpeta está ignorada; sin el asset, el sistema debe funcionar en fallback.
-- No uses Git LFS para packs completos.
-
-## Propiedad de carpetas
-
-| Responsable | Rutas principales |
+| Menú | Qué hace |
 | --- | --- |
-| Gabriel | `Scripts/`, `UI/`, `Data/`, `Input/`, `Prefabs/Systems/`, `Scenes/Persistent/`, `Scenes/Menus/`, `Scenes/Sandbox/`, `Packages/`, `ProjectSettings/` |
-| Carlos | `Scenes/Floors/`, `Prefabs/Environment/`, `Prefabs/Characters/`, `Prefabs/Interactables/`, `Models/`, `Materials/`, `Animations/`, `Lighting/`, `Audio/`, `docs/ASSETS.md` |
-| Ambos | `docs/handoffs/`, siempre con archivos nuevos por petición |
-
-Una escena `.unity` tiene un único dueño. Todo cambio fuera de tu carpeta se solicita mediante una plantilla en `docs/handoffs/`.
-
-**Antes de proteger ramas:** sustituye el propietario provisional de las rutas de Carlos en `.github/CODEOWNERS` por su usuario real de GitHub.
+| Nexo › Checks › Integrity | Scripts que faltan, shaders rosas, materiales vacíos, AudioClip rotos (`Logs/NexoIntegrityCheck.txt`) |
+| Nexo › Checks › Playthrough | Recorrido automático completo 12 → 6 → 1 → giro → créditos → menú, incluidas las preguntas [1]-[3] de Elena en cada piso (`Logs/NexoPlaythroughCheck.txt`) |
+| Nexo › Checks › Visual Capture | Capturas de cada piso (linterna on/off), luminancia, terminales y UI real (`Logs/VisualCapture/`) |
+| Nexo › Cinematics › Validate | Lista y valida los vídeos de `StreamingAssets/Cinematics` |
+| Nexo › Elena › Generate Portrait | Regenera `Resources/Elena/portrait.png` |
+| Nexo › Build › Windows | Build de entrega: Elena offline y atajos de demo solo en el build; restaura todo al terminar |
 
 ## Controles
 
-Tomados de `Input/NexoControls.inputactions` y de los bindings creados en código (`PlayerWeapon`, `ElenaVoiceInput`, `ObjectiveReminder`, `StruggleQTE`, `PlayerMovement`). En mando, Interactuar y Recargar comparten el botón oeste [verificar en mando físico].
-
 | Acción | Teclado/ratón | Mando |
 | --- | --- | --- |
-| Movimiento | WASD | Stick izquierdo |
-| Cámara | Ratón | Stick derecho |
-| Correr | Shift izquierdo | Presionar stick izquierdo |
-| Interactuar | E | Botón oeste |
-| Visión térmica (linterna) | F | — (`FlashlightSystem` lee la tecla F directamente; la acción `ThermalVision` del mapa no está conectada) |
-| Rueda de órdenes | Mantener Q | Mantener hombro izquierdo |
-| Preguntas rápidas a Elena | 1, 2, 3 | — |
-| Hablar con Elena (voz) | V | Botón norte |
-| Disparar | Clic izquierdo | Gatillo derecho |
-| Apuntar | Clic derecho | Gatillo izquierdo |
-| Recargar | R | Botón oeste |
+| Moverse / correr | WASD / Shift izquierdo | Stick izquierdo / presionarlo |
+| Mirar | Ratón | Stick derecho |
 | Agacharse | Ctrl izquierdo o C | — |
+| Interactuar | E | Botón oeste |
+| Linterna / visión térmica | F | — |
+| Disparar / apuntar / recargar | Clic izquierdo / clic derecho / R | Gatillo derecho / izquierdo / botón oeste |
+| Forcejeo (cuando te agarran) | Espacio | Botón sur |
+| Preguntas rápidas a Elena | 1, 2, 3 | — |
+| Hablar con Elena (voz) | Mantener V | Botón norte |
+| Rueda de órdenes | Mantener Q | Hombro izquierdo |
+| Red de cámaras (con una terminal abierta) | C | — |
 | Ver objetivo | Tab | Select |
-| Forcejeo (QTE) | Espacio | Botón sur |
-| Pausa / cancelar | Esc o P | Start |
+| Pausa | Esc o P | Start |
+| Pantalla completa / ventana | Alt+Intro u Opciones › Video | — |
 
 ## Flujo Git
 
-- `main`: solo hitos demostrables etiquetados.
-- `develop`: integración revisada.
-- Ramas cortas: `feature/gabriel/<tema>` y `feature/carlos/<tema>`.
-- PR a `develop` con **Rebase and merge** o **Merge commit**; nunca squash.
-- Commits atómicos con Conventional Commits, en inglés y minúsculas.
-- Añade rutas explícitas con `git add`; no uses `git add .`, `git add -A` ni `git push --force`.
-- Cada archivo de Unity y su `.meta` van en el mismo commit.
-
-Rutina diaria:
-
-```bash
-git checkout develop
-git pull --rebase
-git checkout -b feature/gabriel/<tema>
-# Trabajo acotado, verificación y commit atómico.
-git pull --rebase origin develop
-git push -u origin feature/gabriel/<tema>
-```
-
-El backlog completo de 133 commits y los criterios de cada sprint están en `docs/TECHNICAL_BIBLE.md`.
-
-## Primera publicación de esta base
-
-Si el repositorio remoto está vacío y decides importar toda la base como un único commit inicial:
-
-```bash
-git add .gitignore .gitattributes .editorconfig README.md .antigravity/rules.md .github Packages ProjectSettings Assets docs
-git commit -m 'chore(unity): create urp project skeleton and folder structure'
-git branch -M main
-git remote add origin https://github.com/itsGabo22/NexoProtocoloSombra.git
-git push -u origin main
-git checkout -b develop
-git push -u origin develop
-```
-
-Si `origin` ya existe, omite la línea `git remote add`. Para seguir el desglose atómico de los commits 1–11 de la biblia, registra los archivos por unidades en lugar de usar el commit único anterior.
-
-## Verificación antes de cada PR
-
-1. Compilación sin errores nuevos en Unity.
-2. Prueba real en Play Mode o EditMode del cambio entregado.
-3. Sin secretos, builds, packs de terceros ni cambios fuera de tu propiedad.
-4. Escenas y prefabs en YAML de texto; `.meta` incluidos.
-5. README y handoffs actualizados cuando cambie un contrato de integración.
+- Ramas de trabajo desde `origin/develop`; PR a `develop` con **merge commit** (nunca squash ni force-push). `main` solo recibe hitos.
+- Conventional Commits en inglés y minúsculas; `git add <archivo> <archivo>.meta` (nunca `git add .`).
+- Nunca se versionan secretos, builds, logs, packs de terceros ni los vídeos de las cinemáticas.
+- Guía completa para agentes y personas: [`CLAUDE.md`](CLAUDE.md). Traspasos: `docs/handoffs/`.
