@@ -111,6 +111,9 @@ namespace Nexo.EditorTools
 
             AddHair(head, "Hair_Cap", headPos + Vector3.up * h * 0.045f + back * h * 0.012f, new Vector3(0.16f, 0.15f, 0.17f) * (h / 1.3f), hair, PrimitiveType.Sphere);
             AddHair(head, "Hair_Long", headPos - Vector3.up * h * 0.07f + back * h * 0.05f, new Vector3(0.15f, 0.2f, 0.07f) * (h / 1.3f), hair, PrimitiveType.Capsule);
+
+            // Color por pieza (piel con textura, ropa de niña) si ya se ejecutó Nexo/Characters/Aplicar color (Carlos)
+            NexoCharacterColors.ApplyElena(instance);
         }
 
         private static void AddHair(Transform head, string name, Vector3 worldPos, Vector3 worldScale, Material mat, PrimitiveType type)
