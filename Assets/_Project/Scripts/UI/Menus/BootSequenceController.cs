@@ -4,8 +4,9 @@ using UnityEngine.UIElements;
 namespace Nexo.UI.Menus
 {
     /// <summary>
-    /// Secuencia de arranque: Despertar (progreso 0→100 % en ~3 s y apertura de párpados) → Escaneo biométrico (~2.5 s) → Menú.
-    /// Cualquier tecla, clic o botón de navegación salta directamente al menú. La calibración óptica queda fuera de alcance.
+    /// Pantalla de inicio. Si el layout de BootAwakening tiene «splash-prompt» (layout actual): «PRESIONA [ENTER] PARA
+    /// CONTINUAR» con fondo animado (MenuBackdrop) y el aviso parpadeando; espera a Intro, cualquier tecla o clic → menú.
+    /// Con el layout antiguo: Despertar (progreso 0→100 % en ~3 s y párpados) → Escaneo biométrico (~2.5 s) → Menú.
     /// Temporizadores con VisualElement.schedule (sin Update).
     /// </summary>
     public sealed class BootSequenceController : IMenuScreen
@@ -15,6 +16,8 @@ namespace Nexo.UI.Menus
         private const long LidOpenMs = 1200;   // misma duración que la transición de .boot-lid en nexo-menu-screens.uss
         private const long ScanDurationMs = 2500;
         private const string LidOpenClass = "boot-lid--open";
+        private const long PromptBlinkMs = 900;
+        private const string PromptDimClass = "aw-prompt--dim";
 
         private MenuFlowController _flow;
         private VisualElement _root;
@@ -25,6 +28,9 @@ namespace Nexo.UI.Menus
         private IVisualElementScheduledItem _progressTick;
         private IVisualElementScheduledItem _nextStep;
         private long _elapsedMs;
+        private readonly MenuBackdrop _backdrop = new MenuBackdrop();
+        private Label _prompt;
+        private IVisualElementScheduledItem _blink;
 
         public void Bind(MenuFlowController flow, VisualElement root, ScreenId screen)
         {
@@ -38,7 +44,14 @@ namespace Nexo.UI.Menus
             _root.RegisterCallback<NavigationCancelEvent>(HandleSkipCancel);
             _root.Focus();
 
-            if (screen == ScreenId.BootAwakening)
+            _prompt = screen == ScreenId.BootAwakening ? _root.Q<Label>("splash-prompt") : null;
+            if (_prompt != null)
+            {
+                // Modo splash: sin avance automático; el aviso parpadea (quieto con «reducir movimiento»)
+                _backdrop.Attach(_root);
+                _blink = _prompt.schedule.Execute(BlinkPrompt).Every(PromptBlinkMs);
+            }
+            else if (screen == ScreenId.BootAwakening)
             {
                 _progressFill = _root.Q<VisualElement>("boot-progress-fill");
                 _progressValue = _root.Q<Label>("boot-progress-value");
@@ -59,8 +72,12 @@ namespace Nexo.UI.Menus
         {
             _progressTick?.Pause();
             _nextStep?.Pause();
+            _blink?.Pause();
             _progressTick = null;
             _nextStep = null;
+            _blink = null;
+            _prompt = null;
+            _backdrop.Detach();
 
             if (_root != null)
             {
@@ -88,6 +105,14 @@ namespace Nexo.UI.Menus
             _lidTop?.AddToClassList(LidOpenClass);
             _lidBottom?.AddToClassList(LidOpenClass);
             if (_root != null) _nextStep = _root.schedule.Execute(GoToBiometricScan).StartingIn(LidOpenMs);
+        }
+
+        private void BlinkPrompt()
+        {
+            if (_prompt == null || _root == null) return;
+            bool reduce = false;
+            for (VisualElement e = _root; e != null; e = e.hierarchy.parent) reduce |= e.ClassListContains("reduce-motion");
+            _prompt.EnableInClassList(PromptDimClass, !reduce && !_prompt.ClassListContains(PromptDimClass));
         }
 
         private void SetProgress(float t)

@@ -16,7 +16,7 @@ namespace Nexo.AI.Elena
         [Serializable] private sealed class Content { public Part[] parts; }
         [Serializable] private sealed class PrebuiltVoiceConfig { public string voiceName; }
         [Serializable] private sealed class VoiceConfig { public PrebuiltVoiceConfig prebuiltVoiceConfig; }
-        [Serializable] private sealed class SpeechConfig { public VoiceConfig voiceConfig; }
+        [Serializable] private sealed class SpeechConfig { public VoiceConfig voiceConfig; public string languageCode = "es-US"; }
         [Serializable] private sealed class GenerationConfig { public string[] responseModalities; public SpeechConfig speechConfig; }
         [Serializable] private sealed class Body { public Content[] contents; public GenerationConfig generationConfig; }
 
@@ -66,6 +66,8 @@ namespace Nexo.AI.Elena
             return false;
         }
 
+        // Medido el 2026-11-04: con indicación de estilo («Say nervously…») el TTS la LEE en voz alta en inglés y luego dice la frase
+        // en español. La voz dinámica envía solo la frase, con languageCode es-US, y suena limpia y en español.
         /// <summary>Clip de voz para una respuesta dinámica, o null si no hay clave, falla la red o no llega a tiempo.</summary>
         public static async Awaitable<AudioClip> SynthesizeAsync(ElenaConfig config, string line, string emotion)
         {
@@ -73,7 +75,7 @@ namespace Nexo.AI.Elena
 
             string url = config.BuildEndpointUrl(config.TtsModel);
             using var request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
-            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(BuildBody(emotion, line, config.TtsVoice)));
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(BuildBodyRaw(line, config.TtsVoice)));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
             request.SetRequestHeader("x-goog-api-key", config.Secrets.ApiKey);

@@ -1,0 +1,68 @@
+/* Menú de inicio y pantalla «PRESIONA [ENTER]» (estilo monocromo salvia/carbón, solo texto).
+   Paleta: salvia #A3B8AC, pálido #CDD9D1, carbón #2A2A2A, casi negro #111111.
+   USS sin gap, @keyframes, rem ni Grid: márgenes en px, flex y transition-property. */
+
+.aw-screen { position: absolute; left: 0; top: 0; right: 0; bottom: 0; background-color: rgb(17, 17, 17); overflow: hidden; }
+
+/* Capas de fondo: las texturas las genera MenuBackdrop en memoria. */
+.aw-bg { position: absolute; left: -40px; top: -40px; right: -40px; bottom: -40px; -unity-background-scale-mode: scale-and-crop; }
+.aw-vignette { position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-background-scale-mode: stretch-to-fill; }
+.aw-grain { position: absolute; left: -64px; top: -64px; right: -64px; bottom: -64px; background-repeat: repeat repeat; background-size: 512px 512px; opacity: 0.9; }
+
+/* Bloque del título, arriba a la izquierda */
+.aw-title-block { position: absolute; left: 128px; top: 112px; width: 900px; flex-direction: column; }
+.aw-hairline { height: 1px; width: 720px; background-color: rgba(205, 217, 209, 0.32); }
+.aw-strip { height: 6px; width: 560px; margin-top: 18px; margin-bottom: 22px; -unity-background-scale-mode: stretch-to-fill; }
+.aw-title {
+    font-size: 168px; min-height: 150px; color: rgb(205, 217, 209); letter-spacing: 6px; margin: 0; padding: 0;
+    -unity-font-definition: url("../Fonts/BarlowCondensed-Bold.ttf"); -unity-text-align: middle-left;
+}
+.aw-subtitle {
+    font-size: 46px; min-height: 52px; color: rgb(163, 184, 172); letter-spacing: 18px; margin-top: 4px; margin-bottom: 22px; padding: 0;
+    -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf");
+}
+.aw-tagline {
+    font-size: 18px; color: rgba(205, 217, 209, 0.55); letter-spacing: 6px; margin-top: 14px; padding: 0;
+    -unity-font-definition: url("../Fonts/IBMPlexMono-Medium.ttf");
+}
+
+/* Menú de solo texto, centrado en la parte baja */
+.aw-menu { position: absolute; left: 0; right: 0; bottom: 210px; flex-direction: column; align-items: center; }
+.aw-item {
+    font-size: 30px; min-height: 40px; color: rgba(163, 184, 172, 0.62); letter-spacing: 10px;
+    padding-left: 10px; padding-right: 0; padding-top: 2px; padding-bottom: 4px; margin-top: 8px; margin-bottom: 8px;
+    border-bottom-width: 1px; border-bottom-color: rgba(205, 217, 209, 0);
+    -unity-font-definition: url("../Fonts/BarlowCondensed-Medium.ttf"); -unity-text-align: middle-center;
+    transition-property: color, border-bottom-color, letter-spacing; transition-duration: 0.18s, 0.18s, 0.25s;
+}
+.aw-item:hover, .aw-item.is-focused {
+    color: rgb(205, 217, 209); border-bottom-color: rgba(205, 217, 209, 0.9); letter-spacing: 12px;
+    -unity-font-definition: url("../Fonts/BarlowCondensed-SemiBold.ttf");
+}
+
+.aw-hint {
+    position: absolute; left: 0; right: 0; bottom: 150px; font-size: 18px; color: rgba(163, 184, 172, 0.7);
+    -unity-text-align: middle-center; -unity-font-definition: url("../Fonts/IBMPlexSans-Regular.ttf");
+}
+.aw-footer {
+    position: absolute; left: 0; right: 0; bottom: 64px; font-size: 15px; color: rgba(163, 184, 172, 0.5); letter-spacing: 4px;
+    -unity-text-align: middle-center; -unity-font-definition: url("../Fonts/IBMPlexMono-Medium.ttf");
+}
+.aw-version {
+    position: absolute; right: 64px; bottom: 64px; font-size: 14px; color: rgba(163, 184, 172, 0.4); letter-spacing: 3px;
+    -unity-font-definition: url("../Fonts/IBMPlexMono-Medium.ttf");
+}
+
+/* Pantalla «PRESIONA [ENTER]» */
+.aw-prompt {
+    position: absolute; left: 0; right: 0; bottom: 230px; font-size: 26px; color: rgb(205, 217, 209); letter-spacing: 12px;
+    -unity-text-align: middle-center; -unity-font-definition: url("../Fonts/BarlowCondensed-Medium.ttf");
+    transition-property: opacity; transition-duration: 0.9s;
+}
+.aw-prompt--dim { opacity: 0.25; }
+
+/* Accesibilidad: alto contraste y reducir movimiento */
+.a11y-hc .aw-item { color: rgb(205, 217, 209); }
+.a11y-hc .aw-item.is-focused { color: rgb(255, 255, 255); border-bottom-color: rgb(255, 255, 255); }
+.a11y-hc .aw-hint, .a11y-hc .aw-footer { color: rgb(205, 217, 209); }
+.reduce-motion .aw-item, .reduce-motion .aw-prompt { transition-duration: 0s; }

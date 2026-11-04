@@ -13,10 +13,10 @@ namespace Nexo.AI.Elena
     }
 
     /// <summary>
-    /// Cliente HTTP con Gemini vía UnityWebRequest (modelo de diálogo de ElenaConfig, por defecto gemini-3.8-flash).
+    /// Cliente HTTP con Gemini vía UnityWebRequest (modelo de diálogo de ElenaConfig: gemini-2.5-flash y, de reserva, gemini-3.5-flash-lite y gemini-3.8-flash).
     /// Envía el System Prompt, historial y contexto diegético, exige JSON y pide el razonamiento mínimo (thinkingLevel
     /// «low»: sin él 3.8-flash tarda ~4,6 s). Si el modelo responde 503/429/404 o se agota el tiempo, prueba los modelos de
-    /// reserva dentro del MISMO plazo total (TimeoutSeconds). Cualquier fallo devuelve null y ElenaAIService usa el respaldo
+    /// reserva dentro del MISMO plazo total (TimeoutSeconds; cada modelo con reservas pendientes usa como mucho PerModelTimeoutSeconds). Cualquier fallo devuelve null y ElenaAIService usa el respaldo
     /// offline: el jugador nunca ve un error. Las respuestas pasan por ElenaReplyGuard (sin spoilers del giro ni salir del
     /// personaje) y HudTextSanitizer (sin ids internos de puertas).
     /// </summary>
@@ -59,14 +59,15 @@ namespace Nexo.AI.Elena
             float budget = _config != null ? Mathf.Max(1f, _config.TimeoutSeconds) : 5f;
             float start = Time.realtimeSinceStartup;
 
-            var models = new List<string>(Models());
+            var models = GeminiModelOrder.Dialog(_config != null ? _config.ModelName : ElenaConfig.DefaultDialogModel, _config != null ? _config.FallbackModelNames : null);
             for (int i = 0; i < models.Count; i++)
             {
                 string model = models[i];
                 float remaining = budget - (Time.realtimeSinceStartup - start);
                 if (remaining < MinAttemptSeconds) break;
                 // Con reservas pendientes, el intento no se come todo el plazo (deja sitio al siguiente modelo)
-                float attempt = i < models.Count - 1 ? Mathf.Min(remaining, budget * 0.6f) : remaining;
+                float perModel = _config != null ? _config.PerModelTimeoutSeconds : 4.5f;
+                float attempt = i < models.Count - 1 ? Mathf.Min(remaining, perModel) : remaining;
 
                 string json = BuildBody(context, history);
                 json = GeminiThinking.Inject(json, GeminiThinking.ConfigFragment(model, _config != null ? _config.ThinkingLevel : "low"));
@@ -77,20 +78,13 @@ namespace Nexo.AI.Elena
                 {
                     LastModel = model;
                     LastLatency = Time.realtimeSinceStartup - start;
+                    response.source = model;
                     Debug.Log($"[GeminiProvider] Respuesta de {model} en {LastLatency:0.00} s");
                     return response;
                 }
                 if (!GeminiThinking.ShouldTryNextModel(code, timedOut)) break;
             }
             return null;
-        }
-
-        private IEnumerable<string> Models()
-        {
-            yield return _config != null ? _config.ModelName : ElenaConfig.DefaultDialogModel;
-            if (_config == null) yield break;
-            foreach (string m in _config.FallbackModelNames)
-                if (!string.IsNullOrWhiteSpace(m) && m.Trim() != _config.ModelName) yield return m.Trim();
         }
 
         private string BuildBody(ElenaRequestContext context, List<ChatTurn> history)

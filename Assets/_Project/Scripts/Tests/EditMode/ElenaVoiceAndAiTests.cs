@@ -179,15 +179,18 @@ namespace Nexo.Tests
         }
 
         [Test]
-        public void Config_DefaultsUseGemini38()
+        public void Config_DefaultsUseReliableModelFirst()
         {
             var config = ScriptableObject.CreateInstance<ElenaConfig>();
-            Assert.AreEqual("gemini-3.8-flash", config.ModelName);
-            Assert.AreEqual("gemini-3.8-flash", config.SpeechToTextModel);
+            Assert.AreEqual("gemini-2.5-flash", config.ModelName);
+            Assert.AreEqual("gemini-2.5-flash", config.SpeechToTextModel);
+            CollectionAssert.AreEqual(new[] { "gemini-3.5-flash-lite", "gemini-3.8-flash" }, config.FallbackModelNames);
+            CollectionAssert.AreEqual(ElenaConfig.DefaultFallbackModels, config.FallbackModelNames);
             StringAssert.StartsWith("gemini-3.8-flash", config.TtsModel);
             Assert.AreEqual("low", config.ThinkingLevel);
-            Assert.LessOrEqual(config.TimeoutSeconds, 5.5f);
-            StringAssert.Contains("gemini-3.8-flash:generateContent", config.BuildEndpointUrl());
+            Assert.LessOrEqual(config.PerModelTimeoutSeconds, 5f, "cada modelo, como mucho ~4-5 s");
+            Assert.LessOrEqual(config.TimeoutSeconds, 8.5f, "plazo total acotado: Elena nunca se cuelga");
+            StringAssert.Contains("gemini-2.5-flash:generateContent", config.BuildEndpointUrl());
             UnityEngine.Object.DestroyImmediate(config);
         }
 
@@ -197,7 +200,8 @@ namespace Nexo.Tests
             var config = AssetDatabase.LoadAssetAtPath<ElenaConfig>("Assets/_Project/Data/ElenaConfig.asset");
             Assert.IsNotNull(config);
             Assert.IsFalse(config.ForceFallback, "En el repo Elena usa Gemini en el Editor");
-            Assert.AreEqual("gemini-3.8-flash", config.ModelName);
+            Assert.AreEqual("gemini-2.5-flash", config.ModelName);
+            Assert.LessOrEqual(config.TimeoutSeconds, 8.5f);
         }
 
         // ---------- Filtro de respuestas ----------

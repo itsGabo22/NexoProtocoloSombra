@@ -30,7 +30,7 @@
                 <ui:Label name="cr-course-label" text="MATERIA" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-course-value" text="Diseño de Interfaces · Ingeniería de Software, 5.º semestre" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-dialogue-label" text="DIÁLOGOS DE ELENA" class="label text-muted nx-mb-4" />
-                <ui:Label name="cr-dialogue-value" text="Gemini 2.5 Flash (Google)" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-dialogue-value" text="Gemini 2.5 Flash, con reserva Gemini 3.5 Flash-Lite y 3.8 Flash (Google) · respaldo offline escrito por el equipo" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-fonts-label" text="TIPOGRAFÍAS" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-fonts-value" text="Barlow Condensed (The Barlow Project Authors) · IBM Plex Sans e IBM Plex Mono (IBM Corp.) · SIL Open Font License 1.1" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-audio-label" text="EFECTOS DE SONIDO" class="label text-muted nx-mb-4" />

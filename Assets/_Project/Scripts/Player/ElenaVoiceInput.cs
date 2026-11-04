@@ -9,9 +9,11 @@ using UnityEngine.Windows.Speech;
 namespace Nexo.Player
 {
     /// <summary>
-    /// Hablar con Elena por voz: mantener [V] (o el botón norte del mando) y soltar para enviar.
-    /// Si Windows tiene reconocimiento de voz se usa su dictado; si no, se graba el micrófono y Gemini transcribe
-    /// el audio (requiere la API key de ElenaSecrets). La frase se envía a Elena por GameEvents.OnPlayerSpoke.
+    /// Hablar con Elena por voz: mantener [V] (o el botón norte del mando) y soltar para enviar (máx. 8 s).
+    /// Vía primaria: se graba el micrófono con Unity y Gemini transcribe el audio en español (no depende del ajuste
+    /// «Reconocimiento de voz en línea» de Windows; requiere la API key de ElenaSecrets). Si no hay clave (o el modo es
+    /// offline) se usa el dictado de Windows como alternativa. La frase se envía a Elena por GameEvents.OnPlayerSpoke.
+    /// Los estados (ESCUCHANDO / PROCESANDO / errores) se publican con GameEvents.OnVoiceStatus.
     /// Todo por callbacks y await: sin Update().
     /// Cualquier fallo (sin micrófono, sin permiso, dictado rechazado, sin red o build sin conexión) se degrada a un
     /// subtítulo que remite a las preguntas rápidas [1]-[3] y nunca lanza excepciones (cambio de Gabriel, 2026-11-03).
@@ -20,7 +22,7 @@ namespace Nexo.Player
     public sealed class ElenaVoiceInput : MonoBehaviour
     {
         private const int RecordRate = 16000;
-        private const int MaxRecordSeconds = 10;
+        private const int MaxRecordSeconds = ElenaVoiceRules.MaxRecordSeconds;
 
         [SerializeField] private PlayerMovement _playerMovement;
         [SerializeField] private MicrophoneNoiseSensor _noiseSensor;
@@ -37,6 +39,7 @@ namespace Nexo.Player
         private AudioClip _recording;
         // Si el dictado de Windows falla una vez (privacidad de voz desactivada, servicio ocupado) no se reintenta
         private bool _dictationFailed;
+        private Coroutine _autoStop;
 
         // Mensaje único cuando no hay forma de oír al jugador: siempre quedan las preguntas rápidas
         private const string NoVoiceFirstMessage = "(Elena no puede oír tu voz. Activa el reconocimiento de voz en línea en Configuración > Privacidad y seguridad > Voz. Mientras tanto, escríbele con [T] o usa [1] [2] [3])";
@@ -129,33 +132,39 @@ namespace Nexo.Player
             if (_playerMovement != null && _playerMovement.IsInputLocked) return;
 
             // Sin dictado ni transcripción (build sin conexión) se avisa al pulsar, sin grabar en vano
-            bool dictation = UseWindowsDictation;
+            bool dictation = !CanTranscribe && UseWindowsDictation;
             if (!dictation && !CanTranscribe)
             {
                 GameEvents.RaiseSubtitle(NoVoiceMessage);
+                GameEvents.RaiseVoiceStatus(ElenaVoiceRules.NotHeard);
                 return;
             }
 
             _isListening = true;
             _lastHypothesis = "";
-            GameEvents.RaiseSubtitle("(Hablando con Elena... suelta [V] para enviar)");
+            GameEvents.RaiseVoiceStatus(ElenaVoiceRules.Listening);
             GameEvents.RaiseNoiseEmitted(transform.position, _talkNoise);
 
-            if (dictation && StartDictation()) return;
             if (CanTranscribe)
             {
                 StartRecording();
+            }
+            else if (dictation && StartDictation())
+            {
+                StartAutoStop();
             }
             else
             {
                 _isListening = false;
                 GameEvents.RaiseSubtitle(NoVoiceMessage);
+                GameEvents.RaiseVoiceStatus(ElenaVoiceRules.NotHeard);
             }
         }
 
         private void HandleTalkReleased(InputAction.CallbackContext context)
         {
             if (!_isListening) return;
+            StopAutoStop();
             _isListening = false;
 
             if (IsDictationRunning)
@@ -171,7 +180,9 @@ namespace Nexo.Player
 
         private void CancelListening()
         {
+            StopAutoStop();
             _isListening = false;
+            GameEvents.RaiseVoiceStatus(string.Empty);
             StopDictation();
             try
             {
@@ -184,6 +195,36 @@ namespace Nexo.Player
             _recording = null;
         }
 
+        /// <summary>Corta la escucha a los 8 s aunque el jugador siga pulsando [V] (equivale a soltar).</summary>
+        private void StartAutoStop()
+        {
+            StopAutoStop();
+            _autoStop = StartCoroutine(AutoStopRoutine());
+        }
+
+        private void StopAutoStop()
+        {
+            if (_autoStop != null) StopCoroutine(_autoStop);
+            _autoStop = null;
+        }
+
+        private System.Collections.IEnumerator AutoStopRoutine()
+        {
+            yield return new WaitForSecondsRealtime(MaxRecordSeconds);
+            _autoStop = null;
+            if (!_isListening) yield break;
+            _isListening = false;
+            if (IsDictationRunning)
+            {
+                if (!string.IsNullOrWhiteSpace(_lastHypothesis)) Send(_lastHypothesis);
+                StopDictation();
+            }
+            else
+            {
+                FinishRecording();
+            }
+        }
+
         // ---------- Grabación + Gemini ----------
 
         private void StartRecording()
@@ -192,6 +233,7 @@ namespace Nexo.Player
             {
                 _isListening = false;
                 GameEvents.RaiseSubtitle("(No hay micrófono conectado)");
+                GameEvents.RaiseVoiceStatus(ElenaVoiceRules.NoMic);
                 return;
             }
 
@@ -212,7 +254,10 @@ namespace Nexo.Player
                 _isListening = false;
                 if (_noiseSensor != null) _noiseSensor.Resume();
                 GameEvents.RaiseSubtitle("(No se puede usar el micrófono. Usa las preguntas rápidas [1] [2] [3])");
+                GameEvents.RaiseVoiceStatus(ElenaVoiceRules.NoMic);
+                return;
             }
+            StartAutoStop();
         }
 
         private async void FinishRecording()
@@ -234,27 +279,43 @@ namespace Nexo.Player
             _recording = null;
             if (_noiseSensor != null) _noiseSensor.Resume();
 
-            if (samplesCount < RecordRate / 3)
+            int rate = clip != null && clip.frequency > 0 ? clip.frequency : RecordRate;
+            float[] samples = null;
+            if (clip != null && samplesCount > 0)
             {
-                GameEvents.RaiseSubtitle("(Mantén [V] mientras hablas)");
+                try
+                {
+                    samples = new float[Mathf.Min(samplesCount, clip.samples) * clip.channels];
+                    clip.GetData(samples, 0);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning("[ElenaVoiceInput] No se pudo leer la grabación: " + e.Message, this);
+                    samples = null;
+                }
+            }
+
+            VoiceOutcome capture = ElenaVoiceRules.ClassifyCapture(samples, samples != null ? samples.Length : 0, rate);
+            if (capture != VoiceOutcome.Ok)
+            {
+                GameEvents.RaiseVoiceStatus(capture == VoiceOutcome.TooShort ? "Mantén [V] mientras hablas" : ElenaVoiceRules.NotHeard);
                 return;
             }
 
             if (!CanTranscribe)
             {
                 GameEvents.RaiseSubtitle(NoVoiceMessage);
+                GameEvents.RaiseVoiceStatus(ElenaVoiceRules.NotHeard);
                 return;
             }
 
-            var samples = new float[samplesCount];
-            clip.GetData(samples, 0);
-
             _isTranscribing = true;
+            GameEvents.RaiseVoiceStatus(ElenaVoiceRules.Processing);
             GameEvents.RaiseElenaThinking(true);
             string text = null;
             try
             {
-                text = await GeminiSpeechTranscriber.TranscribeAsync(_elenaConfig, samples, RecordRate);
+                text = await GeminiSpeechTranscriber.TranscribeAsync(_elenaConfig, samples, rate);
             }
             catch (System.Exception e)
             {
@@ -268,8 +329,13 @@ namespace Nexo.Player
                 GameEvents.RaiseElenaThinking(false);
             }
 
-            if (string.IsNullOrWhiteSpace(text)) GameEvents.RaiseSubtitle("(Elena no entendió lo que dijiste. Prueba otra vez o usa [1] [2] [3])");
-            else Send(text);
+            if (ElenaVoiceRules.ClassifyTranscript(text) != VoiceOutcome.Ok)
+            {
+                GameEvents.RaiseVoiceStatus(ElenaVoiceRules.NotHeard);
+                return;
+            }
+            GameEvents.RaiseVoiceStatus(string.Empty);
+            Send(text);
         }
 
         // ---------- Dictado de Windows ----------
@@ -347,6 +413,7 @@ namespace Nexo.Player
             _dictationFailed = true;
             Debug.LogWarning($"[ElenaVoiceInput] Dictado no disponible: {error} ({hresult}).", this);
             GameEvents.RaiseSubtitle(NoVoiceMessage);
+            GameEvents.RaiseVoiceStatus(ElenaVoiceRules.NotHeard);
         }
 #endif
 
@@ -354,6 +421,7 @@ namespace Nexo.Player
         {
             if (string.IsNullOrWhiteSpace(text)) return;
             _lastHypothesis = "";
+            GameEvents.RaiseVoiceStatus(string.Empty);
             GameEvents.RaiseSubtitle("TÚ: " + text);
             GameEvents.RaisePlayerSpoke(text);
         }
