@@ -23,6 +23,10 @@ namespace Nexo.Player
         [SerializeField] private float _sprintSpeed = 7.0f;
         [SerializeField] private float _crouchSpeed = 2.2f;
         [SerializeField] private float _gravity = -19.62f;
+        [Tooltip("Altura del salto con [Espacio] (metros). Sin daño por caída.")]
+        [SerializeField] private float _jumpHeight = 0.9f;
+        [Tooltip("Tras recuperar el control (forcejeo, UI, cinemática) el salto espera este tiempo para no reutilizar la misma pulsación.")]
+        [SerializeField] private float _jumpUnlockGrace = 0.35f;
 
         [Header("Sensibilidad y Límites de Cámara")]
         [SerializeField] private float _mouseSensitivity = 2.0f;
@@ -46,12 +50,25 @@ namespace Nexo.Player
         private bool _isCrouching = false;
         private bool _isFrozen = false;
         private bool _inputLocked = false;
+        private float _unlockedAt = -10f;
+        private bool _limitedLook;
+        private float _limitedBaseYaw;
+        private float _limitedYawOffset;
+        private float _limitedYawLimit = LookLimits.HidingYaw;
+        private float _limitedPitchLimit = LookLimits.HidingPitch;
 
         public Vector2 MoveInput { get; private set; }
         public bool IsMoving => _controller != null && _controller.isGrounded && MoveInput.sqrMagnitude > 0.01f;
         public bool IsCrouching => _isCrouching;
         public bool IsInputLocked => _inputLocked || _isFrozen;
         public bool IsSprinting { get; private set; }
+        public bool IsGrounded => _controller != null && _controller.isGrounded;
+        public bool IsLookLimited => _limitedLook;
+        /// <summary>Desvío actual de la mirada (grados: guiñada, cabeceo) respecto a la dirección de entrada mientras está limitada.</summary>
+        public Vector2 LimitedLookOffset => new Vector2(_limitedYawOffset, _pitch);
+
+        /// <summary>Se emite al despegar del suelo con un salto.</summary>
+        public event Action Jumped;
 
         /// <summary>
         /// Se emite cuando el jugador empieza (true) o deja (false) de esprintar en movimiento.
@@ -101,9 +118,42 @@ namespace Nexo.Player
         /// </summary>
         public void SetInputLocked(bool locked, bool showCursor)
         {
+            if (_inputLocked && !locked) _unlockedAt = Time.unscaledTime;
             _inputLocked = locked;
             Cursor.lockState = locked && showCursor ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = locked && showCursor;
+        }
+
+        /// <summary>
+        /// Mirada limitada (escondite): con el movimiento bloqueado, el ratón gira la cámara como máximo
+        /// ±<paramref name="yawLimit"/> grados en horizontal y ±<paramref name="pitchLimit"/> en vertical alrededor
+        /// de la orientación actual. EndLimitedLook devuelve la mirada normal.
+        /// </summary>
+        public void BeginLimitedLook(float yawLimit, float pitchLimit)
+        {
+            _limitedLook = true;
+            _limitedBaseYaw = transform.eulerAngles.y;
+            _limitedYawOffset = 0f;
+            _limitedYawLimit = Mathf.Abs(yawLimit);
+            _limitedPitchLimit = Mathf.Abs(pitchLimit);
+            _pitch = LookLimits.Clamp(_pitch, _limitedPitchLimit);
+            ApplyPitch();
+        }
+
+        public void EndLimitedLook()
+        {
+            _limitedLook = false;
+            _limitedYawOffset = 0f;
+        }
+
+        /// <summary>Coloca al jugador (desactiva el CharacterController durante el cambio de posición) y anula la caída.</summary>
+        public void TeleportTo(Vector3 position, float yaw)
+        {
+            bool wasEnabled = _controller != null && _controller.enabled;
+            if (wasEnabled) _controller.enabled = false;
+            transform.SetPositionAndRotation(position, Quaternion.Euler(0f, yaw, 0f));
+            if (wasEnabled) _controller.enabled = true;
+            _velocity = Vector3.zero;
         }
 
         private void OnEnable()
@@ -136,6 +186,7 @@ namespace Nexo.Player
 
             HandleLook();
             HandleCrouch();
+            HandleJump();
             HandleMovement();
             UpdateAnimator();
             NotifySprintState();
@@ -152,19 +203,43 @@ namespace Nexo.Player
 
         private void HandleLook()
         {
-            if (_inputLocked || Mouse.current == null) return;
+            if (Mouse.current == null) return;
+            if (_inputLocked && !_limitedLook) return;
+            // Con un menú o modal abierto sobre el escondite (cursor libre) la cámara no se mueve
+            if (_limitedLook && Cursor.lockState != CursorLockMode.Locked) return;
 
             Vector2 mouseDelta = Mouse.current.delta.ReadValue() * (_mouseSensitivity * 0.08f);
 
-            _pitch -= mouseDelta.y;
-            _pitch = Mathf.Clamp(_pitch, -_maxLookAngle, _maxLookAngle);
-
-            if (_cameraPivot != null)
+            if (_limitedLook)
             {
-                _cameraPivot.localRotation = Quaternion.Euler(_pitch, 0f, 0f);
+                _pitch = LookLimits.Clamp(_pitch - mouseDelta.y, _limitedPitchLimit);
+                _limitedYawOffset = LookLimits.Clamp(_limitedYawOffset + mouseDelta.x, _limitedYawLimit);
+                transform.rotation = Quaternion.Euler(0f, _limitedBaseYaw + _limitedYawOffset, 0f);
+                ApplyPitch();
+                return;
             }
 
+            _pitch -= mouseDelta.y;
+            _pitch = Mathf.Clamp(_pitch, -_maxLookAngle, _maxLookAngle);
+            ApplyPitch();
+
             transform.Rotate(Vector3.up * mouseDelta.x);
+        }
+
+        private void ApplyPitch()
+        {
+            if (_cameraPivot != null) _cameraPivot.localRotation = Quaternion.Euler(_pitch, 0f, 0f);
+        }
+
+        private void HandleJump()
+        {
+            if (Keyboard.current == null || !Keyboard.current.spaceKey.wasPressedThisFrame) return;
+            bool canJump = JumpRules.CanJump(IsGrounded, _inputLocked || _isFrozen, _isCrouching, PlayerHiding.IsHidden,
+                                             Time.unscaledTime - _unlockedAt, _jumpUnlockGrace);
+            if (!canJump) return;
+
+            _velocity.y = JumpRules.TakeOffSpeed(_jumpHeight, _gravity);
+            Jumped?.Invoke();
         }
 
         private void HandleCrouch()
@@ -268,7 +343,10 @@ namespace Nexo.Player
                 else if (parameter.nameHash == IsCrouchingHash) _hasIsCrouchingParam = parameter.type == AnimatorControllerParameterType.Bool;
             }
 
-            if (!_hasSpeedParam || !_hasIsMovingParam || !_hasIsCrouchingParam)
+            // AC_Alex no tiene ningún parámetro a propósito (pose fija de brazos en primera persona): no es un error.
+            // Solo se avisa si el controlador tiene parámetros pero le falta alguno (configuración a medias).
+            bool hasAny = _characterAnimator.parameters.Length > 0;
+            if (hasAny && (!_hasSpeedParam || !_hasIsMovingParam || !_hasIsCrouchingParam))
             {
                 Debug.LogWarning($"[PlayerMovement] '{_characterAnimator.runtimeAnimatorController.name}' no tiene todos los parámetros " +
                                  "Speed (Float), IsMoving (Bool) e IsCrouching (Bool); los que falten se ignoran.", this);
