@@ -32,14 +32,22 @@ namespace Nexo.Player
             if (_struggle == null) _struggle = GetComponent<StruggleQTE>();
         }
 
+        /// <summary>Vida del jugador activo (un solo jugador persistente): la usan los botiquines.</summary>
+        public static PlayerHealth Current { get; private set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => Current = null;
+
         private void OnEnable()
         {
+            Current = this;
             GameEvents.OnPlayerAttacked += HandlePlayerAttacked;
             GameEvents.OnFloorChanged += HandleFloorChanged;
         }
 
         private void OnDisable()
         {
+            if (Current == this) Current = null;
             GameEvents.OnPlayerAttacked -= HandlePlayerAttacked;
             GameEvents.OnFloorChanged -= HandleFloorChanged;
         }
@@ -96,6 +104,19 @@ namespace Nexo.Player
         {
             int remaining = _hitsPerPoint - _hits;
             for (int i = 0; i < remaining && !_isDown; i++) RegisterHit();
+        }
+
+        /// <summary>
+        /// Botiquín: suma puntos de vida (hasta el máximo) y borra los golpes acumulados del punto actual.
+        /// Devuelve false (sin consumir el botiquín) si el jugador ya está ileso o ha caído.
+        /// </summary>
+        public bool TryHeal(int points)
+        {
+            if (_isDown || IsUnharmed || points <= 0) return false;
+            HealthRules.Heal(_points, _hits, _maxPoints, points, out _points, out _hits);
+            PublishVitals();
+            GameEvents.RaisePlayerHealed(points);
+            return true;
         }
 
         /// <summary>Vida completa (partida nueva).</summary>
