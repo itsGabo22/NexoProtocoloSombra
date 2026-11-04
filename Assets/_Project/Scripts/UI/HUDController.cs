@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nexo.Accessibility;
 using Nexo.AI.Elena;
 using Nexo.Core;
+using Nexo.Player;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
@@ -83,6 +84,9 @@ namespace Nexo.UI
         private Label _vitalsStatus;
         private Label _bpm;
         private Label _dialogue;
+        private Label _aiMarker;
+        private Label _voiceStatus;
+        private IVisualElementScheduledItem _voiceStatusHide;
         private Label _emotionLabel;
         private Label _noiseValue;
         private Label _batteryValue;
@@ -158,6 +162,7 @@ namespace Nexo.UI
             GameEvents.OnNotification += ShowNotification;
             GameEvents.OnElenaResponse += HandleElenaResponse;
             GameEvents.OnElenaThinking += HandleElenaThinking;
+            GameEvents.OnVoiceStatus += HandleVoiceStatus;
             GameEvents.OnQuickQuestionsChanged += HandleQuickLabels;
             GameEvents.OnHudCorruptionRequested += PlayCorruptionSequence;
             GameEvents.OnPlayerCaught += ShowCaptureScreen;
@@ -197,6 +202,7 @@ namespace Nexo.UI
             GameEvents.OnNotification -= ShowNotification;
             GameEvents.OnElenaResponse -= HandleElenaResponse;
             GameEvents.OnElenaThinking -= HandleElenaThinking;
+            GameEvents.OnVoiceStatus -= HandleVoiceStatus;
             GameEvents.OnQuickQuestionsChanged -= HandleQuickLabels;
             GameEvents.OnHudCorruptionRequested -= PlayCorruptionSequence;
             GameEvents.OnPlayerCaught -= ShowCaptureScreen;
@@ -255,6 +261,8 @@ namespace Nexo.UI
             _vitalsStatus = _root.Q<Label>("hud-vitals-status");
             _bpm = _root.Q<Label>("hud-bpm");
             _dialogue = _root.Q<Label>("radio-dialogue");
+            _aiMarker = _root.Q<Label>("radio-ai-marker");
+            _voiceStatus = _root.Q<Label>("radio-voice-status");
             _emotionLabel = _root.Q<Label>("radio-emotion");
             _typing = _root.Q<Label>("radio-typing");
             _seal = _root.Q<Label>("radio-seal");
@@ -615,6 +623,35 @@ namespace Nexo.UI
             if (_typing != null) _typing.EnableInClassList("hidden", !thinking);
         }
 
+        /// <summary>Marcador discreto «IA: Gemini» / «IA: respaldo» (vacío para las líneas fijas de la historia).</summary>
+        private void ShowAiMarker(string source)
+        {
+            if (_aiMarker == null) return;
+            string text = ElenaReplyResolver.MarkerText(source);
+            _aiMarker.text = text;
+            _aiMarker.EnableInClassList("hidden", text.Length == 0);
+        }
+
+        /// <summary>Estado de la entrada de voz [V]; los mensajes finales se ocultan solos a los 4 s.</summary>
+        private void HandleVoiceStatus(string text)
+        {
+            if (_voiceStatus == null) return;
+            _voiceStatusHide?.Pause();
+            bool empty = string.IsNullOrEmpty(text);
+            _voiceStatus.text = empty ? string.Empty : text;
+            _voiceStatus.EnableInClassList("hidden", empty);
+            if (empty) return;
+            bool transient = text == ElenaVoiceRules.Listening || text == ElenaVoiceRules.Processing;
+            if (!transient) _voiceStatusHide = _voiceStatus.schedule.Execute(HideVoiceStatus).StartingIn(4000);
+        }
+
+        private void HideVoiceStatus()
+        {
+            if (_voiceStatus == null) return;
+            _voiceStatus.text = string.Empty;
+            _voiceStatus.AddToClassList("hidden");
+        }
+
         private void HandleElenaResponse(ElenaResponse response)
         {
             if (response == null) return;
@@ -626,6 +663,7 @@ namespace Nexo.UI
                 _trustFill.style.width = Length.Percent(Mathf.Clamp(response.trust_level, 0, 100));
             }
             StartTypewriter(response.dialogue);
+            ShowAiMarker(response.source);
 
             if (response.glitch_intensity > GlitchThreshold) PulseGlitch(response.glitch_intensity);
         }
