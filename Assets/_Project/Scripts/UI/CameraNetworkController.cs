@@ -303,8 +303,12 @@ namespace Nexo.UI
 
             foreach (int floor in _network.Floors)
             {
-                var tab = new Button { text = $"PISO {floor}" };
+                // El texto va en una Label hija: el texto propio del Button y una Label hija se dibujaban superpuestos
+                var tab = new Button();
                 tab.AddToClassList("netcam-tab");
+                var name = new Label($"PISO {floor}");
+                name.AddToClassList("netcam-tab__label");
+                tab.Add(name);
                 if (floor == _currentFloor)
                 {
                     var here = new Label("● AQUÍ");

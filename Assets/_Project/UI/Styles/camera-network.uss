@@ -8,12 +8,16 @@
 .netcam-launcher__text { color: var(--c-text); font-size: 13px; letter-spacing: 2px; }
 
 .netcam-overlay { background-color: rgba(0, 0, 0, 0.72); }
-.netcam-window { width: 1120px; padding: 16px; }
+/* Fondo opaco: la terminal abierta debajo no debe transparentarse */
+.netcam-window { width: 1120px; padding: 16px; background-color: var(--c-bg); }
 
 /* Pestañas de piso */
-.netcam-tab { -unity-text-align: middle-center; font-size: 14px; letter-spacing: 3px; color: var(--c-muted); background-color: rgba(0, 0, 0, 0); border-color: var(--c-accent-dim); border-width: 1px; border-radius: 4px; padding: 6px 18px; margin: 0 8px 0 0; transition-property: background-color, color, border-color; transition-duration: 0.15s; }
+.netcam-tab { flex-direction: row; align-items: center; justify-content: center; -unity-text-align: middle-center; font-size: 14px; letter-spacing: 3px; color: var(--c-muted); background-color: rgba(0, 0, 0, 0); border-color: var(--c-accent-dim); border-width: 1px; border-radius: 4px; padding: 6px 18px; margin: 0 8px 0 0; transition-property: background-color, color, border-color; transition-duration: 0.15s; }
 .netcam-tab:hover { color: var(--c-text); border-color: var(--c-accent); }
 .netcam-tab--active { color: var(--c-bg); background-color: var(--c-accent); border-color: var(--c-accent); -unity-font-style: bold; }
+.netcam-tab__label { padding: 0; margin: 0; font-size: 14px; letter-spacing: 3px; color: var(--c-muted); }
+.netcam-tab:hover .netcam-tab__label { color: var(--c-text); }
+.netcam-tab--active .netcam-tab__label { color: var(--c-bg); -unity-font-style: bold; }
 .netcam-tab__here { font-size: 10px; color: var(--c-ok); margin-left: 6px; }
 .netcam-tab--active .netcam-tab__here { color: var(--c-bg); }
 
