@@ -601,9 +601,17 @@ namespace Nexo.EditorTools
                 yield return WaitSeconds(0.2);
                 reader.Close();
                 Check(NoteJournal.Count == afterFirst, "releer la misma nota no la duplica en el diario");
+                UnityEngine.Cursor.lockState = CursorLockMode.Locked; // en juego el cursor está bloqueado; en batchmode hay que pedirlo
+                bool cursorLocked = UnityEngine.Cursor.lockState == CursorLockMode.Locked;
                 reader.ShowJournal();
                 yield return WaitSeconds(0.2);
-                Check(reader.IsJournalOpen, $"el diario [J] se abre ({NoteJournal.Count} notas)");
+                if (cursorLocked) Check(reader.IsJournalOpen, $"el diario [J] se abre ({NoteJournal.Count} notas)");
+                else
+                {
+                    // En batchmode no hay ventana con foco y el cursor no se puede bloquear: es el caso «menú o modal abierto»
+                    Log("NOTA: cursor sin bloquear (batchmode); [J] se comprueba en su guarda y en la prueba manual");
+                    Check(!reader.IsJournalOpen, "con el cursor libre (menú o modal abierto) [J] no abre el diario");
+                }
                 reader.CloseJournal();
                 yield return WaitSeconds(0.2);
                 Check(!reader.IsJournalOpen && !movement.IsInputLocked, "el diario se cierra y devuelve el control");
@@ -615,10 +623,20 @@ namespace Nexo.EditorTools
             if (typed != null)
             {
                 int responses = _elenaResponses;
-                Check(typed.DebugOpenWith("¿Por dónde salgo?"), "[T] abre la caja de texto para Elena");
-                Check(typed.IsOpen, "caja de texto abierta");
-                typed.Submit();
-                yield return WaitFor(() => _elenaResponses > responses, 12, "Elena responde al texto escrito (modo offline)");
+                UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+                if (UnityEngine.Cursor.lockState == CursorLockMode.Locked)
+                {
+                    Check(typed.DebugOpenWith("¿Por dónde salgo?"), "[T] abre la caja de texto para Elena");
+                    Check(typed.IsOpen, "caja de texto abierta");
+                    typed.Submit();
+                }
+                else
+                {
+                    Log("NOTA: cursor sin bloquear (batchmode); [T] se prueba enviando el texto como lo hace la caja (GameEvents.OnPlayerSpoke)");
+                    Check(!typed.DebugOpenWith("¿Por dónde salgo?"), "con el cursor libre (menú o modal abierto) [T] no abre la caja");
+                    GameEvents.RaisePlayerSpoke("¿Por dónde salgo?");
+                }
+                yield return WaitFor(() => _elenaResponses > responses, 12, "Elena responde al texto escrito");
                 if (typed.IsOpen) typed.Close();
                 yield return WaitSeconds(0.2);
                 Check(!typed.IsOpen && !movement.IsInputLocked, "la caja de texto se cierra y devuelve el control");
@@ -645,6 +663,8 @@ namespace Nexo.EditorTools
             ElenaVoicePlayer voice = Object.FindAnyObjectByType<ElenaVoicePlayer>();
             if (voice != null && library != null && library.Entries.Count > 0)
             {
+                // Con clave, una respuesta de Gemini puede estar sonando (TTS dinámico): se espera a que acabe
+                yield return WaitFor(() => !voice.IsSpeaking, 20, "Elena en silencio antes de probar su voz");
                 int played = voice.ClipsPlayed;
                 voice.Speak(library.Entries[0].Text, "CALM", false);
                 yield return WaitSeconds(0.3);
@@ -1036,6 +1056,9 @@ namespace Nexo.EditorTools
             Check(Count<PlayerMovement>() == 1, $"[{sceneName}] un único jugador ({Count<PlayerMovement>()})");
             Check(Count<HUDController>() == 1, $"[{sceneName}] un único HUD ({Count<HUDController>()})");
             Check(!HudHidden(), $"[{sceneName}] HUD visible");
+            string hudIssue = HudCoverageIssue(out string documents);
+            Log($"[{sceneName}] UIDocuments: {documents}");
+            Check(hudIssue == null, $"[{sceneName}] HUD visible de verdad (tamaño real) y ningún UIDocument lo tapa ni lo bloquea" + (hudIssue != null ? ": " + hudIssue : string.Empty));
             Check(Time.timeScale == 1f && !AudioListener.pause, $"[{sceneName}] tiempo y audio normales");
             Check(!Movement().IsInputLocked, $"[{sceneName}] jugador con control");
 
@@ -1249,6 +1272,126 @@ namespace Nexo.EditorTools
             VisualElement hudRoot = root?.Q<VisualElement>("hud-root");
             if (root == null || hudRoot == null) return true;
             return root.style.display == DisplayStyle.None || hudRoot.style.display == DisplayStyle.None;
+        }
+
+        /// <summary>
+        /// Comprueba que el HUD se dibuja de verdad: hud-root con tamaño real (el fallo de la presentación fue una raíz de 0 px
+        /// anidada en un UIDocument vacío) y ningún elemento visible fuera del HUD, pintado ENCIMA, lo cubre (≥ 80 %) con fondo
+        /// opaco o capturando el ratón (pickingMode Position). Devuelve null si todo está bien; en <paramref name="documents"/>
+        /// lista cada UIDocument activo con su sortingOrder (panel/documento) para el informe.
+        /// </summary>
+        private static string HudCoverageIssue(out string documents)
+        {
+            var docs = new StringBuilder();
+            UIDocument[] all = Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Exclude);
+            foreach (UIDocument d in all)
+            {
+                if (!d.isActiveAndEnabled) continue;
+                docs.Append(d.name).Append('(').Append(d.panelSettings != null ? d.panelSettings.sortingOrder.ToString("0") : "sin panel")
+                    .Append('/').Append(d.sortingOrder.ToString("0")).Append(") ");
+            }
+            documents = docs.ToString().Trim();
+
+            HUDController hud = Object.FindAnyObjectByType<HUDController>();
+            UIDocument hudDoc = hud != null ? hud.GetComponent<UIDocument>() : null;
+            VisualElement hudRoot = hudDoc != null && hudDoc.rootVisualElement != null ? hudDoc.rootVisualElement.Q<VisualElement>("hud-root") : null;
+            if (hudRoot == null || hudRoot.panel == null) return "no hay hud-root en un panel";
+            VisualElement tree = hudRoot.panel.visualTree;
+            Rect screen = tree.worldBound;
+            Rect hudRect = hudRoot.worldBound;
+            if (screen.width < 1f || screen.height < 1f) return "panel sin tamaño";
+            if (hudRect.width < screen.width * 0.5f || hudRect.height < screen.height * 0.5f)
+            {
+                FieldInfo bound = typeof(HUDController).GetField("_root", BindingFlags.Instance | BindingFlags.NonPublic);
+                object boundRoot = bound != null ? bound.GetValue(hud) : null;
+                return $"hud-root aplastado ({hudRect.width:0}x{hudRect.height:0} px de {screen.width:0}x{screen.height:0}); " +
+                       $"inline display={hudRoot.style.display.value}/{hudRoot.style.display.keyword}, clases=[{string.Join(" ", hudRoot.GetClasses())}], " +
+                       $"HUDController._root es este={ReferenceEquals(boundRoot, hudRoot)}; cadena: {AncestorChain(hudRoot)}";
+            }
+            if (VisibleOpacity(hudRoot) < 0.5f) return $"hud-root transparente u oculto (opacidad efectiva {VisibleOpacity(hudRoot):0.00})";
+
+            // Mismo panel: lo que va después del HUD en el orden de pintado (recorrido en profundidad) queda encima
+            var order = new List<VisualElement>();
+            Collect(tree, order);
+            int hudIndex = order.IndexOf(hudRoot);
+            for (int i = hudIndex + 1; i < order.Count; i++)
+            {
+                string issue = CoverIssue(order[i], hudRoot, hudRect);
+                if (issue != null) return issue;
+            }
+
+            // Otros paneles con sortingOrder igual o mayor se pintan encima del panel del HUD
+            float hudOrder = hudDoc.panelSettings != null ? hudDoc.panelSettings.sortingOrder : 0f;
+            var seen = new HashSet<IPanel> { hudRoot.panel };
+            foreach (UIDocument d in all)
+            {
+                if (!d.isActiveAndEnabled || d.rootVisualElement == null || d.rootVisualElement.panel == null) continue;
+                if (!seen.Add(d.rootVisualElement.panel)) continue;
+                if (d.panelSettings == null || d.panelSettings.sortingOrder < hudOrder) continue;
+                var other = new List<VisualElement>();
+                Collect(d.rootVisualElement.panel.visualTree, other);
+                foreach (VisualElement e in other)
+                {
+                    string issue = CoverIssue(e, hudRoot, hudRect);
+                    if (issue != null) return "(panel " + d.panelSettings.name + ") " + issue;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>Diagnóstico: cada antepasado de hud-root con su display, posición y tamaño calculado.</summary>
+        private static string AncestorChain(VisualElement e)
+        {
+            var sb = new StringBuilder();
+            for (VisualElement p = e; p != null; p = p.hierarchy.parent)
+            {
+                IResolvedStyle st = p.resolvedStyle;
+                sb.Append(string.IsNullOrEmpty(p.name) ? p.GetType().Name : p.name)
+                  .Append('[').Append(st.display).Append(',').Append(st.position).Append(',')
+                  .Append(p.layout.width.ToString("0")).Append('x').Append(p.layout.height.ToString("0")).Append("] < ");
+            }
+            return sb.ToString();
+        }
+
+        private static void Collect(VisualElement e, List<VisualElement> into)
+        {
+            into.Add(e);
+            for (int i = 0; i < e.hierarchy.childCount; i++) Collect(e.hierarchy[i], into);
+        }
+
+        private static string CoverIssue(VisualElement e, VisualElement hudRoot, Rect hudRect)
+        {
+            if (e == hudRoot || hudRoot.Contains(e) || e.Contains(hudRoot)) return null;
+            Rect r = e.worldBound;
+            float w = Mathf.Min(r.xMax, hudRect.xMax) - Mathf.Max(r.xMin, hudRect.xMin);
+            float h = Mathf.Min(r.yMax, hudRect.yMax) - Mathf.Max(r.yMin, hudRect.yMin);
+            if (w <= 0f || h <= 0f || w * h < hudRect.width * hudRect.height * 0.8f) return null;
+            float opacity = VisibleOpacity(e);
+            if (opacity < 0.05f) return null;
+            bool opaque = e.resolvedStyle.backgroundColor.a * opacity > 0.3f || HasBackgroundImage(e);
+            bool blocks = e.pickingMode == PickingMode.Position && e.enabledInHierarchy;
+            if (!opaque && !blocks) return null;
+            string doc = e.GetFirstAncestorOfType<TemplateContainer>()?.name ?? string.Empty;
+            return $"«{(string.IsNullOrEmpty(e.name) ? e.GetType().Name : e.name)}» {doc} cubre el HUD ({(opaque ? "fondo opaco" : "")}{(opaque && blocks ? ", " : "")}{(blocks ? "captura el ratón" : "")})";
+        }
+
+        private static bool HasBackgroundImage(VisualElement e)
+        {
+            Background b = e.resolvedStyle.backgroundImage;
+            return b.texture != null || b.sprite != null || b.renderTexture != null || b.vectorImage != null;
+        }
+
+        /// <summary>Opacidad efectiva teniendo en cuenta display, visibility y opacity de toda la cadena de padres (0 = no se ve).</summary>
+        private static float VisibleOpacity(VisualElement e)
+        {
+            float opacity = 1f;
+            for (VisualElement p = e; p != null; p = p.hierarchy.parent)
+            {
+                IResolvedStyle st = p.resolvedStyle;
+                if (st.display == DisplayStyle.None || st.visibility == Visibility.Hidden) return 0f;
+                opacity *= st.opacity;
+            }
+            return opacity;
         }
 
         private static T OverlayQ<T>(string name) where T : VisualElement
