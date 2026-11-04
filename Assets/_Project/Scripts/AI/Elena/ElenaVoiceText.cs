@@ -24,6 +24,24 @@ namespace Nexo.AI.Elena
             return IsElenaSubtitle(subtitle) ? subtitle.Substring(SpeakerPrefix.Length).Trim() : subtitle.Trim();
         }
 
+        /// <summary>
+        /// Fracción de las palabras de <paramref name="expected"/> que aparecen en <paramref name="heard"/> (0-1).
+        /// Verifica que un trozo de audio corresponde a su línea.
+        /// </summary>
+        public static float WordOverlap(string expected, string heard)
+        {
+            string[] want = Normalize(expected).Split(' ');
+            var got = new System.Collections.Generic.HashSet<string>(Normalize(heard).Split(' '));
+            int total = 0, hits = 0;
+            foreach (string w in want)
+            {
+                if (w.Length == 0) continue;
+                total++;
+                if (got.Contains(w)) hits++;
+            }
+            return total == 0 ? 0f : hits / (float)total;
+        }
+
         public static string Normalize(string line)
         {
             if (string.IsNullOrWhiteSpace(line)) return string.Empty;

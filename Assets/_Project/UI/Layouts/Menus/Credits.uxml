@@ -37,6 +37,8 @@
                 <ui:Label name="cr-audio-value" text="Efectos procedurales creados para el proyecto" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-portrait-label" text="RETRATO DE ELENA" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-portrait-value" text="Avatar holográfico generado en Unity" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-voice-label" text="VOZ DE ELENA" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-voice-value" text="Sintetizada con Gemini TTS (Google, voz Leda) · líneas de respaldo con la voz de Windows (Microsoft Helena)" class="body text-main wrap nx-mb-24" />
             </ui:VisualElement>
             <ui:VisualElement name="cr-col-right" class="cr-col">
                 <ui:Label name="cr-weapon-label" text="ARMA M1911" class="label text-muted nx-mb-4" />

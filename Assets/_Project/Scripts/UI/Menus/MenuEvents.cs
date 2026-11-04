@@ -32,6 +32,9 @@ namespace Nexo.UI.Menus
         /// </summary>
         public static event Action ShowCreditsRequested;
 
+        /// <summary>El menú de pausa se abre (true) o se cierra para seguir jugando (false). La voz de Elena se pausa con él.</summary>
+        public static event Action<bool> PauseChanged;
+
         public static void RaisePlayRequested() => PlayRequested?.Invoke();
         public static void RaiseResumeRequested() => ResumeRequested?.Invoke();
         public static void RaiseRestartFloorRequested() => RestartFloorRequested?.Invoke();
@@ -39,6 +42,7 @@ namespace Nexo.UI.Menus
         public static void RaiseQuitRequested() => QuitRequested?.Invoke();
         public static void RaiseShowFloorRestartedRequested() => ShowFloorRestartedRequested?.Invoke();
         public static void RaiseShowCreditsRequested() => ShowCreditsRequested?.Invoke();
+        public static void RaisePauseChanged(bool paused) => PauseChanged?.Invoke(paused);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -50,6 +54,7 @@ namespace Nexo.UI.Menus
             QuitRequested = null;
             ShowFloorRestartedRequested = null;
             ShowCreditsRequested = null;
+            PauseChanged = null;
         }
     }
 }

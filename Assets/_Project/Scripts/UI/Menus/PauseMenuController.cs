@@ -81,6 +81,8 @@ namespace Nexo.UI.Menus
         {
             // La misma pulsación de Esc también llega como NavigationCancelEvent: un solo cambio por frame
             if (_menuFlow == null || Time.frameCount == _lastToggleFrame) return;
+            // Esc cierra el cuadro de texto de Elena ([T]) sin abrir la pausa
+            if (Nexo.Core.UiTextEntry.BlocksHotkeys) return;
 
             if (_menuFlow.Current == ScreenId.None) TryPause();
             else if (_menuFlow.Current == ScreenId.Pause) Resume();
@@ -98,6 +100,7 @@ namespace Nexo.UI.Menus
             _lastToggleFrame = Time.frameCount;
             Time.timeScale = 0f;
             _menuFlow.ShowScreen(ScreenId.Pause);
+            MenuEvents.RaisePauseChanged(true);
         }
 
         private void Resume()
@@ -107,6 +110,7 @@ namespace Nexo.UI.Menus
             _lastToggleFrame = Time.frameCount;
             Time.timeScale = 1f;
             _menuFlow.ShowScreen(ScreenId.None);
+            MenuEvents.RaisePauseChanged(false);
         }
 
         private void HandleResumeRequested()

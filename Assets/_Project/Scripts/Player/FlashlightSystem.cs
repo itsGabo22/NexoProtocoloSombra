@@ -65,7 +65,7 @@ namespace Nexo.Player
         {
             if (_isLocked) return;
 
-            if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+            if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame && !Nexo.Core.UiTextEntry.BlocksHotkeys)
             {
                 ToggleFlashlight();
             }

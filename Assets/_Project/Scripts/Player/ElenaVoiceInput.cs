@@ -39,7 +39,23 @@ namespace Nexo.Player
         private bool _dictationFailed;
 
         // Mensaje único cuando no hay forma de oír al jugador: siempre quedan las preguntas rápidas
-        private const string NoVoiceMessage = "(Elena no puede oír tu voz ahora. Usa las preguntas rápidas [1] [2] [3])";
+        private const string NoVoiceFirstMessage = "(Elena no puede oír tu voz. Activa el reconocimiento de voz en línea en Configuración > Privacidad y seguridad > Voz. Mientras tanto, escríbele con [T] o usa [1] [2] [3])";
+        private const string NoVoiceShortMessage = "(Sin voz: escribe a Elena con [T] o usa las preguntas rápidas [1] [2] [3])";
+        private static bool s_noVoiceExplained;
+
+        /// <summary>La primera vez explica cómo activar el dictado; después, un recordatorio corto.</summary>
+        private static string NoVoiceMessage
+        {
+            get
+            {
+                if (s_noVoiceExplained) return NoVoiceShortMessage;
+                s_noVoiceExplained = true;
+                return NoVoiceFirstMessage;
+            }
+        }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetNoVoiceNotice() => s_noVoiceExplained = false;
 
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         private DictationRecognizer _dictation;
@@ -330,7 +346,7 @@ namespace Nexo.Player
             _isListening = false;
             _dictationFailed = true;
             Debug.LogWarning($"[ElenaVoiceInput] Dictado no disponible: {error} ({hresult}).", this);
-            GameEvents.RaiseSubtitle("(Elena no te oye: activa el reconocimiento de voz de Windows o usa las preguntas rápidas [1] [2] [3])");
+            GameEvents.RaiseSubtitle(NoVoiceMessage);
         }
 #endif
 
