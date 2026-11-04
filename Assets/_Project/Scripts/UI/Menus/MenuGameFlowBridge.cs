@@ -1,4 +1,5 @@
 using System.Collections;
+using Nexo.Cinematics;
 using Nexo.Core;
 using Nexo.Narrative;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace Nexo.UI.Menus
 {
     /// <summary>
     /// Traduce las peticiones de los menús (MenuEvents) a la API existente de carga de pisos:
-    /// JUGAR → SceneLoader.LoadFloor (o ReloadFloor si el piso ya está cargado detrás del menú),
+    /// JUGAR → cinemática «intro» (si existe el clip) → SceneLoader.LoadFloor (o ReloadFloor si el piso ya está cargado detrás del menú),
     /// REINICIAR → SceneLoader.ReloadFloor, MENÚ PRINCIPAL → descarga el piso activo y muestra el hub,
     /// SALIR → Application.Quit. Vive en Systems_Persistent junto a MenuFlowController.
     /// </summary>
@@ -26,6 +27,7 @@ namespace Nexo.UI.Menus
         [SerializeField] private string _firstFloorScene = "Floor12_Offices";
 
         private bool _restartedScreenPending;
+        private bool _introPending;
         private Coroutine _restartedRoutine;
 
         private void Awake()
@@ -55,14 +57,25 @@ namespace Nexo.UI.Menus
             if (_restartedRoutine != null) StopCoroutine(_restartedRoutine);
             _restartedRoutine = null;
             _restartedScreenPending = false;
+            _introPending = false;
         }
 
         private void HandlePlayRequested()
         {
-            if (_sceneLoader == null || _menuFlow == null) return;
+            if (_sceneLoader == null || _menuFlow == null || _introPending) return;
 
             Time.timeScale = 1f;
             _menuFlow.ShowScreen(ScreenId.None);
+
+            // JUGAR siempre es partida nueva: la intro va antes del Piso 12 (sin clip, StartFirstFloor se llama al instante)
+            _introPending = true;
+            CinematicService.Play(CinematicIds.Intro, StartFirstFloor);
+        }
+
+        private void StartFirstFloor()
+        {
+            _introPending = false;
+            if (_sceneLoader == null) return;
 
             // Con SceneLoader._loadOnStart activo el piso ya está cargado detrás del menú: se reinicia para empezar limpio
             if (FloorMetadata.Active != null) _sceneLoader.ReloadFloor();
