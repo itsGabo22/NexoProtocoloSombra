@@ -59,6 +59,7 @@ namespace Nexo.Player
             _pushAction.performed += HandlePush;
             GameEvents.OnPlayerCaught += HandleAbort;
             GameEvents.OnFloorChanged += HandleFloorChanged;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted; // cinematics-ready
             BuildUi();
         }
 
@@ -68,6 +69,7 @@ namespace Nexo.Player
             _pushAction.Disable();
             GameEvents.OnPlayerCaught -= HandleAbort;
             GameEvents.OnFloorChanged -= HandleFloorChanged;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted; // cinematics-ready
             if (IsActive) Finish(false, false);
         }
 
@@ -76,6 +78,9 @@ namespace Nexo.Player
         private void HandleAbort() { if (IsActive) Finish(false, false); }
 
         private void HandleFloorChanged(int floor) { if (IsActive) Finish(false, false); }
+
+        // cinematics-ready: Espacio salta la cinemática; si siguiera el forcejeo contaría como empujón fallido (y golpe)
+        private void HandleCinematicStarted(string id) { if (IsActive) Finish(false, false); }
 
         // ---------- UI ----------
 
