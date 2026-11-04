@@ -57,6 +57,7 @@ namespace Nexo.EditorTools
         private static bool _tempClipCreated;
         private static string _tempCaptionsPath;
         private static string _tempCorruptPath;
+        private static string _createdCinematicsFolder;
         private static int _errorsBeforeCorrupt;
         private static bool _twistStarted;
 
@@ -458,6 +459,10 @@ namespace Nexo.EditorTools
             string path = CinematicPaths.VideoPath(Application.streamingAssetsPath, "nexo_check_corrupt");
             var garbage = new byte[64 * 1024];
             new System.Random(7).NextBytes(garbage);
+            // Sin clips reales la carpeta StreamingAssets/Cinematics puede no existir (está en .gitignore)
+            string folder = Path.GetDirectoryName(path);
+            _createdCinematicsFolder = !Directory.Exists(folder) ? folder : null;
+            Directory.CreateDirectory(folder);
             File.WriteAllBytes(path, garbage);
             _tempCorruptPath = path;
 
@@ -480,6 +485,20 @@ namespace Nexo.EditorTools
         {
             if (_tempCorruptPath != null && File.Exists(_tempCorruptPath)) File.Delete(_tempCorruptPath);
             _tempCorruptPath = null;
+
+            // Si la carpeta la creó esta comprobación y quedó vacía, se elimina (con StreamingAssets si también quedó vacía)
+            if (_createdCinematicsFolder != null && Directory.Exists(_createdCinematicsFolder) && Directory.GetFileSystemEntries(_createdCinematicsFolder).Length == 0)
+            {
+                Directory.Delete(_createdCinematicsFolder);
+                if (File.Exists(_createdCinematicsFolder + ".meta")) File.Delete(_createdCinematicsFolder + ".meta");
+                string parent = Path.GetDirectoryName(_createdCinematicsFolder);
+                if (Directory.Exists(parent) && Directory.GetFileSystemEntries(parent).Length == 0)
+                {
+                    Directory.Delete(parent);
+                    if (File.Exists(parent + ".meta")) File.Delete(parent + ".meta");
+                }
+            }
+            _createdCinematicsFolder = null;
         }
 
         private static IEnumerator StruggleDuringCinematic()
