@@ -54,7 +54,9 @@ namespace Nexo.EditorTools
                     }
                 }
                 stats.AppendLine($"  escena {scene.name}: {objects} objetos");
+                CheckGameplayContent(scene, issues, stats);
             }
+            CheckVoiceCoverage(issues, stats);
 
             string[] prefabGuids = AssetDatabase.FindAssets("t:Prefab", new[] { ProjectRoot });
             foreach (string guid in prefabGuids)
@@ -93,6 +95,50 @@ namespace Nexo.EditorTools
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(file));
             File.WriteAllText(file, report);
             return issues.Distinct().Count();
+        }
+
+        /// <summary>
+        /// Pase de jugabilidad (2026-11-04): en cada piso, 3 puntos de control y 2 botiquines como mínimo; en el Piso 12, el
+        /// cuchillo como botín garantizado de un InfectedSpawnPoint; la figura de Elena solo en el Piso 12.
+        /// </summary>
+        private static void CheckGameplayContent(Scene scene, List<string> issues, StringBuilder stats)
+        {
+            if (!scene.name.StartsWith("Floor")) return;
+            int checkpoints = 0, medkits = 0, elenaVisuals = 0, knifeLoot = 0;
+            foreach (GameObject root in scene.GetRootGameObjects())
+            {
+                checkpoints += root.GetComponentsInChildren<Nexo.Interaction.CheckpointTrigger>(true).Length;
+                medkits += root.GetComponentsInChildren<Nexo.Interaction.MedkitPickup>(true).Length;
+                elenaVisuals += root.GetComponentsInChildren<Nexo.AI.Elena.ElenaVisualIdle>(true).Length;
+                foreach (Nexo.Interaction.InfectedLootDrop loot in root.GetComponentsInChildren<Nexo.Interaction.InfectedLootDrop>(true))
+                {
+                    foreach (GameObject g in loot.Guaranteed)
+                    {
+                        if (g != null && g.GetComponentInChildren<Nexo.Interaction.KnifePickup>(true) != null) knifeLoot++;
+                    }
+                }
+            }
+            stats.AppendLine($"    {scene.name}: {checkpoints} puntos de control, {medkits} botiquines, {elenaVisuals} figura(s) de Elena, {knifeLoot} cuchillo(s) de botín");
+            if (checkpoints < 3) issues.Add($"{scene.name}: {checkpoints} CheckpointTrigger (mínimo 3)");
+            if (medkits < 2) issues.Add($"{scene.name}: {medkits} botiquines (mínimo 2)");
+            bool isFloor12 = scene.name == "Floor12_Offices";
+            if (isFloor12 && elenaVisuals != 1) issues.Add($"{scene.name}: {elenaVisuals} figuras de Elena (debe haber 1, tras el cristal)");
+            if (!isFloor12 && elenaVisuals != 0) issues.Add($"{scene.name}: figura de Elena fuera del Piso 12");
+            if (isFloor12 && knifeLoot < 1) issues.Add($"{scene.name}: ningún infectado suelta el cuchillo");
+        }
+
+        /// <summary>Las 51 líneas fijas de Elena deben tener clip de voz.</summary>
+        private static void CheckVoiceCoverage(List<string> issues, StringBuilder stats)
+        {
+            var library = AssetDatabase.LoadAssetAtPath<Nexo.AI.Elena.ElenaVoiceLibrary>(ProjectRoot + "/Resources/Elena/ElenaVoiceLibrary.asset");
+            if (library == null)
+            {
+                issues.Add("Resources/Elena/ElenaVoiceLibrary.asset no existe");
+                return;
+            }
+            int withClip = library.Entries.Count(e => e.Clip != null);
+            stats.AppendLine($"  voz de Elena: {withClip}/{library.Entries.Count} líneas con clip");
+            if (withClip < library.Entries.Count || withClip < 51) issues.Add($"voz de Elena: {withClip}/{library.Entries.Count} líneas con clip (se esperan 51/51)");
         }
 
         private static void Inspect(GameObject go, string where, List<string> issues)
