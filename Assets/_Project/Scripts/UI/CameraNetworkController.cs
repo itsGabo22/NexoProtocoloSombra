@@ -172,6 +172,7 @@ namespace Nexo.UI
             GameEvents.OnFloorChanged += HandleFloorChanged;
             GameEvents.OnLightsChanged += HandleLightsChanged;
             GameEvents.OnPlayerCaught += HideAll;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted;
 
             _toggleAction.performed += HandleTogglePerformed;
             _upAction.performed += HandleUp;
@@ -186,6 +187,7 @@ namespace Nexo.UI
             GameEvents.OnFloorChanged -= HandleFloorChanged;
             GameEvents.OnLightsChanged -= HandleLightsChanged;
             GameEvents.OnPlayerCaught -= HideAll;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted;
 
             _toggleAction.performed -= HandleTogglePerformed;
             _upAction.performed -= HandleUp;
@@ -279,6 +281,9 @@ namespace Nexo.UI
 
             if (_terminalOpen) _launcher?.RemoveFromClassList(HiddenClass);
         }
+
+        /// <summary>Una cinemática cierra la red (y libera su RenderTexture) como si se cerrara la terminal.</summary>
+        private void HandleCinematicStarted(string id) => HideAll();
 
         private void HideAll()
         {

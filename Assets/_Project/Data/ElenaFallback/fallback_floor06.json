@@ -4,7 +4,7 @@
       "floor": 6,
       "key": "SAFE_PATH",
       "response": {
-        "dialogue": "El laboratorio está vacío, lo veo por la cámara. Si se apagan las luces, pulsa F y usa la visión térmica, ¿sí?",
+        "dialogue": "La sala de contención está vacía, lo veo por la cámara. Si se apagan las luces, pulsa F y usa la visión térmica, ¿sí?",
         "emotion": "WHISPER",
         "ui_action": "HIGHLIGHT_SAFE_ROUTE",
         "target_id": "F06_Door_Lab",

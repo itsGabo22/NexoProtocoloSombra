@@ -14,7 +14,7 @@ namespace Nexo.Tests
         [TestCase("Puerta F12_Door_Stairs desbloqueada remotamente.",
                   "Puerta de las escaleras desbloqueada remotamente.")]
         [TestCase("Puerta F06_Door_Lab desbloqueada remotamente.",
-                  "Puerta del laboratorio desbloqueada remotamente.")]
+                  "Puerta de Contención desbloqueada remotamente.")]
         [TestCase("Puerta F12_Door_Meeting desbloqueada remotamente.",
                   "Puerta de la sala de reuniones desbloqueada remotamente.")]
         [TestCase("F12_Door_Stairs: apertura denegada. Presencia hostil activa en el piso.",
@@ -38,12 +38,12 @@ namespace Nexo.Tests
         public void Humanize_ReplacesSeveralIdsInOneSentence()
         {
             Assert.AreEqual(
-                "Abre la puerta de las escaleras y luego el laboratorio.",
+                "Abre la puerta de las escaleras y luego la sala de contención.",
                 HudTextSanitizer.Humanize("Abre F12_Door_Stairs y luego F06_Door_Lab."));
         }
 
         [TestCase("(F12_Door_Stairs)", "(La puerta de las escaleras)")]
-        [TestCase("¿F06_Door_Lab?", "¿El laboratorio?")]
+        [TestCase("¿F06_Door_Lab?", "¿La sala de contención?")]
         [TestCase("Corre: F12_Door_Stairs!", "Corre: la puerta de las escaleras!")]
         [TestCase("«F12_Door_Stairs», dijo.", "«La puerta de las escaleras», dijo.")]
         public void Humanize_KeepsSurroundingPunctuation(string input, string expected)

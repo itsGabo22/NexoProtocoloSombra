@@ -343,20 +343,15 @@ namespace Nexo.Player
             if (_viewmodel != null) _viewmodel.localRotation = _viewmodelRestRot;
             _isReloading = false;
             GameEvents.RaiseWeaponReloadChanged(false); // hud-polish
+            // cinematics-ready: sin notificación «M1911 · Cargador x/7»; el panel de arma ya muestra la munición
             GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize);
-            AnnounceAmmo();
         }
 
         private void HandleAmmoPicked(int rounds)
         {
             _reserve = Mathf.Min(_maxReserve, _reserve + rounds);
+            // cinematics-ready: el HUD ya enseña «+N» y el panel; la notificación duplicada se quitó
             GameEvents.RaiseAmmoChanged(_magazine, _reserve, _magazineSize); // hud-polish
-            AnnounceAmmo();
-        }
-
-        private void AnnounceAmmo()
-        {
-            GameEvents.RaiseNotification(new HudNotification("M1911", $"Cargador {_magazine}/{_magazineSize} · Reserva {_reserve}", false));
         }
 
         private void PlayClip(AudioClip clip, float volume)

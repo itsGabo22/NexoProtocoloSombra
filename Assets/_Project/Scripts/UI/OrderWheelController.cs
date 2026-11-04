@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nexo.Cinematics;
 using Nexo.Core;
 using Nexo.Player;
 using UnityEngine;
@@ -86,6 +87,7 @@ namespace Nexo.UI
             GameEvents.OnPlotTwistTriggered += HandlePlotTwistTriggered;
             GameEvents.OnPlayerCaught += HandlePlayerCaught;
             GameEvents.OnFloorChanged += HandleFloorChanged;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted;
 
             if (_wheelAction != null)
             {
@@ -110,6 +112,7 @@ namespace Nexo.UI
             GameEvents.OnPlotTwistTriggered -= HandlePlotTwistTriggered;
             GameEvents.OnPlayerCaught -= HandlePlayerCaught;
             GameEvents.OnFloorChanged -= HandleFloorChanged;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted;
 
             if (_wheelAction != null)
             {
@@ -154,6 +157,12 @@ namespace Nexo.UI
             Close();
         }
 
+        private void HandleCinematicStarted(string id)
+        {
+            // Se cierra sin confirmar; CinematicService guarda el control ya devuelto y lo restaura al terminar
+            Close();
+        }
+
         private void HandlePointerMove(PointerMoveEvent evt)
         {
             if (!_isOpen || _ring == null) return;
@@ -173,6 +182,7 @@ namespace Nexo.UI
         {
             if (_root == null || _isOpen || _isLocked || _isCaptured) return;
             if (_terminalController != null && _terminalController.IsOpen) return;
+            if (CinematicService.BlocksGameplayInput) return;
 
             _isOpen = true;
             BuildSectors();

@@ -63,6 +63,7 @@ namespace Nexo.UI
             GameEvents.OnUiAction += HandleUiAction;
             GameEvents.OnPlayerCaught += HandlePlayerCaught;
             GameEvents.OnFloorChanged += HandleFloorChanged;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted;
             if (_closeButton != null) _closeButton.clicked += Close;
             if (_closeAction != null)
             {
@@ -77,6 +78,7 @@ namespace Nexo.UI
             GameEvents.OnUiAction -= HandleUiAction;
             GameEvents.OnPlayerCaught -= HandlePlayerCaught;
             GameEvents.OnFloorChanged -= HandleFloorChanged;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted;
             if (_closeButton != null) _closeButton.clicked -= Close;
             if (_closeAction != null) _closeAction.action.performed -= HandleClosePerformed;
 
@@ -122,6 +124,12 @@ namespace Nexo.UI
             _root.AddToClassList(HiddenClass);
 
             if (restoreInput && _playerMovement != null) _playerMovement.SetInputLocked(false, false);
+        }
+
+        private void HandleCinematicStarted(string id)
+        {
+            // Devuelve el control antes de que CinematicService guarde el estado que restaurará al terminar
+            Close(true);
         }
 
         private void HandlePlayerCaught()

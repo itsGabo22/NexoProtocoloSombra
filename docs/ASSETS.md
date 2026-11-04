@@ -13,7 +13,7 @@ Reconciliado el 2026-11-03 contra los packs presentes en la máquina de Gabriel.
 | `Pack_Nokobot_Guns` | Modelo M1911 del viewmodel | Unity Asset Store: *Modern Guns: Handgun* v1.2 (`README.txt` del pack) | Nokobot | Standard Unity Asset Store EULA | Presente |
 | `Pack_OfficeBuilding` | Edificio, puertas, ascensor y props del Piso 12 | Unity Asset Store [verificar enlace]. El `Read me.txt` lo llama «polygon office building» (antes se registró como «Modular Office Building»). No es *POLYGON Office* de Synty: no usa sus prefijos ni su estructura de carpetas | [verificar]: el `Read me.txt` solo da un correo de contacto, sin nombre | Standard Unity Asset Store EULA | Presente |
 | `Pack_UnityLearnTemplate` | Skyboxes, audio base, VFX y animaciones de locomoción `Stand--Idle`, `Locomotion--Walk_N`, `Locomotion--Run_N` (carpeta `SourceFiles/StarterAssets/ThirdPersonController`) que usa `AC_SmartInfected` | Unity Technologies (plantilla de Unity Learn / Starter Assets) | Unity Technologies | Unity Companion License | Presente |
-| `Pack_ZombieMale_AAB` | Modelo `ZombieModel` anidado en `PF_Infected_Variant.prefab` (GUID `2f6b5402acaac7e45a0b798395dd250b`) | [verificar] | [verificar] | [verificar] | **Falta**: no está en el zip `ThirdPartyAssets.zip` del 2026-10-31. Pedir a Carlos el zip actualizado |
+| `Pack_ZombieMale_AAB` | Modelo `ZombieModel` anidado en `PF_Infected_Variant.prefab` (GUID `2f6b5402acaac7e45a0b798395dd250b`) | [verificar] | [verificar] | [verificar] | Presente (comprobado el 2026-11-03 en `Assets/ThirdPartyAssets/`) |
 | `Unused/Ch33_nonPBR.fbx` | Copia original del personaje Mixamo (no se usa en escenas) | Mixamo (Adobe) | Adobe | Términos de Mixamo: uso libre en proyectos, sin atribución obligatoria (se acredita igualmente) | Presente |
 
 ## Assets versionados en `Assets/_Project/`
@@ -37,6 +37,12 @@ Reconciliado el 2026-11-03 contra los packs presentes en la máquina de Gabriel.
 | `Materials/Floor06/MAT_F06_*.mat` | Materiales Standard creados por `NexoFloor06Builder.cs` | Propio |
 | `Materials/Floor01/MAT_F01_*.mat` | Materiales Standard creados por `NexoFloor01AmbienceBuilder.cs` | Propio |
 | `Data/ElenaConfig.asset` → `gemini-2.5-flash` | Diálogos de Elena generados en tiempo real por Gemini 2.5 Flash (Google); sin conexión se usan los JSON de fallback escritos por el equipo | Términos de la API de Gemini |
+
+## Cinemáticas (no versionadas)
+
+| Archivo | Origen | Licencia / nota |
+| :--- | :--- | :--- |
+| `Assets/StreamingAssets/Cinematics/intro.mp4`, `floor_transition.mp4`, `ending.mp4` (opcionales `floor_transition_to_06.mp4`, `floor_transition_to_01.mp4`) | Vídeos generados con IA por el equipo (Gemini y Veo, Google). Créditos: bloque «CINEMÁTICAS» | Términos de uso de Gemini / Veo. La carpeta está en `.gitignore`: se copian a mano antes del build (ver `docs/DEMO_SCRIPT.md`) |
 
 ## Protocolo para actualizar packs
 

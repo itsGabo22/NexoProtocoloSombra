@@ -1,3 +1,4 @@
+using Nexo.Cinematics;
 using Nexo.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -92,6 +93,7 @@ namespace Nexo.UI.Menus
             if (_terminal != null && _terminal.IsOpen) return;                 // Esc / P cierran la terminal
             if (_captureHandler != null && _captureHandler.IsCapturing) return; // el piso se está reiniciando
             if (Nexo.Narrative.NarrativeEvents.TwistHasPlayed) return;          // el giro final no se pausa ni se reinicia
+            if (CinematicService.BlocksGameplayInput) return;                  // Esc salta la cinemática, no pausa
 
             _lastToggleFrame = Time.frameCount;
             Time.timeScale = 0f;

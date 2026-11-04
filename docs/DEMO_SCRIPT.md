@@ -48,6 +48,31 @@ Para la presentación del 2026-11-04. Ejecuta el build de Windows (`Builds/NexoP
 - **El build se cierra o no arranca:** abrir el proyecto en Unity 6000.6.7f1, escena `Assets/_Project/Scenes/Persistent/Systems_Persistent.unity`, Play.
 - **El infectado no se ve:** falta el pack `Pack_ZombieMale_AAB` en esa máquina; la IA funciona igual (se oye y ataca). Ver «Limitaciones».
 
+## Cinemáticas
+
+| Clip (`Assets/StreamingAssets/Cinematics/`) | Cuándo suena |
+| --- | --- |
+| `intro.mp4` | Al pulsar JUGAR (partida nueva), antes del Piso 12. No suena al volver de los créditos al menú. |
+| `floor_transition.mp4` | Al bajar de piso (escaleras, Elena o [F5]), antes de cargar el siguiente. Si existen `floor_transition_to_06.mp4` o `floor_transition_to_01.mp4`, se usan para ese piso. |
+| `ending.mp4` | Tras la última línea de Elena en el giro; al acabar (o saltarlo) salen los créditos. |
+
+- **Saltar:** Esc, Espacio, Intro o clic, a partir de 0,5 s; el aviso «Esc / Espacio: saltar» aparece al segundo. Esc no abre la pausa mientras suena un clip.
+- **Durante el clip** el juego queda en pausa (infectados, forcejeo y audio) y el HUD se oculta; al terminar todo vuelve como estaba.
+- **Si falta un clip** (o está roto, o tarda más de 5 s en prepararse) el juego sigue sin él, sin errores. Comprobar antes de la demo: menú **Nexo › Cinematics › Validate**.
+- Los vídeos no están en Git (carpeta ignorada): hay que copiarlos en cada máquina y **antes** de generar el build. En el build van en `NexoProtocoloSombra_Data/StreamingAssets/Cinematics/`.
+- Requiere el módulo integrado **Video** de Unity (`com.unity.modules.video` en `Packages/manifest.json`). Sin él, el juego funciona igual pero sin cinemáticas.
+
+## Atajos de presentación
+
+Desactivados en el repo. Para activarlos: abrir el prefab `Assets/_Project/Prefabs/Systems/PF_Player.prefab` (no la instancia de la escena, para no crear un override), componente **Demo Shortcuts** → marcar **Enable Demo Shortcuts** y guardar. Para el build de la presentación, marcarlo antes de **Nexo › Build › Windows**. Después desmarcarlo (o `git restore Assets/_Project/Prefabs/Systems/PF_Player.prefab`) y no subir el cambio.
+
+| Tecla | Efecto |
+| --- | --- |
+| F5 | Siguiente piso (pasa por la cinemática de transición). |
+| F6 | Vida completa. |
+| F7 | Munición llena (7 + 35). |
+| F8 | Baja hasta el Piso 1 y deja al jugador frente al BioScanner (con una cinemática de transición por piso; se pueden saltar). |
+
 ## Limitaciones conocidas
 
 - En la máquina de Gabriel falta `Pack_ZombieMale_AAB`: el infectado no tiene malla ni animación y la consola repite «Animator is not playing an AnimatorController». Con el pack de Carlos se ve normal.

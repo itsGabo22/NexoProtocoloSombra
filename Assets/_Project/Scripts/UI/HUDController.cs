@@ -57,6 +57,8 @@ namespace Nexo.UI
         [SerializeField] private float _radarRangeMeters = 18f;
 
         private VisualElement _root;
+        private bool _hiddenByCinematic;
+        private StyleEnum<DisplayStyle> _displayBeforeCinematic;
         private VisualElement _spectrogram;
         private VisualElement _notifications;
         private VisualElement _glitch;
@@ -155,6 +157,8 @@ namespace Nexo.UI
             GameEvents.OnAmmoChanged += HandleAmmoChanged;
             GameEvents.OnWeaponReloadChanged += HandleWeaponReloadChanged;
             GameEvents.OnAmmoPicked += HandleAmmoPicked;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted;
+            GameEvents.OnCinematicFinished += HandleCinematicFinished;
             AccessibilitySettings.Changed += HandleAccessibilityChanged;
             HandleAccessibilityChanged(AccessibilitySettings.Current);
 
@@ -189,7 +193,10 @@ namespace Nexo.UI
             GameEvents.OnAmmoChanged -= HandleAmmoChanged;
             GameEvents.OnWeaponReloadChanged -= HandleWeaponReloadChanged;
             GameEvents.OnAmmoPicked -= HandleAmmoPicked;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted;
+            GameEvents.OnCinematicFinished -= HandleCinematicFinished;
             AccessibilitySettings.Changed -= HandleAccessibilityChanged;
+            if (_hiddenByCinematic) HandleCinematicFinished(string.Empty);
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -438,6 +445,24 @@ namespace Nexo.UI
         }
 
         /// <summary>«+N» junto al nombre del arma y un pulso breve del panel (sin pulso con reducir movimiento).</summary>
+        /// <summary>Durante una cinemática se oculta todo el HUD; al terminar recupera el display que tenía.</summary>
+        private void HandleCinematicStarted(string id)
+        {
+            if (_root == null || _hiddenByCinematic) return;
+
+            _displayBeforeCinematic = _root.style.display;
+            _hiddenByCinematic = true;
+            _root.style.display = DisplayStyle.None;
+        }
+
+        private void HandleCinematicFinished(string id)
+        {
+            if (_root == null || !_hiddenByCinematic) return;
+
+            _hiddenByCinematic = false;
+            _root.style.display = _displayBeforeCinematic;
+        }
+
         private void HandleAmmoPicked(int rounds)
         {
             string text = AmmoDisplayState.PickupText(rounds);

@@ -44,6 +44,8 @@ namespace Nexo.Interaction
             GameEvents.OnPlayerSpawned += HandlePlayerSpawned;
             GameEvents.OnPlayerCaught += HandlePlayerCaught;
             GameEvents.OnPlayerAttacked += HandlePlayerAttacked;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted;   // cinematics-ready
+            GameEvents.OnCinematicFinished += HandleCinematicFinished; // cinematics-ready
         }
 
         private void OnDisable()
@@ -52,6 +54,8 @@ namespace Nexo.Interaction
             GameEvents.OnPlayerSpawned -= HandlePlayerSpawned;
             GameEvents.OnPlayerCaught -= HandlePlayerCaught;
             GameEvents.OnPlayerAttacked -= HandlePlayerAttacked;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted;   // cinematics-ready
+            GameEvents.OnCinematicFinished -= HandleCinematicFinished; // cinematics-ready
             // Descarga del piso con el jugador dentro: se libera el estado y el control
             if (_occupied) Leave(true);
         }
@@ -112,6 +116,14 @@ namespace Nexo.Interaction
         private void HandlePlayerCaught()
         {
             if (_occupied) Leave(false);
+        }
+
+        // cinematics-ready: durante el clip [E] no saca al jugador del escondite (devolvería el control bajo el vídeo)
+        private void HandleCinematicStarted(string id) => _exitAction.Disable();
+
+        private void HandleCinematicFinished(string id)
+        {
+            if (_occupied) _exitAction.Enable();
         }
 
         private void Leave(bool restoreInput)
