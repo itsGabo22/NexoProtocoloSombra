@@ -76,6 +76,8 @@ namespace Nexo.EditorTools
         private static string _lastNotificationKey;
         private static int _lastNotificationFrame = -1;
         private static int _duplicateNotifications;
+        private static int _elenaResponses;
+        private static ElenaResponse _lastElenaResponse;
 
         private struct State
         {
@@ -263,6 +265,7 @@ namespace Nexo.EditorTools
             yield return WaitSeconds(2.5);
             CheckFloor("Floor12_Offices", 12);
             CheckNewGame("JUGAR (1.ª partida)");
+            yield return ElenaQuickQuestions(12);
 
             // ---- Clip corrupto: error o tiempo de preparación agotado, nunca bloquea ----
             yield return CorruptClipCheck();
@@ -289,6 +292,7 @@ namespace Nexo.EditorTools
             yield return WaitSeconds(2.5);
             CheckFloor("Floor06_Labs", 6);
             yield return Floor06Checks();
+            yield return ElenaQuickQuestions(6);
 
             // ---- 6 → 1 con clip específico temporal y jugador escondido ----
             Log("== Piso 6 → Piso 1 (clip específico + escondido) ==");
@@ -319,6 +323,8 @@ namespace Nexo.EditorTools
             yield return WaitSeconds(2.5);
             CheckFloor("Floor01_Lobby", 1);
             Check(!Movement().IsInputLocked, "control devuelto tras bajar escondido");
+
+            yield return ElenaQuickQuestions(1);
 
             // ---- Giro final ----
             yield return TwistAndEnding(hasEnding);
@@ -559,6 +565,38 @@ namespace Nexo.EditorTools
             // Pregunta rápida [2]: Elena (fallback) abre la puerta de las escaleras
             GameEvents.RaiseQuickQuestionSelected(1);
             yield return WaitFor(() => stairs != null && !stairs.IsLocked, 20, "[2] de Elena (fallback) desbloquea F06_Door_Stairs");
+        }
+
+        /// <summary>
+        /// Preguntas rápidas [1]-[3] en el piso actual. Sin ElenaSecrets (o con _forceFallback) responde el fallback:
+        /// cada diálogo debe existir en el fallback_floorNN.json de ESE piso (coherencia de piso) y pasar el filtro de
+        /// textos (sin ids técnicos ni spoilers del giro).
+        /// </summary>
+        private static IEnumerator ElenaQuickQuestions(int floor)
+        {
+            Log($"== Elena: preguntas rápidas [1]-[3] en el Piso {floor} ==");
+            ElenaConfig config = AssetDatabase.LoadAssetAtPath<ElenaConfig>("Assets/_Project/Data/ElenaConfig.asset");
+            bool offline = config == null || config.ForceFallback || config.Secrets == null || !config.Secrets.HasApiKey;
+            Log(offline
+                ? "Elena en modo sin conexión (sin ElenaSecrets o _forceFallback): se prueba el fallback"
+                : "AVISO: hay API key; las respuestas pueden venir de Gemini y no se comparan con el fallback");
+            string json = File.ReadAllText($"Assets/_Project/Data/ElenaFallback/fallback_floor{floor:00}.json");
+            for (int i = 0; i < 3; i++)
+            {
+                yield return WaitSeconds(0.3);
+                int before = _elenaResponses;
+                GameEvents.RaiseQuickQuestionSelected(i);
+                yield return WaitFor(() => _elenaResponses > before, 15, $"Piso {floor}: Elena responde a [{i + 1}]");
+                if (_elenaResponses == before || _lastElenaResponse == null) continue;
+                string dialogue = _lastElenaResponse.dialogue ?? string.Empty;
+                Log($"   [{i + 1}] «{dialogue}» ({_lastElenaResponse.ui_action})");
+                Check(dialogue.Trim().Length > 0, $"Piso {floor} [{i + 1}]: diálogo no vacío");
+                if (offline)
+                {
+                    string escaped = dialogue.Replace("\\", "\\\\").Replace("\"", "\\\"");
+                    Check(json.Contains(dialogue) || json.Contains(escaped), $"Piso {floor} [{i + 1}]: la respuesta sale del fallback de ese piso");
+                }
+            }
         }
 
         private static IEnumerator TwistAndEnding(bool hasEnding)
@@ -825,7 +863,10 @@ namespace Nexo.EditorTools
 
         private static void HandleElenaResponse(ElenaResponse response)
         {
-            if (response != null) CheckPlayerText("Elena", response.dialogue);
+            if (response == null) return;
+            _elenaResponses++;
+            _lastElenaResponse = response;
+            CheckPlayerText("Elena", response.dialogue);
         }
 
         private static void CheckPlayerText(string kind, string text)
