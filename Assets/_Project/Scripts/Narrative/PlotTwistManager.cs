@@ -1,5 +1,6 @@
 using System.Collections;
 using Nexo.Accessibility;
+using Nexo.Cinematics;
 using Nexo.Core;
 using Nexo.Player;
 using Nexo.UI.Menus;
@@ -11,7 +12,8 @@ namespace Nexo.Narrative
     /// Giro final: al recibir NarrativeEvents.BioScannerHandPlaced reproduce, con una corrutina en tiempo real,
     /// la línea de tiempo de TwistTimeline: t=0 bloqueo del jugador + OnPlotTwistTriggered; +0.8 s OnHudCorruptionRequested;
     /// +2.0 s luces de emergencia a rojo (~1.5 s; instantáneo con reducir movimiento); +3.5 s líneas finales de Elena
-    /// como subtítulos; créditos 4 s después de la última línea (MenuEvents.ShowCreditsRequested). Solo se reproduce una vez.
+    /// como subtítulos; 4 s después de la última línea, cinemática «ending» (si existe el clip) y después los créditos
+    /// (MenuEvents.ShowCreditsRequested; también si se salta o falla el clip). Solo se reproduce una vez.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class PlotTwistManager : MonoBehaviour
@@ -38,6 +40,7 @@ namespace Nexo.Narrative
         private Coroutine _sequence;
         private Coroutine _lightRamp;
         private bool _played;
+        private bool _creditsRequested;
 
         public bool HasPlayed => _played;
 
@@ -120,9 +123,17 @@ namespace Nexo.Narrative
                     break;
                 case TwistAction.ShowCredits:
                     NarrativeSubtitles.Clear();
-                    MenuEvents.RaiseShowCreditsRequested();
+                    // Sin clip, HandleEndingFinished se llama al instante (mismo comportamiento que antes)
+                    CinematicService.Play(CinematicIds.Ending, HandleEndingFinished);
                     break;
             }
+        }
+
+        private void HandleEndingFinished()
+        {
+            if (_creditsRequested) return;
+            _creditsRequested = true;
+            MenuEvents.RaiseShowCreditsRequested();
         }
 
         private IEnumerator RampEmergencyLights(float seconds)

@@ -69,6 +69,14 @@ namespace Nexo.Core
         public static event Action<int> OnAmmoPicked;
         public static event Action<string> OnPlayerSpoke;
         public static event Action<Transform> OnPlayerAttacked;
+        /// <summary>Munición del arma tras cualquier cambio: cargador, reserva y tamaño del cargador (panel de arma del HUD).</summary>
+        public static event Action<int, int, int> OnAmmoChanged;
+        /// <summary>La recarga del arma empieza (true) o termina (false).</summary>
+        public static event Action<bool> OnWeaponReloadChanged;
+        /// <summary>Empieza una cinemática (id del clip): el HUD se oculta y las UI modales (terminal, red de cámaras, forcejeo) se cierran.</summary>
+        public static event Action<string> OnCinematicStarted;
+        /// <summary>Termina una cinemática (fin, salto o error): todo vuelve al estado previo.</summary>
+        public static event Action<string> OnCinematicFinished;
 
         public static void RaiseNoiseChanged(float noise) => OnNoiseChanged?.Invoke(noise);
         public static void RaiseBatteryChanged(float battery) => OnBatteryChanged?.Invoke(battery);
@@ -93,6 +101,10 @@ namespace Nexo.Core
         public static void RaiseAmmoPicked(int rounds) => OnAmmoPicked?.Invoke(rounds);
         public static void RaisePlayerSpoke(string text) => OnPlayerSpoke?.Invoke(text);
         public static void RaisePlayerAttacked(Transform attacker) => OnPlayerAttacked?.Invoke(attacker);
+        public static void RaiseAmmoChanged(int magazine, int reserve, int magazineSize) => OnAmmoChanged?.Invoke(magazine, reserve, magazineSize);
+        public static void RaiseWeaponReloadChanged(bool isReloading) => OnWeaponReloadChanged?.Invoke(isReloading);
+        public static void RaiseCinematicStarted(string id) => OnCinematicStarted?.Invoke(id);
+        public static void RaiseCinematicFinished(string id) => OnCinematicFinished?.Invoke(id);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -120,6 +132,10 @@ namespace Nexo.Core
             OnAmmoPicked = null;
             OnPlayerSpoke = null;
             OnPlayerAttacked = null;
+            OnAmmoChanged = null;
+            OnWeaponReloadChanged = null;
+            OnCinematicStarted = null;
+            OnCinematicFinished = null;
         }
     }
 }

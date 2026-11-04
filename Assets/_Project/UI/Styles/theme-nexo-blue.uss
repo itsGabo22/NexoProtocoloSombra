@@ -14,5 +14,6 @@
 /* Alto contraste: selector compuesto = mayor especificidad, gana sin importar el orden */
 .theme-nexo.a11y-hc { --c-bg: rgb(0, 0, 0); --c-surface: rgb(0, 0, 0); --c-text: rgb(255, 255, 255); --c-muted: rgb(225, 225, 225); }
 /* Daltonismo (paleta Okabe-Ito) */
-.theme-nexo.cb-deutan, .theme-nexo.cb-protan { --c-ok: rgb(86, 180, 233); --c-danger: rgb(230, 159, 0); --c-fake: rgb(204, 121, 167); }
+/* En deutan/protan el peligro es naranja: el aviso pasa a amarillo Okabe-Ito para que «munición baja» y «vacío» no se confundan */
+.theme-nexo.cb-deutan, .theme-nexo.cb-protan { --c-ok: rgb(86, 180, 233); --c-danger: rgb(230, 159, 0); --c-fake: rgb(204, 121, 167); --c-warn: rgb(240, 228, 66); }
 .theme-nexo.cb-tritan { --c-ok: rgb(0, 158, 115); --c-danger: rgb(213, 94, 0); --c-fake: rgb(240, 228, 66); }

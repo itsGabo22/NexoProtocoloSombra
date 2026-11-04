@@ -3,19 +3,16 @@ using UnityEngine;
 namespace Nexo.AI.Infected
 {
     /// <summary>
-    /// Acude al último ruido (o a la última posición conocida del jugador) a WalkSpeed * 1.4,
-    /// gira buscando durante 3s y vuelve a patrullar.
+    /// Acude al último ruido (o a la última posición conocida del jugador) a WalkSpeed * 1.4.
+    /// Al llegar examina la zona (SearchState). Un ruido nuevo redirige la investigación.
     /// </summary>
     public sealed class InvestigateNoiseState : IInfectedState
     {
         private const float SpeedMultiplier = 1.4f;
-        private const float SearchDuration = 3f;
         private const float GiveUpTime = 15f;
 
         private readonly SmartInfectedBrain _brain;
         private Vector3 _target;
-        private bool _searching;
-        private float _searchStartTime;
         private float _enterTime;
 
         public InvestigateNoiseState(SmartInfectedBrain brain)
@@ -53,33 +50,20 @@ namespace Nexo.AI.Infected
                 return;
             }
 
-            if (!_searching)
+            if (_brain.HasArrived(0.6f) || _brain.NavigationBlocked || Time.time - _enterTime > GiveUpTime)
             {
-                if (_brain.HasArrived(0.6f) || Time.time - _enterTime > GiveUpTime)
-                {
-                    _searching = true;
-                    _searchStartTime = Time.time;
-                    _brain.StopMoving();
-                    _brain.StartLookAround(SearchDuration);
-                }
-                return;
-            }
-
-            if (Time.time - _searchStartTime >= SearchDuration)
-            {
-                _brain.ChangeState(_brain.Patrol);
+                _brain.Search.SetCenter(_target);
+                _brain.ChangeState(_brain.Search);
             }
         }
 
         public void Exit()
         {
-            _searching = false;
             _brain.StopLookAround();
         }
 
         private void GoToTarget()
         {
-            _searching = false;
             _brain.StopLookAround();
             _brain.MoveTo(_target, _brain.WalkSpeed * SpeedMultiplier);
         }

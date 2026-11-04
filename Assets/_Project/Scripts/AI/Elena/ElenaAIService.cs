@@ -17,7 +17,7 @@ namespace Nexo.AI.Elena
         private static readonly string[] IntentTexts =
         {
             "¿Está despejado el pasillo?",
-            "Abre la puerta norte.",
+            "Abre la puerta de las escaleras.",
             "Tengo miedo, ¿qué tienes en la mano?"
         };
 

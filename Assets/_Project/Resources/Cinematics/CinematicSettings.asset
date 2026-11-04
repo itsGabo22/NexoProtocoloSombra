@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 153d7d9eaf67454ba7600754d8215d18, type: 3}
+  m_Name: CinematicSettings
+  m_EditorClassIdentifier: Nexo::Nexo.Cinematics.CinematicSettings
+  _panelSettings: {fileID: 11400000, guid: 4e52caf4cd7bbfb4f8aa3a62304ae6b6, type: 2}
+  _sortingOrder: 1000
+  _volume: 1

@@ -1,0 +1,58 @@
+/* Assets/_Project/UI/Styles/camera-network.uss — Red de cámaras NexoOS (3 pisos) */
+
+.netcam-root { }
+
+/* Aviso bajo la terminal de seguridad */
+.netcam-launcher { position: absolute; bottom: 64px; left: 50%; translate: -50% 0; padding: 6px 12px; border-color: var(--c-accent); }
+.netcam-launcher__key { color: var(--c-bg); background-color: var(--c-accent); padding: 1px 6px; border-radius: 3px; font-size: 13px; -unity-font-style: bold; margin-right: 8px; }
+.netcam-launcher__text { color: var(--c-text); font-size: 13px; letter-spacing: 2px; }
+
+.netcam-overlay { background-color: rgba(0, 0, 0, 0.72); }
+/* Fondo opaco: la terminal abierta debajo no debe transparentarse */
+.netcam-window { width: 1120px; padding: 16px; background-color: var(--c-bg); }
+
+/* Pestañas de piso */
+.netcam-tab { flex-direction: row; align-items: center; justify-content: center; -unity-text-align: middle-center; font-size: 14px; letter-spacing: 3px; color: var(--c-muted); background-color: rgba(0, 0, 0, 0); border-color: var(--c-accent-dim); border-width: 1px; border-radius: 4px; padding: 6px 18px; margin: 0 8px 0 0; transition-property: background-color, color, border-color; transition-duration: 0.15s; }
+.netcam-tab:hover { color: var(--c-text); border-color: var(--c-accent); }
+.netcam-tab--active { color: var(--c-bg); background-color: var(--c-accent); border-color: var(--c-accent); -unity-font-style: bold; }
+.netcam-tab__label { padding: 0; margin: 0; font-size: 14px; letter-spacing: 3px; color: var(--c-muted); }
+.netcam-tab:hover .netcam-tab__label { color: var(--c-text); }
+.netcam-tab--active .netcam-tab__label { color: var(--c-bg); -unity-font-style: bold; }
+.netcam-tab__here { font-size: 10px; color: var(--c-ok); margin-left: 6px; }
+.netcam-tab--active .netcam-tab__here { color: var(--c-bg); }
+
+/* Lista de cámaras */
+.netcam-list-panel { width: 300px; }
+.netcam-list { height: 432px; }
+.netcam-item { flex-direction: row; align-items: center; padding: 8px 10px; margin-bottom: 6px; border-color: var(--c-accent-dim); border-width: 1px; border-radius: 4px; background-color: rgba(0, 0, 0, 0); transition-property: background-color, border-color; transition-duration: 0.12s; }
+.netcam-item:hover { border-color: var(--c-accent); }
+.netcam-item--selected { background-color: var(--c-accent-dim); border-color: var(--c-accent); }
+.netcam-item__dot { width: 8px; height: 8px; border-radius: 4px; margin-right: 10px; background-color: var(--c-muted); }
+.netcam-item--live .netcam-item__dot { background-color: var(--c-ok); }
+.netcam-item--archive .netcam-item__dot { background-color: var(--c-warn); }
+.netcam-item--dark .netcam-item__dot { background-color: var(--c-danger); }
+.netcam-item__id { font-size: 13px; color: var(--c-text); -unity-font-style: bold; }
+.netcam-item__label { font-size: 11px; color: var(--c-muted); }
+.netcam-item__state { font-size: 10px; color: var(--c-muted); letter-spacing: 1px; margin-left: auto; }
+
+/* Pantalla principal 16:9 */
+.netcam-screen { width: 768px; height: 432px; background-color: rgb(4, 7, 12); border-color: var(--c-accent); border-width: 1px; border-radius: 4px; overflow: hidden; }
+.netcam-image { -unity-background-scale-mode: scale-and-crop; transition-property: opacity; transition-duration: 0.2s; }
+.netcam-image--dark { -unity-background-image-tint-color: rgb(120, 140, 160); }
+.netcam-image--archive { -unity-background-image-tint-color: rgb(205, 215, 225); }
+.netcam-scanlines { background-repeat: repeat; background-size: 4px 4px; opacity: 0.35; }
+.netcam-static { opacity: 0; -unity-background-scale-mode: stretch-to-fill; transition-property: opacity; transition-duration: 0.25s; }
+.netcam-static--burst { opacity: 0.85; transition-duration: 0s; }
+.netcam-nosignal { position: absolute; left: 0; right: 0; top: 46%; -unity-text-align: middle-center; font-size: 32px; letter-spacing: 8px; color: var(--c-danger); -unity-font-style: bold; }
+
+/* OSD (texto sobreimpreso en la imagen) */
+.netcam-osd { position: absolute; font-size: 13px; color: rgb(235, 245, 255); background-color: rgba(0, 0, 0, 0.45); padding: 2px 6px; letter-spacing: 1px; }
+.netcam-osd--tl { left: 10px; top: 10px; -unity-font-style: bold; }
+.netcam-osd--tr { right: 10px; top: 10px; }
+.netcam-osd--bl { left: 10px; bottom: 10px; }
+.netcam-osd--br { right: 10px; bottom: 10px; }
+.netcam-osd--live { color: var(--c-ok); }
+.netcam-osd--archive { color: var(--c-warn); }
+.netcam-osd--dark { color: var(--c-danger); }
+
+.reduce-motion .netcam-static--burst { opacity: 0.3; }

@@ -1,0 +1,51 @@
+<ui:UXML xmlns:ui='UnityEngine.UIElements' editor-extension-mode='False'>
+    <Style src='../Styles/tailwind-utilities.uss' />
+    <Style src='../Styles/theme-nexo-blue.uss' />
+    <Style src='../Styles/components.uss' />
+    <Style src='../Styles/camera-network.uss' />
+
+    <!-- Red de cámaras NexoOS (3 pisos). La abre CameraNetworkController desde cualquier terminal de seguridad con [C]. -->
+    <ui:VisualElement name='netcam-root' class='theme-nexo netcam-root absolute inset-0' picking-mode='Ignore'>
+
+        <!-- Aviso que aparece bajo la terminal de seguridad abierta -->
+        <ui:VisualElement name='netcam-launcher' class='netcam-launcher hud-panel flex-row items-center hidden'>
+            <ui:Label text='[C]' class='netcam-launcher__key' />
+            <ui:Label text='RED DE CÁMARAS NEXO · PISOS 12 · 6 · 1' class='netcam-launcher__text' />
+        </ui:VisualElement>
+
+        <ui:VisualElement name='netcam-overlay' class='netcam-overlay absolute inset-0 flex-col items-center justify-center hidden'>
+            <ui:VisualElement name='netcam-window' class='hud-panel netcam-window flex-col'>
+
+                <ui:VisualElement class='flex-row items-center justify-between'>
+                    <ui:VisualElement class='flex-col'>
+                        <ui:Label text='NEXOOS // RED DE CÁMARAS' class='text-xs text-muted tracking-wide' />
+                        <ui:Label name='netcam-title' text='VIGILANCIA MULTIPISO' class='text-lg text-accent font-bold' />
+                    </ui:VisualElement>
+                    <ui:Button name='netcam-close' text='[C] VOLVER A LA TERMINAL' class='btn-quick' />
+                </ui:VisualElement>
+
+                <ui:VisualElement name='netcam-tabs' class='netcam-tabs flex-row mt-2' />
+
+                <ui:VisualElement class='flex-row items-start mt-2'>
+                    <ui:VisualElement class='netcam-list-panel flex-col'>
+                        <ui:Label name='netcam-list-title' text='CÁMARAS' class='text-xs text-muted tracking-wide mb-2' />
+                        <ui:ScrollView name='netcam-list' class='netcam-list' />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement name='netcam-screen' class='netcam-screen ml-4'>
+                        <ui:VisualElement name='netcam-image' class='netcam-image absolute inset-0' />
+                        <ui:VisualElement name='netcam-scanlines' class='netcam-scanlines absolute inset-0' picking-mode='Ignore' />
+                        <ui:VisualElement name='netcam-static' class='netcam-static absolute inset-0' picking-mode='Ignore' />
+                        <ui:Label name='netcam-nosignal' text='SIN SEÑAL' class='netcam-nosignal hidden' picking-mode='Ignore' />
+                        <ui:Label name='netcam-feed-id' text='CAM --' class='netcam-osd netcam-osd--tl' picking-mode='Ignore' />
+                        <ui:Label name='netcam-feed-status' text='● EN VIVO' class='netcam-osd netcam-osd--tr' picking-mode='Ignore' />
+                        <ui:Label name='netcam-feed-clock' text='00:00:00' class='netcam-osd netcam-osd--bl' picking-mode='Ignore' />
+                        <ui:Label name='netcam-feed-floor' text='PISO --' class='netcam-osd netcam-osd--br' picking-mode='Ignore' />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:Label name='netcam-status' text='' class='text-xs text-muted mt-2' />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

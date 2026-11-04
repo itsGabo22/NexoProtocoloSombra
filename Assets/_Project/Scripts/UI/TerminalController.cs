@@ -2,6 +2,7 @@ using Nexo.AI.Elena;
 using Nexo.Core;
 using Nexo.Interaction;
 using Nexo.Player;
+using Nexo.UI.Menus;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
@@ -33,6 +34,7 @@ namespace Nexo.UI
 
         private SecurityTerminal _terminal;
         private bool _isCaptured;
+        private int _trackedFloor;
 
         public bool IsOpen => _terminal != null;
 
@@ -61,6 +63,7 @@ namespace Nexo.UI
             GameEvents.OnUiAction += HandleUiAction;
             GameEvents.OnPlayerCaught += HandlePlayerCaught;
             GameEvents.OnFloorChanged += HandleFloorChanged;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted;
             if (_closeButton != null) _closeButton.clicked += Close;
             if (_closeAction != null)
             {
@@ -75,6 +78,7 @@ namespace Nexo.UI
             GameEvents.OnUiAction -= HandleUiAction;
             GameEvents.OnPlayerCaught -= HandlePlayerCaught;
             GameEvents.OnFloorChanged -= HandleFloorChanged;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted;
             if (_closeButton != null) _closeButton.clicked -= Close;
             if (_closeAction != null) _closeAction.action.performed -= HandleClosePerformed;
 
@@ -91,7 +95,9 @@ namespace Nexo.UI
             _terminal = terminal;
             _terminal.SetFeedsActive(true);
 
-            if (_title != null) _title.text = terminal.TerminalId.Replace('_', ' ').ToUpperInvariant();
+            // Título en español con el piso activo (FloorMetadata) o el último publicado; por defecto el 12
+            int metadataFloor = FloorMetadata.Active != null ? FloorMetadata.Active.FloorNumber : 0;
+            if (_title != null) _title.text = FloorLabels.TerminalTitle(FloorLabels.Resolve(metadataFloor, _trackedFloor));
             SetStatus(string.Empty);
 
             BuildFeeds();
@@ -120,6 +126,12 @@ namespace Nexo.UI
             if (restoreInput && _playerMovement != null) _playerMovement.SetInputLocked(false, false);
         }
 
+        private void HandleCinematicStarted(string id)
+        {
+            // Devuelve el control antes de que CinematicService guarde el estado que restaurará al terminar
+            Close(true);
+        }
+
         private void HandlePlayerCaught()
         {
             // PlayerCaptureHandler mantiene congelado al jugador hasta el reinicio del piso
@@ -130,6 +142,7 @@ namespace Nexo.UI
         private void HandleFloorChanged(int floor)
         {
             _isCaptured = false;
+            _trackedFloor = floor;
         }
 
         private void HandleClosePerformed(InputAction.CallbackContext context)
@@ -147,6 +160,8 @@ namespace Nexo.UI
         {
             if (_feeds == null) return;
             _feeds.Clear();
+            // Con una sola cámara la vista previa usa todo el ancho de la columna
+            _feeds.EnableInClassList("terminal-feeds--single", _terminal.FeedCount == 1);
 
             for (int i = 0; i < _terminal.FeedCount; i++)
             {
@@ -161,7 +176,8 @@ namespace Nexo.UI
                     image.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(texture));
                 }
 
-                var label = new Label(_terminal.GetFeedLabel(i));
+                // Etiquetas escritas en la escena: se traducen por si contienen ids
+                var label = new Label(HudTextSanitizer.Humanize(_terminal.GetFeedLabel(i)));
                 label.AddToClassList("terminal-feed__label");
 
                 feed.Add(image);
@@ -188,7 +204,7 @@ namespace Nexo.UI
                 var info = new VisualElement();
                 info.AddToClassList("flex-col");
 
-                var idLabel = new Label(door.DoorId);
+                var idLabel = new Label(HudTextSanitizer.Humanize(DoorDisplayNames.Label(door.DoorId)));
                 idLabel.AddToClassList("text-sm");
                 idLabel.AddToClassList("text-main");
 
@@ -229,14 +245,15 @@ namespace Nexo.UI
             DoorController door = _terminal.GetDoor(doorIndex);
             if (_terminal.TryToggleDoor(doorIndex) && door != null)
             {
-                SetStatus($"> {door.DoorId}: {(door.IsOpen ? "APERTURA" : "CIERRE")} REMOTO EJECUTADO");
+                string name = DoorDisplayNames.Label(door.DoorId).ToUpperInvariant();
+                SetStatus($"> {name}: {(door.IsOpen ? "APERTURA REMOTA EJECUTADA" : "CIERRE REMOTO EJECUTADO")}");
             }
             BuildDoors();
         }
 
         private void SetStatus(string text)
         {
-            if (_status != null) _status.text = text;
+            if (_status != null) _status.text = HudTextSanitizer.Humanize(text);
         }
     }
 }

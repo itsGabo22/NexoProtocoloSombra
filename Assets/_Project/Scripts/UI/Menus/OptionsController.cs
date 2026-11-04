@@ -7,7 +7,8 @@ namespace Nexo.UI.Menus
     /// <summary>
     /// Opciones con dos pestañas (Q/E alternan; AUDIO y CONTROLES no existen todavía):
     /// ACCESIBILIDAD es funcional (AccessibilitySettings + AccessibilityPrefs, vista previa en vivo);
-    /// VIDEO solo cambia los valores mostrados. Esc vuelve a la pantalla de origen (menú o pausa).
+    /// VIDEO aplica «Resolución» y «Modo de pantalla» (Screen) y «Volumen general» (AudioPrefs); el resto solo cambia el valor
+    /// mostrado. Esc vuelve a la pantalla de origen (menú o pausa).
     /// </summary>
     public sealed class OptionsController : IMenuScreen, IMenuNavigationHandler
     {
@@ -44,8 +45,16 @@ namespace Nexo.UI.Menus
             new Row("optv-row-shadows", RowKind.Toggle, null, 1),
             new Row("optv-row-antialiasing", RowKind.Choice, new[] { "Desactivado", "FXAA", "SMAA", "TAA" }, 3),
             new Row("optv-row-brightness", RowKind.Slider, null, 60),
-            new Row("optv-row-vsync", RowKind.Toggle, null, 0)
+            new Row("optv-row-vsync", RowKind.Toggle, null, 0),
+            new Row("optv-row-master-volume", RowKind.Slider, null, AudioPrefs.DefaultMasterVolume)
         };
+
+        // Filas de VIDEO que se aplican: resolución y modo de pantalla (Screen), volumen general (AudioPrefs)
+        private const int ResolutionRow = 0;
+        private const int DisplayModeRow = 1;
+        private const int MasterVolumeRow = 7;
+        private static readonly Vector2Int[] Resolutions = { new Vector2Int(1920, 1080), new Vector2Int(1600, 900), new Vector2Int(1280, 720) };
+        private static readonly FullScreenMode[] DisplayModes = { FullScreenMode.ExclusiveFullScreen, FullScreenMode.FullScreenWindow, FullScreenMode.Windowed };
 
         // Pestaña ACCESIBILIDAD: el orden coincide con las filas de Options_Accessibility.uxml
         private const int HighContrastRow = 0;
@@ -86,6 +95,11 @@ namespace Nexo.UI.Menus
             bool accessibility = screen == ScreenId.OptionsAccessibility;
             _rows = accessibility ? _accessibilityRows : _videoRows;
             if (accessibility) LoadAccessibilityValues();
+            else
+            {
+                _videoRows[MasterVolumeRow].Value = AudioPrefs.MasterVolume;
+                SyncDisplayRows();
+            }
 
             var elements = new VisualElement[_rows.Length];
             for (int i = 0; i < _rows.Length; i++)
@@ -176,7 +190,34 @@ namespace Nexo.UI.Menus
             {
                 SaveAccessibilityValues();
             }
-            // TODO apply: la pestaña VIDEO todavía no aplica resolución, modo de pantalla, calidad, sombras, AA, brillo ni VSync.
+            else if (row == _videoRows[MasterVolumeRow])
+            {
+                AudioPrefs.SetMasterVolume(row.Value);
+            }
+            else if (row == _videoRows[ResolutionRow] || row == _videoRows[DisplayModeRow])
+            {
+                ApplyDisplay();
+            }
+            // TODO apply: calidad, sombras, AA, brillo y VSync siguen siendo solo visuales.
+        }
+
+        /// <summary>Refleja en las filas el modo y la resolución reales (Alt+Intro también cambia el modo).</summary>
+        private void SyncDisplayRows()
+        {
+            int mode = System.Array.IndexOf(DisplayModes, Screen.fullScreenMode);
+            if (mode == -1) mode = Screen.fullScreenMode == FullScreenMode.MaximizedWindow ? 2 : 1;
+            _videoRows[DisplayModeRow].Value = mode;
+            for (int i = 0; i < Resolutions.Length; i++)
+            {
+                if (Screen.width == Resolutions[i].x && Screen.height == Resolutions[i].y) _videoRows[ResolutionRow].Value = i;
+            }
+        }
+
+        private void ApplyDisplay()
+        {
+            // En el Editor la ventana Game no cambia; en el build se aplica al instante y Unity lo recuerda
+            Vector2Int size = Resolutions[_videoRows[ResolutionRow].Value];
+            Screen.SetResolution(size.x, size.y, DisplayModes[_videoRows[DisplayModeRow].Value]);
         }
 
         private static void Refresh(Row row)

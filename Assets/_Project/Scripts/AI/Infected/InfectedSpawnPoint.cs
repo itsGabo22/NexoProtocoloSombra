@@ -5,8 +5,9 @@ using UnityEngine.AI;
 namespace Nexo.AI.Infected
 {
     /// <summary>
-    /// Punto de aparición del infectado en F12_Waypoints.
-    /// Al recibir GameEvents.OnPlayerSpawned instancia PF_Infected_Variant y le inyecta el jugador y su ruta.
+    /// Punto de aparición del infectado (F12_Waypoints, F06_Waypoints...).
+    /// Al recibir GameEvents.OnPlayerSpawned instancia PF_Infected_Variant, le aplica los ajustes del punto
+    /// (perfil, sigilo, mimetismo) y le inyecta el jugador y su ruta.
     /// </summary>
     public sealed class InfectedSpawnPoint : MonoBehaviour
     {
@@ -14,6 +15,9 @@ namespace Nexo.AI.Infected
         [SerializeField] private SmartInfectedBrain _infectedPrefab;
         [SerializeField] private Transform[] _patrolPoints;
         [SerializeField] private float _navMeshSnapDistance = 2f;
+
+        [Header("Ajustes de este infectado (opcional)")]
+        [SerializeField] private InfectedSpawnOverrides _overrides = new InfectedSpawnOverrides();
 
         private SmartInfectedBrain _instance;
 
@@ -63,6 +67,7 @@ namespace Nexo.AI.Infected
 
             // Se instancia como hijo de la escena del piso para descargarse junto a ella
             _instance = Instantiate(_infectedPrefab, position, transform.rotation, transform.parent);
+            _instance.ApplyOverrides(_overrides);
             _instance.Initialize(player, _patrolPoints);
             return _instance;
         }

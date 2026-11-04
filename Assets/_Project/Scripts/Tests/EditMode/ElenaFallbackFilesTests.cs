@@ -73,6 +73,22 @@ namespace Nexo.Tests
         }
 
         [Test]
+        public void EveryDialogue_HidesTechnicalIds()
+        {
+            // Los ids técnicos (F12_Door_Stairs, F01_BioScanner…) solo pueden ir en target_id, nunca en lo que lee el jugador
+            var technicalId = new Regex(@"\bF\d{2}_[A-Za-z]");
+            foreach (string path in FallbackFiles())
+            {
+                string file = Path.GetFileName(path);
+                FallbackLibrary library = JsonUtility.FromJson<FallbackLibrary>(File.ReadAllText(path));
+                foreach (FallbackEntry entry in library.entries)
+                {
+                    Assert.IsFalse(technicalId.IsMatch(entry.response.dialogue), $"{file}/{entry.key}: el diálogo muestra un id técnico.");
+                }
+            }
+        }
+
+        [Test]
         public void Provider_SelectsTheEntryOfEachFloor()
         {
             var assets = new List<TextAsset>();

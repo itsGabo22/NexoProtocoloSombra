@@ -1,4 +1,5 @@
 using System.Collections;
+using Nexo.Cinematics;
 using Nexo.Core;
 using Nexo.Player;
 using Nexo.UI.Menus;
@@ -10,6 +11,8 @@ namespace Nexo.Narrative
     /// Progresión de pisos (vive en Systems_Persistent): Piso 12 → Piso 6 → Piso 1.
     /// LoadNext delega la descarga/carga en SceneLoader.LoadFloor (no duplica su lógica) y, como PlayerCaptureHandler,
     /// bloquea al jugador mientras SceneLoader.IsLoading. JUGAR y volver al menú reinician el índice a 0.
+    /// Antes de cargar reproduce la cinemática floor_transition_to_NN (o floor_transition si no existe); el piso se carga
+    /// DESPUÉS del clip: así el Momento 0 del piso nuevo (subtítulos, Elena, objetivo) no ocurre detrás del vídeo.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class FloorProgression : MonoBehaviour
@@ -26,6 +29,7 @@ namespace Nexo.Narrative
 
         private FloorOrder _order;
         private Coroutine _loadRoutine;
+        private bool _waitingCinematic;
 
         /// <summary>Instancia activa (la usa StairsExit desde la escena del piso; registrada en OnEnable).</summary>
         public static FloorProgression Active { get; private set; }
@@ -59,6 +63,7 @@ namespace Nexo.Narrative
             MenuEvents.ReturnToMainMenuRequested -= HandleReturnToMainMenuRequested;
             if (Active == this) Active = null;
 
+            _waitingCinematic = false;
             if (_loadRoutine != null)
             {
                 StopCoroutine(_loadRoutine);
@@ -83,6 +88,12 @@ namespace Nexo.Narrative
             if (_playerMovement != null) _playerMovement.SetInputLocked(true, false);
 
             int floorNumber = FloorOrder.ParseFloorNumber(sceneName);
+
+            // Sin clip, HandleTransitionCinematicFinished se llama al instante y no se espera ningún fotograma
+            _waitingCinematic = true;
+            CinematicService.Play(CinematicIds.ResolveFloorTransition(floorNumber, CinematicService.HasClip), HandleTransitionCinematicFinished);
+            while (_waitingCinematic) yield return null;
+
             if (floorNumber > 0 && !string.IsNullOrEmpty(_descendingLine))
             {
                 NarrativeSubtitles.Say(string.Empty, string.Format(_descendingLine, floorNumber));
@@ -95,6 +106,11 @@ namespace Nexo.Narrative
             if (_playerMovement != null) _playerMovement.SetInputLocked(false, false);
             _loadRoutine = null;
             NarrativeEvents.RaiseFloorChanged(floorNumber);
+        }
+
+        private void HandleTransitionCinematicFinished()
+        {
+            _waitingCinematic = false;
         }
 
         private void HandlePlayRequested()

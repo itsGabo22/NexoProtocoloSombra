@@ -22,6 +22,21 @@ namespace Nexo.UI
         private const int BarCount = 24;
         private const long NotificationMs = 5500;
         private const float GlitchThreshold = 0.05f;
+        private const string PortraitResource = "Elena/portrait";
+        private const long PickupVisibleMs = 1500;
+        private const long WeaponPulseMs = 300;
+        private const long HitFlashMs = 250;
+        private const long LowHealthPulseMs = 1000;
+        private const long HintFadeMs = 400;
+        private const long NotificationPulseMs = 180;
+
+        /// <summary>Tarjeta de notificación visible y sus temporizadores (la decisión la toma NotificationStack).</summary>
+        private sealed class NotificationCard
+        {
+            public VisualElement Element;
+            public IVisualElementScheduledItem Dismiss;
+            public IVisualElementScheduledItem PulseEnd;
+        }
 
         private static readonly string[] RootDebugLines =
         {
@@ -37,11 +52,13 @@ namespace Nexo.UI
         [SerializeField] private bool _reduceMotion;
 
         [Header("Órdenes Tácticas de Elena")]
-        [Tooltip("Destino por defecto de HIGHLIGHT_SAFE_ROUTE cuando Elena no indica target_id.")]
+        [Tooltip("DoorId por defecto de HIGHLIGHT_SAFE_ROUTE cuando Elena no indica target_id (se muestra traducido con DoorDisplayNames).")]
         [SerializeField] private string _safeRouteDefaultTarget = "F12_Door_Stairs";
         [SerializeField] private float _radarRangeMeters = 18f;
 
         private VisualElement _root;
+        private bool _hiddenByCinematic;
+        private StyleEnum<DisplayStyle> _displayBeforeCinematic;
         private VisualElement _spectrogram;
         private VisualElement _notifications;
         private VisualElement _glitch;
@@ -63,16 +80,44 @@ namespace Nexo.UI
         private Label _typing;
         private Label _seal;
         private Label _interactPrompt;
+        private Label _vitalsInfection;
+
+        // Panel de arma
+        private VisualElement _weaponPanel;
+        private VisualElement _weaponCells;
+        private Label _weaponAmmo;
+        private Label _weaponStatus;
+        private Label _weaponPickup;
+        private readonly List<VisualElement> _cells = new();
+        private string _weaponStatusClass = string.Empty;
+        private int _magazine;
+        private int _reserve;
+        private int _magazineSize;
+        private bool _reloading;
+
+        // Feedback de daño y ayuda de controles
+        private VisualElement _damage;
+        private Label _controlsHint;
+        private int _lastHealthPercent = VitalsFeedback.Unknown;
+        private bool _lowHealth;
+        private bool _hudCorrupted;
 
         private readonly List<VisualElement> _bars = new();
         private readonly float[] _barLevels = new float[BarCount];
         private readonly Button[] _quick = new Button[3];
         private readonly Action[] _quickHandlers = new Action[3];
+        private readonly NotificationStack _notificationStack = new NotificationStack(CurrentTime);
+        private readonly Dictionary<int, NotificationCard> _cards = new();
 
         private IVisualElementScheduledItem _typewriter;
         private IVisualElementScheduledItem _spectro;
         private IVisualElementScheduledItem _pulse;
         private IVisualElementScheduledItem _glitchPulse;
+        private IVisualElementScheduledItem _pickupHide;
+        private IVisualElementScheduledItem _weaponPulseEnd;
+        private IVisualElementScheduledItem _hitEnd;
+        private IVisualElementScheduledItem _lowPulse;
+        private IVisualElementScheduledItem _hintHide;
         private string _emotionClass;
         private float _noise;
         private int _infectedNearby;
@@ -82,6 +127,8 @@ namespace Nexo.UI
         private void HandleAccessibilityChanged(AccessibilityOptions options)
         {
             SetReduceMotion(options.ReduceMotion);
+            // Con reducir movimiento el pulso de salud baja pasa a ser una viñeta fija
+            RefreshLowHealth();
         }
 
         private void OnEnable()
@@ -107,6 +154,11 @@ namespace Nexo.UI
             GameEvents.OnFloorChanged += HandleFloorChanged;
             GameEvents.OnUiAction += HandleUiAction;
             GameEvents.OnInfectedNearbyChanged += HandleInfectedNearbyChanged;
+            GameEvents.OnAmmoChanged += HandleAmmoChanged;
+            GameEvents.OnWeaponReloadChanged += HandleWeaponReloadChanged;
+            GameEvents.OnAmmoPicked += HandleAmmoPicked;
+            GameEvents.OnCinematicStarted += HandleCinematicStarted;
+            GameEvents.OnCinematicFinished += HandleCinematicFinished;
             AccessibilitySettings.Changed += HandleAccessibilityChanged;
             HandleAccessibilityChanged(AccessibilitySettings.Current);
 
@@ -138,7 +190,13 @@ namespace Nexo.UI
             GameEvents.OnFloorChanged -= HandleFloorChanged;
             GameEvents.OnUiAction -= HandleUiAction;
             GameEvents.OnInfectedNearbyChanged -= HandleInfectedNearbyChanged;
+            GameEvents.OnAmmoChanged -= HandleAmmoChanged;
+            GameEvents.OnWeaponReloadChanged -= HandleWeaponReloadChanged;
+            GameEvents.OnAmmoPicked -= HandleAmmoPicked;
+            GameEvents.OnCinematicStarted -= HandleCinematicStarted;
+            GameEvents.OnCinematicFinished -= HandleCinematicFinished;
             AccessibilitySettings.Changed -= HandleAccessibilityChanged;
+            if (_hiddenByCinematic) HandleCinematicFinished(string.Empty);
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -153,7 +211,16 @@ namespace Nexo.UI
             _pulse?.Pause();
             _glitchPulse?.Pause();
             _glitch?.RemoveFromClassList("hud-glitch-pulse");
+            _pickupHide?.Pause();
+            _weaponPulseEnd?.Pause();
+            _hitEnd?.Pause();
+            _lowPulse?.Pause();
+            _hintHide?.Pause();
+            ClearNotifications();
         }
+
+        /// <summary>Reloj de la pila de notificaciones (tiempo real: no depende de Time.timeScale).</summary>
+        private static double CurrentTime() => Time.realtimeSinceStartupAsDouble;
 
         private void PulsePortrait()
         {
@@ -176,6 +243,14 @@ namespace Nexo.UI
             _batteryValue = _root.Q<Label>("hud-battery-value");
             _debugText = _root.Q<Label>("hud-debug-text");
             _interactPrompt = _root.Q<Label>("hud-interact");
+            _vitalsInfection = _root.Q<Label>("hud-vitals-infection");
+            _weaponPanel = _root.Q<VisualElement>("hud-weapon");
+            _weaponCells = _root.Q<VisualElement>("hud-weapon-cells");
+            _weaponAmmo = _root.Q<Label>("hud-weapon-ammo");
+            _weaponStatus = _root.Q<Label>("hud-weapon-status");
+            _weaponPickup = _root.Q<Label>("hud-weapon-pickup");
+            _damage = _root.Q<VisualElement>("hud-damage");
+            _controlsHint = _root.Q<Label>("hud-controls-hint");
 
             _portrait = _root.Q<VisualElement>("radio-elena-portrait");
             _trustFill = _root.Q<VisualElement>("radio-trust-fill");
@@ -191,6 +266,22 @@ namespace Nexo.UI
             {
                 _quick[i] = _root.Q<Button>($"radio-quick-{i + 1}");
             }
+
+            ApplyPortrait();
+        }
+
+        /// <summary>
+        /// Retrato de Elena opcional (Assets/_Project/Resources/Elena/portrait.png). Si no existe se mantiene el círculo
+        /// vacío; Resources.Load devuelve null sin registrar nada en consola.
+        /// </summary>
+        private void ApplyPortrait()
+        {
+            if (_portrait == null) return;
+            Texture2D portrait = Resources.Load<Texture2D>(PortraitResource);
+            if (portrait == null) return;
+
+            _portrait.style.backgroundImage = new StyleBackground(portrait);
+            _portrait.AddToClassList("radio-portrait--image");
         }
 
         private void BuildSpectrogram()
@@ -241,9 +332,191 @@ namespace Nexo.UI
 
         private void HandleVitals(VitalsData data)
         {
+            // Tras el giro el HUD ya dice la verdad («98.4% INFECTADO»): no se vuelve a pisar
+            if (_hudCorrupted) return;
+
             if (_vitalsValue != null) _vitalsValue.text = data.ValueText;
             if (_vitalsStatus != null) _vitalsStatus.text = data.StatusText;
             if (_bpm != null) _bpm.text = $"♥ {data.HeartRate} BPM";
+
+            if (!VitalsFeedback.TryParsePercent(data.ValueText, out int percent)) return;
+            if (VitalsFeedback.IsDamage(_lastHealthPercent, percent)) FlashDamage();
+            _lastHealthPercent = percent;
+            _lowHealth = VitalsFeedback.IsLowHealth(percent);
+            RefreshLowHealth();
+        }
+
+        // ---------- Feedback de daño ----------
+
+        /// <summary>Destello rojo breve en los bordes al recibir un golpe; se omite con reducir movimiento.</summary>
+        private void FlashDamage()
+        {
+            if (_reduceMotion || _damage == null) return;
+
+            _hitEnd?.Pause();
+            _damage.AddToClassList("damage-vignette--hit");
+            _hitEnd = _damage.schedule.Execute(EndDamageFlash).StartingIn(HitFlashMs);
+        }
+
+        private void EndDamageFlash()
+        {
+            _damage?.RemoveFromClassList("damage-vignette--hit");
+        }
+
+        /// <summary>Viñeta de salud baja: pulso lento, o fija si está activo reducir movimiento.</summary>
+        private void RefreshLowHealth()
+        {
+            if (_damage == null) return;
+
+            bool active = _lowHealth && !_hudCorrupted;
+            _damage.EnableInClassList("damage-vignette--low", active);
+
+            if (active && !_reduceMotion)
+            {
+                if (_lowPulse == null) _lowPulse = _damage.schedule.Execute(ToggleLowHealthPulse).Every(LowHealthPulseMs);
+                else _lowPulse.Resume();
+                return;
+            }
+
+            _lowPulse?.Pause();
+            _damage.RemoveFromClassList("damage-vignette--low-peak");
+        }
+
+        private void ToggleLowHealthPulse()
+        {
+            _damage?.ToggleInClassList("damage-vignette--low-peak");
+        }
+
+        // ---------- Panel de arma ----------
+
+        private void HandleAmmoChanged(int magazine, int reserve, int magazineSize)
+        {
+            _magazine = magazine;
+            _reserve = reserve;
+            _magazineSize = magazineSize;
+            RefreshWeapon();
+        }
+
+        private void HandleWeaponReloadChanged(bool isReloading)
+        {
+            _reloading = isReloading;
+            RefreshWeapon();
+        }
+
+        private void RefreshWeapon()
+        {
+            if (_weaponPanel == null) return;
+            _weaponPanel.RemoveFromClassList("hidden");
+
+            AmmoStatus status = AmmoDisplayState.Resolve(_magazine, _reserve, _magazineSize, _reloading);
+            if (_weaponAmmo != null) _weaponAmmo.text = AmmoDisplayState.Counter(_magazine, _reserve, _magazineSize);
+            if (_weaponStatus != null) _weaponStatus.text = AmmoDisplayState.StatusText(status);
+
+            if (_weaponStatusClass.Length > 0) _weaponPanel.RemoveFromClassList(_weaponStatusClass);
+            _weaponStatusClass = AmmoDisplayState.StatusClass(status);
+            if (_weaponStatusClass.Length > 0) _weaponPanel.AddToClassList(_weaponStatusClass);
+
+            RefreshCells();
+        }
+
+        private void RefreshCells()
+        {
+            if (_weaponCells == null) return;
+
+            int count = AmmoDisplayState.CellCount(_magazineSize);
+            if (_cells.Count != count)
+            {
+                _weaponCells.Clear();
+                _cells.Clear();
+                for (int i = 0; i < count; i++)
+                {
+                    var cell = new VisualElement { pickingMode = PickingMode.Ignore };
+                    cell.AddToClassList("hud-weapon-cell");
+                    _weaponCells.Add(cell);
+                    _cells.Add(cell);
+                }
+            }
+
+            int filled = AmmoDisplayState.FilledCells(_magazine, _magazineSize);
+            for (int i = 0; i < _cells.Count; i++)
+            {
+                _cells[i].EnableInClassList("hud-weapon-cell--filled", i < filled);
+            }
+        }
+
+        /// <summary>«+N» junto al nombre del arma y un pulso breve del panel (sin pulso con reducir movimiento).</summary>
+        /// <summary>Durante una cinemática se oculta todo el HUD; al terminar recupera el display que tenía.</summary>
+        private void HandleCinematicStarted(string id)
+        {
+            if (_root == null || _hiddenByCinematic) return;
+
+            _displayBeforeCinematic = _root.style.display;
+            _hiddenByCinematic = true;
+            _root.style.display = DisplayStyle.None;
+        }
+
+        private void HandleCinematicFinished(string id)
+        {
+            if (_root == null || !_hiddenByCinematic) return;
+
+            _hiddenByCinematic = false;
+            _root.style.display = _displayBeforeCinematic;
+        }
+
+        private void HandleAmmoPicked(int rounds)
+        {
+            string text = AmmoDisplayState.PickupText(rounds);
+            if (_weaponPickup == null || text.Length == 0) return;
+
+            _weaponPickup.text = text;
+            _weaponPickup.AddToClassList("hud-weapon__pickup--visible");
+            _pickupHide?.Pause();
+            _pickupHide = _weaponPickup.schedule.Execute(HidePickup).StartingIn(PickupVisibleMs);
+
+            if (_reduceMotion || _weaponPanel == null) return;
+            _weaponPulseEnd?.Pause();
+            _weaponPanel.AddToClassList("hud-weapon--pulse");
+            _weaponPulseEnd = _weaponPanel.schedule.Execute(EndWeaponPulse).StartingIn(WeaponPulseMs);
+        }
+
+        private void HidePickup()
+        {
+            _weaponPickup?.RemoveFromClassList("hud-weapon__pickup--visible");
+        }
+
+        private void EndWeaponPulse()
+        {
+            _weaponPanel?.RemoveFromClassList("hud-weapon--pulse");
+        }
+
+        // ---------- Ayuda de controles ----------
+
+        /// <summary>Muestra la franja de controles una vez por sesión (los reinicios de piso no la repiten).</summary>
+        private void ShowControlsHintOnce()
+        {
+            if (_controlsHint == null || !ControlsHint.TryConsume()) return;
+
+            _controlsHint.text = ControlsHint.Text;
+            _controlsHint.RemoveFromClassList("hidden");
+            _controlsHint.schedule.Execute(RevealControlsHint).StartingIn(20);
+            _hintHide = _controlsHint.schedule.Execute(FadeControlsHint).StartingIn(ControlsHint.VisibleMs);
+        }
+
+        private void RevealControlsHint()
+        {
+            _controlsHint?.AddToClassList("hud-controls-hint--visible");
+        }
+
+        private void FadeControlsHint()
+        {
+            if (_controlsHint == null) return;
+            _controlsHint.RemoveFromClassList("hud-controls-hint--visible");
+            _hintHide = _controlsHint.schedule.Execute(HideControlsHint).StartingIn(_reduceMotion ? 0 : HintFadeMs);
+        }
+
+        private void HideControlsHint()
+        {
+            _controlsHint?.AddToClassList("hidden");
         }
 
         private void HandleElenaThinking(bool thinking)
@@ -292,7 +565,7 @@ namespace Nexo.UI
 
             _emotionClass = "emotion-" + emotion.ToString().ToLowerInvariant();
             _portrait.AddToClassList(_emotionClass);
-            if (_emotionLabel != null) _emotionLabel.text = emotion.ToString().ToUpperInvariant();
+            if (_emotionLabel != null) _emotionLabel.text = ElenaEmotionLabels.ToSpanish(emotion);
         }
 
         private void StartTypewriter(string text)
@@ -300,6 +573,8 @@ namespace Nexo.UI
             if (_dialogue == null) return;
             _typewriter?.Pause();
 
+            // Solo se traduce lo que se muestra: la respuesta de Elena queda intacta
+            text = HudTextSanitizer.Humanize(text) ?? string.Empty;
             int shown = 0;
             _dialogue.text = string.Empty;
             _typewriter = _dialogue.schedule.Execute(() =>
@@ -338,7 +613,8 @@ namespace Nexo.UI
                     break;
 
                 case ElenaUiAction.HighlightSafeRoute:
-                    string destination = string.IsNullOrEmpty(targetId) ? _safeRouteDefaultTarget : targetId;
+                    // Nunca se muestra el DoorId técnico: se traduce a un nombre en español
+                    string destination = DoorDisplayNames.Destination(string.IsNullOrEmpty(targetId) ? _safeRouteDefaultTarget : targetId);
                     ShowNotification(new HudNotification("RUTA SEGURA", $"➜ Ruta despejada hacia {destination}. Mantente agachado.", false));
                     _crosshair?.AddToClassList("crosshair--route");
                     _root.schedule.Execute(ClearRouteHighlight).StartingIn(NotificationMs);
@@ -371,6 +647,8 @@ namespace Nexo.UI
 
         private void HandleFloorChanged(int floor)
         {
+            ShowControlsHintOnce();
+
             // El piso se (re)cargó: retirar la pantalla de captura con fundido
             if (_capture == null || _capture.ClassListContains("hidden")) return;
 
@@ -388,12 +666,31 @@ namespace Nexo.UI
             if (_interactPrompt == null) return;
             bool hasPrompt = !string.IsNullOrEmpty(prompt);
             _interactPrompt.EnableInClassList("hidden", !hasPrompt);
-            _interactPrompt.text = prompt;
+            _interactPrompt.text = HudTextSanitizer.Humanize(prompt);
         }
 
+        /// <summary>
+        /// Muestra una notificación con los ids internos traducidos. Una idéntica ya visible solo reinicia su tiempo de vida
+        /// (con un pulso breve salvo reducir movimiento); hay como máximo NotificationStack.DefaultMaxVisible tarjetas.
+        /// </summary>
         public void ShowNotification(HudNotification data)
         {
             if (_notifications == null) return;
+
+            string senderText = HudTextSanitizer.Humanize(data.Sender) ?? string.Empty;
+            string bodyText = HudTextSanitizer.Humanize(data.Body) ?? string.Empty;
+
+            NotificationResult result = _notificationStack.Push(senderText, bodyText, data.IsFake);
+            switch (result.Action)
+            {
+                case NotificationAction.Suppress:
+                    return;
+                case NotificationAction.Refresh:
+                    RefreshCard(result.CardId);
+                    return;
+            }
+
+            if (result.EvictedId != NotificationResult.None) RemoveCardNow(result.EvictedId);
 
             var card = new VisualElement();
             card.AddToClassList("hud-notification");
@@ -405,7 +702,7 @@ namespace Nexo.UI
             header.AddToClassList("items-center");
             header.AddToClassList("justify-between");
 
-            var sender = new Label(data.Sender);
+            var sender = new Label(senderText);
             sender.AddToClassList("hud-notification__sender");
             sender.AddToClassList("text-sm");
             sender.AddToClassList("text-accent");
@@ -420,7 +717,7 @@ namespace Nexo.UI
                 header.Add(seal);
             }
 
-            var body = new Label(data.Body);
+            var body = new Label(bodyText);
             body.AddToClassList("text-sm");
             body.AddToClassList("text-main");
             body.AddToClassList("wrap");
@@ -432,7 +729,58 @@ namespace Nexo.UI
             _notifications.Add(card);
 
             card.schedule.Execute(() => card.AddToClassList("hud-notification--visible")).StartingIn(20);
-            card.schedule.Execute(() => DismissCard(card)).StartingIn(NotificationMs);
+
+            int cardId = result.CardId;
+            var state = new NotificationCard { Element = card };
+            state.Dismiss = card.schedule.Execute(() => ExpireCard(cardId)).StartingIn(NotificationMs);
+            _cards[cardId] = state;
+        }
+
+        /// <summary>Reinicia el tiempo de vida de una tarjeta idéntica ya visible.</summary>
+        private void RefreshCard(int cardId)
+        {
+            if (!_cards.TryGetValue(cardId, out NotificationCard state)) return;
+
+            state.Dismiss?.Pause();
+            state.Dismiss = state.Element.schedule.Execute(() => ExpireCard(cardId)).StartingIn(NotificationMs);
+
+            if (_reduceMotion) return;
+            state.PulseEnd?.Pause();
+            state.Element.AddToClassList("hud-notification--pulse");
+            state.PulseEnd = state.Element.schedule.Execute(() => state.Element.RemoveFromClassList("hud-notification--pulse")).StartingIn(NotificationPulseMs);
+        }
+
+        /// <summary>Fin del tiempo de vida: la tarjeta se desvanece y deja de contar como visible.</summary>
+        private void ExpireCard(int cardId)
+        {
+            if (!_cards.TryGetValue(cardId, out NotificationCard state)) return;
+
+            _cards.Remove(cardId);
+            _notificationStack.Expire(cardId);
+            DismissCard(state.Element);
+        }
+
+        /// <summary>Retira al instante la tarjeta más antigua cuando se supera el tope (sin esperar al fundido).</summary>
+        private void RemoveCardNow(int cardId)
+        {
+            if (!_cards.TryGetValue(cardId, out NotificationCard state)) return;
+
+            _cards.Remove(cardId);
+            state.Dismiss?.Pause();
+            state.PulseEnd?.Pause();
+            state.Element.RemoveFromHierarchy();
+        }
+
+        private void ClearNotifications()
+        {
+            foreach (NotificationCard state in _cards.Values)
+            {
+                state.Dismiss?.Pause();
+                state.PulseEnd?.Pause();
+                state.Element.RemoveFromHierarchy();
+            }
+            _cards.Clear();
+            _notificationStack.Clear();
         }
 
         private static VisualElement BuildWave(bool irregular)
@@ -463,6 +811,11 @@ namespace Nexo.UI
         public void PlayCorruptionSequence()
         {
             _spectro?.Pause();
+            // Desde aquí los vitales de PlayerHealth ya no sobrescriben la verdad ni se muestra la viñeta de daño
+            _hudCorrupted = true;
+            _hitEnd?.Pause();
+            _damage?.RemoveFromClassList("damage-vignette--hit");
+            RefreshLowHealth();
             long t = 0;
 
             // 1) Destellos controlados (máximo 3; 0 si se reduce movimiento por WCAG 2.3.1)
@@ -489,6 +842,7 @@ namespace Nexo.UI
 
                 if (_vitalsValue != null) _vitalsValue.text = "98.4% INFECTADO";
                 if (_vitalsStatus != null) _vitalsStatus.text = "ROOT DEBUG";
+                if (_vitalsInfection != null) _vitalsInfection.AddToClassList("hidden");
                 if (_seal != null) _seal.AddToClassList("hud-seal--hidden");
                 if (_debug != null) _debug.RemoveFromClassList("hidden");
                 if (_debugText != null) _debugText.text = string.Empty;
@@ -520,11 +874,12 @@ namespace Nexo.UI
             _root.Q("hud-radio")?.AddToClassList("hud-shattered-b");
             _root.Q("hud-noise")?.AddToClassList("hud-shattered-c");
             _root.Q("hud-battery")?.AddToClassList("hud-shattered-c");
+            _root.Q("hud-weapon")?.AddToClassList("hud-shattered-b");
         }
 
         private void UnshatterPanels()
         {
-            foreach (string panel in new[] { "hud-vitals", "hud-radio", "hud-noise", "hud-battery" })
+            foreach (string panel in new[] { "hud-vitals", "hud-radio", "hud-noise", "hud-battery", "hud-weapon" })
             {
                 var el = _root.Q(panel);
                 if (el == null) continue;

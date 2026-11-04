@@ -42,6 +42,12 @@ crashlytics-build.properties
 /Assets/ThirdPartyAssets/
 /Assets/ThirdPartyAssets.meta
 
+# Cinemáticas generadas con IA: nunca entran en el repo público (se copian a mano; ver docs/DEMO_SCRIPT.md).
+# StreamingAssets solo contiene esta carpeta: si algún día se versiona otro contenido, quita la línea de StreamingAssets.meta
+/Assets/StreamingAssets/Cinematics/
+/Assets/StreamingAssets/Cinematics.meta
+/Assets/StreamingAssets.meta
+
 # Carpeta residual creada por Unity Hub
 /My project/
 

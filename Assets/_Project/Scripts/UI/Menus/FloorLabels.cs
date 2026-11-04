@@ -44,6 +44,12 @@ namespace Nexo.UI.Menus
             return $"PISO {floor} REINICIADO";
         }
 
+        /// <summary>Título de la terminal de seguridad: "TERMINAL DE SEGURIDAD · PISO 12".</summary>
+        public static string TerminalTitle(int floor)
+        {
+            return $"TERMINAL DE SEGURIDAD · PISO {floor}";
+        }
+
         /// <summary>Aplica el número de piso a una plantilla con {0}; sin plantilla devuelve la ubicación.</summary>
         public static string Format(string template, int floor)
         {

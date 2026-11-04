@@ -24,7 +24,13 @@ namespace Nexo.Interaction
 
         public bool IsOn { get; private set; } = true;
         public string RoomId => _roomId;
-        public string Prompt => IsOn ? "[E] Apagar iluminación" : "[E] Restaurar energía";
+
+        /// <summary>
+        /// Sin corriente (apagón del Piso 6): el interruptor no responde hasta restablecer el diferencial (PowerBreaker).
+        /// </summary>
+        public bool PowerCut { get; set; }
+
+        public string Prompt => PowerCut ? "[E] Interruptor sin corriente" : IsOn ? "[E] Apagar iluminación" : "[E] Restaurar energía";
 
         private void OnEnable()
         {
@@ -54,6 +60,11 @@ namespace Nexo.Interaction
 
         public void Interact()
         {
+            if (PowerCut)
+            {
+                GameEvents.RaiseNotification(new HudNotification("NEXOOS", "Sin corriente en la sala. Restablece el diferencial del pasillo.", false));
+                return;
+            }
             SetPower(!IsOn);
         }
 
