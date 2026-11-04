@@ -34,14 +34,18 @@
                 <ui:Label name="cr-fonts-label" text="TIPOGRAFÍAS" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-fonts-value" text="Barlow Condensed (The Barlow Project Authors) · IBM Plex Sans e IBM Plex Mono (IBM Corp.) · SIL Open Font License 1.1" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-audio-label" text="EFECTOS DE SONIDO" class="label text-muted nx-mb-4" />
-                <ui:Label name="cr-audio-value" text="Sonido procedural creado para el proyecto" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-audio-value" text="Efectos procedurales creados para el proyecto" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-portrait-label" text="RETRATO DE ELENA" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-portrait-value" text="Avatar holográfico generado en Unity" class="body text-main wrap nx-mb-24" />
             </ui:VisualElement>
             <ui:VisualElement name="cr-col-right" class="cr-col">
                 <ui:Label name="cr-weapon-label" text="ARMA M1911" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-weapon-value" text="Nokobot, Modern Guns · Handgun v1.2 (Unity Asset Store) · Standard Unity Asset Store EULA" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-character-label" text="PERSONAJE Y ANIMACIONES" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-character-value" text="Mixamo (Adobe)" class="body text-main wrap nx-mb-24" />
-                <ui:Label name="cr-locomotion-label" text="ANIMACIONES DE LOCOMOCIÓN" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-extra-models-label" text="MODELOS Y ANIMACIONES ADICIONALES" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-extra-models-value" text="Unity Asset Store y Mixamo" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-locomotion-label" text="LOCOMOCIÓN, MÚSICA Y AMBIENTE" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-locomotion-value" text="Starter Assets, plantilla de Unity Learn (Unity Technologies) · Unity Companion License" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-building-label" text="EDIFICIO DE OFICINAS Y ENTORNO" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-building-value" text="Polygon Office Building (Unity Asset Store) · Standard Unity Asset Store EULA" class="body text-main wrap nx-mb-24" />
