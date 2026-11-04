@@ -15,10 +15,16 @@
 | 6 | Notas como papel a pantalla completa (IBM Plex Mono, sonido de papel, [E]/[Esc]), resalte al mirarlas, diario [J]. |
 | 7 | `PF_ElenaVisual` (Ch33 a 1,30 m, tinte y melena) tras el cristal del Piso 12; desaparece al salir de la sala. Primitivas azules ocultas. Ver `docs/ELENA_VISUAL.md`. Piso 6: no se añadió figura en cámaras. |
 
+## Actualización 2026-11-04 (Carlos, rama `feature/final-verification`)
+
+- **Parte 9: HECHA.** `Nexo › Checks › Playthrough` tiene una sección nueva, «Mecánicas nuevas (Piso 12)»: aviso de controles, voces 51/51, figura de Elena solo en el Piso 12 y cápsula azul oculta, nota a pantalla completa y diario sin duplicados, [T] texto a Elena (offline), cola de mensajes con prioridad para el daño, voz con filtro de radio, caída → punto de control y −1 vida, botiquín (+1, no se gasta con la vida llena), empujón (aparta, enfriamiento, rompe el agarre), cuchillo (botín del patrullero, recogida, ejecución por la espalda, panel de munición intacto) y salto. Además, límites de mirada en el escondite del Piso 6. Recorrido completo en verde (ver el informe del PR). `LEEME_EJECUCION.md`, `DEMO_SCRIPT.md` y `ASSETS.md` están al día.
+- Arreglado en el check: el clip corrupto creaba un archivo en `StreamingAssets/Cinematics` aunque la carpeta no existiera. Ahora la crea y la borra después.
+- Voces: las 51 igualadas (`Nexo › Elena › Igualar voces`). Para regenerar las 23 de Windows: `docs/ELENA_VOICE_REGEN.md`.
+- Alex y Elena con color: `Nexo › Characters › Aplicar color` (texturas de Ch33 extraídas; ropa de niña para Elena). `Rebuild Visual` lo conserva.
+
 ## PENDIENTE
 
-- **Parte 8** (ambientación del Piso 6): sin empezar.
-- **Parte 9**: ampliar `Nexo › Checks › Playthrough`/Integrity con los sistemas nuevos (hay un borrador en el scratchpad del agente, no versionado), recorrido completo, capturas, `LEEME_EJECUCION.md`, `DEMO_SCRIPT.md`, `ASSETS.md`.
+- **Parte 8** (ambientación del Piso 6): sin empezar (se dejó fuera para no arriesgar la demo).
 - Elena en las cámaras del Piso 6 (Parte 7, opcional).
 - Repetir **Nexo › Elena › Generate Voice** cuando vuelva la cuota de Gemini: solo rehace las 23 líneas de Windows.
 - Latencia «después» de `gemini-3.8-flash`: hoy devuelve 503/429 a esta clave en todas las pruebas; la reserva `gemini-3.5-flash-lite` respondió en 1,3-1,8 s (mediana) con el prompt real.
