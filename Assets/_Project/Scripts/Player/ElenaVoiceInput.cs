@@ -13,6 +13,8 @@ namespace Nexo.Player
     /// Si Windows tiene reconocimiento de voz se usa su dictado; si no, se graba el micrófono y Gemini transcribe
     /// el audio (requiere la API key de ElenaSecrets). La frase se envía a Elena por GameEvents.OnPlayerSpoke.
     /// Todo por callbacks y await: sin Update().
+    /// Cualquier fallo (sin micrófono, sin permiso, dictado rechazado, sin red o build sin conexión) se degrada a un
+    /// subtítulo que remite a las preguntas rápidas [1]-[3] y nunca lanza excepciones (cambio de Gabriel, 2026-11-03).
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class ElenaVoiceInput : MonoBehaviour
@@ -33,22 +35,38 @@ namespace Nexo.Player
         private string _lastHypothesis = "";
         private string _device;
         private AudioClip _recording;
+        // Si el dictado de Windows falla una vez (privacidad de voz desactivada, servicio ocupado) no se reintenta
+        private bool _dictationFailed;
+
+        // Mensaje único cuando no hay forma de oír al jugador: siempre quedan las preguntas rápidas
+        private const string NoVoiceMessage = "(Elena no puede oír tu voz ahora. Usa las preguntas rápidas [1] [2] [3])";
 
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         private DictationRecognizer _dictation;
 #endif
 
-        private static bool UseWindowsDictation
+        private bool UseWindowsDictation
         {
             get
             {
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-                return PhraseRecognitionSystem.isSupported;
+                if (_dictationFailed) return false;
+                try
+                {
+                    return PhraseRecognitionSystem.isSupported;
+                }
+                catch (System.Exception)
+                {
+                    return false;
+                }
 #else
                 return false;
 #endif
             }
         }
+
+        /// <summary>Sin dictado, la voz solo llega a Elena si Gemini puede transcribirla (API key y sin modo offline).</summary>
+        private bool CanTranscribe => _elenaConfig != null && !_elenaConfig.ForceFallback && _elenaConfig.Secrets != null && _elenaConfig.Secrets.HasApiKey;
 
         private void Awake()
         {
@@ -94,13 +112,29 @@ namespace Nexo.Player
             if (_isListening || _isTranscribing) return;
             if (_playerMovement != null && _playerMovement.IsInputLocked) return;
 
+            // Sin dictado ni transcripción (build sin conexión) se avisa al pulsar, sin grabar en vano
+            bool dictation = UseWindowsDictation;
+            if (!dictation && !CanTranscribe)
+            {
+                GameEvents.RaiseSubtitle(NoVoiceMessage);
+                return;
+            }
+
             _isListening = true;
             _lastHypothesis = "";
             GameEvents.RaiseSubtitle("(Hablando con Elena... suelta [V] para enviar)");
             GameEvents.RaiseNoiseEmitted(transform.position, _talkNoise);
 
-            if (UseWindowsDictation) StartDictation();
-            else StartRecording();
+            if (dictation && StartDictation()) return;
+            if (CanTranscribe)
+            {
+                StartRecording();
+            }
+            else
+            {
+                _isListening = false;
+                GameEvents.RaiseSubtitle(NoVoiceMessage);
+            }
         }
 
         private void HandleTalkReleased(InputAction.CallbackContext context)
@@ -108,7 +142,7 @@ namespace Nexo.Player
             if (!_isListening) return;
             _isListening = false;
 
-            if (UseWindowsDictation)
+            if (IsDictationRunning)
             {
                 if (!string.IsNullOrWhiteSpace(_lastHypothesis)) Send(_lastHypothesis);
                 StopDictation();
@@ -123,7 +157,14 @@ namespace Nexo.Player
         {
             _isListening = false;
             StopDictation();
-            if (_recording != null && Microphone.IsRecording(_device)) Microphone.End(_device);
+            try
+            {
+                if (_recording != null && Microphone.IsRecording(_device)) Microphone.End(_device);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[ElenaVoiceInput] No se pudo detener el micrófono: " + e.Message, this);
+            }
             _recording = null;
         }
 
@@ -140,15 +181,39 @@ namespace Nexo.Player
 
             if (_noiseSensor != null) _noiseSensor.Pause();
             _device = Microphone.devices[0];
-            _recording = Microphone.Start(_device, false, MaxRecordSeconds, RecordRate);
+            try
+            {
+                _recording = Microphone.Start(_device, false, MaxRecordSeconds, RecordRate);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[ElenaVoiceInput] Micrófono no disponible: " + e.Message, this);
+                _recording = null;
+            }
+            if (_recording == null)
+            {
+                // Sin permiso de micrófono o dispositivo ocupado
+                _isListening = false;
+                if (_noiseSensor != null) _noiseSensor.Resume();
+                GameEvents.RaiseSubtitle("(No se puede usar el micrófono. Usa las preguntas rápidas [1] [2] [3])");
+            }
         }
 
         private async void FinishRecording()
         {
             if (_recording == null) return;
 
-            int samplesCount = Microphone.GetPosition(_device);
-            Microphone.End(_device);
+            int samplesCount;
+            try
+            {
+                samplesCount = Microphone.GetPosition(_device);
+                Microphone.End(_device);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[ElenaVoiceInput] Grabación interrumpida: " + e.Message, this);
+                samplesCount = 0;
+            }
             AudioClip clip = _recording;
             _recording = null;
             if (_noiseSensor != null) _noiseSensor.Resume();
@@ -159,9 +224,9 @@ namespace Nexo.Player
                 return;
             }
 
-            if (_elenaConfig == null || _elenaConfig.Secrets == null || !_elenaConfig.Secrets.HasApiKey)
+            if (!CanTranscribe)
             {
-                GameEvents.RaiseSubtitle("(Elena no puede oírte: falta la API key de Gemini en ElenaSecrets)");
+                GameEvents.RaiseSubtitle(NoVoiceMessage);
                 return;
             }
 
@@ -175,36 +240,75 @@ namespace Nexo.Player
             {
                 text = await GeminiSpeechTranscriber.TranscribeAsync(_elenaConfig, samples, RecordRate);
             }
+            catch (System.Exception e)
+            {
+                // async void: una excepción aquí no debe llegar a la consola como error ni romper la entrada
+                Debug.LogWarning("[ElenaVoiceInput] Transcripción fallida: " + e.Message, this);
+                text = null;
+            }
             finally
             {
                 _isTranscribing = false;
                 GameEvents.RaiseElenaThinking(false);
             }
 
-            if (string.IsNullOrWhiteSpace(text)) GameEvents.RaiseSubtitle("(Elena no entendió lo que dijiste)");
+            if (string.IsNullOrWhiteSpace(text)) GameEvents.RaiseSubtitle("(Elena no entendió lo que dijiste. Prueba otra vez o usa [1] [2] [3])");
             else Send(text);
         }
 
         // ---------- Dictado de Windows ----------
 
-        private void StartDictation()
+        private bool IsDictationRunning
+        {
+            get
+            {
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+                return _dictation != null && !_dictationFailed && _dictation.Status == SpeechSystemStatus.Running;
+#else
+                return false;
+#endif
+            }
+        }
+
+        /// <summary>Arranca el dictado de Windows. Devuelve false (y no lo vuelve a intentar) si Windows lo rechaza.</summary>
+        private bool StartDictation()
         {
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-            if (_dictation == null)
+            try
             {
-                _dictation = new DictationRecognizer();
-                _dictation.DictationHypothesis += HandleHypothesis;
-                _dictation.DictationResult += HandleResult;
-                _dictation.DictationError += HandleError;
+                if (_dictation == null)
+                {
+                    _dictation = new DictationRecognizer();
+                    _dictation.DictationHypothesis += HandleHypothesis;
+                    _dictation.DictationResult += HandleResult;
+                    _dictation.DictationError += HandleError;
+                }
+                if (_dictation.Status != SpeechSystemStatus.Running) _dictation.Start();
+                return true;
             }
-            if (_dictation.Status != SpeechSystemStatus.Running) _dictation.Start();
+            catch (System.Exception e)
+            {
+                // Privacidad de voz desactivada, otro reconocedor activo o servicio no disponible
+                Debug.LogWarning("[ElenaVoiceInput] Dictado de Windows no disponible: " + e.Message, this);
+                _dictationFailed = true;
+                return false;
+            }
+#else
+            return false;
 #endif
         }
 
         private void StopDictation()
         {
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
-            if (_dictation != null && _dictation.Status == SpeechSystemStatus.Running) _dictation.Stop();
+            try
+            {
+                if (_dictation != null && _dictation.Status == SpeechSystemStatus.Running) _dictation.Stop();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[ElenaVoiceInput] No se pudo detener el dictado: " + e.Message, this);
+            }
 #endif
         }
 
@@ -224,8 +328,9 @@ namespace Nexo.Player
         private void HandleError(string error, int hresult)
         {
             _isListening = false;
+            _dictationFailed = true;
             Debug.LogWarning($"[ElenaVoiceInput] Dictado no disponible: {error} ({hresult}).", this);
-            GameEvents.RaiseSubtitle("(Elena no te oye: revisa el reconocimiento de voz en Configuración de Windows > Privacidad > Voz)");
+            GameEvents.RaiseSubtitle("(Elena no te oye: activa el reconocimiento de voz de Windows o usa las preguntas rápidas [1] [2] [3])");
         }
 #endif
 
