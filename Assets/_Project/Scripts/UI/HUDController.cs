@@ -559,7 +559,12 @@ namespace Nexo.UI
             if (_root == null || !_hiddenByCinematic) return;
 
             _hiddenByCinematic = false;
-            _root.style.display = _displayBeforeCinematic;
+            // fix (Gabriel, 2026-11-04): devolver el valor «sin estilo en línea» (StyleKeyword.Null) quitaba el None en línea
+            // pero el estilo calculado se quedaba en None (ninguna regla USS fija display en hud-root): el HUD desaparecía en
+            // el piso siguiente tras cada cinemática. Se restaura un valor explícito.
+            _root.style.display = _displayBeforeCinematic.keyword == StyleKeyword.Undefined && _displayBeforeCinematic.value == DisplayStyle.None
+                ? DisplayStyle.None
+                : DisplayStyle.Flex;
         }
 
         private void HandleAmmoPicked(int rounds)
