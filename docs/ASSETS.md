@@ -42,7 +42,7 @@ Reconciliado el 2026-11-03 (noche) contra los packs presentes en la máquina de 
 | `UI/Textures/CameraArchive/CAM_*.png` | Capturas de las escenas propias del proyecto generadas con `Scripts/Editor/NexoCameraArchiveCapture.cs` | Propio |
 | `Materials/Floor06/MAT_F06_*.mat` | Materiales Standard creados por `NexoFloor06Builder.cs` | Propio |
 | `Materials/Floor01/MAT_F01_*.mat` | Materiales Standard creados por `NexoFloor01AmbienceBuilder.cs` | Propio |
-| `Data/ElenaConfig.asset` → `gemini-2.5-flash` | Diálogos de Elena generados en tiempo real por Gemini 2.5 Flash (Google); sin conexión se usan los JSON de fallback escritos por el equipo | Términos de la API de Gemini |
+| `Data/ElenaConfig.asset` → `gemini-2.5-flash` (reservas `gemini-3.5-flash-lite`, `gemini-3.8-flash`) | Diálogos de Elena y transcripción de la voz [V] generados en tiempo real por Gemini (Google); voz dinámica con Gemini TTS (`gemini-3.8-flash-lite-tts`, voz Leda); sin conexión se usan los JSON de fallback escritos por el equipo | Términos de la API de Gemini |
 
 ## Cinemáticas (no versionadas)
 
@@ -60,7 +60,7 @@ Reconciliado el 2026-11-03 (noche) contra los packs presentes en la máquina de 
 
 ## Créditos del juego (`UI/Layouts/Menus/Credits.uxml`)
 
-Cada línea tiene su fuente arriba: equipo, materia, Gemini 2.5 Flash, tipografías OFL, efectos procedurales propios, retrato generado en Unity, Nokobot M1911, Mixamo (Alex), «Modelos y animaciones adicionales: Unity Asset Store y Mixamo» (genérico a propósito: cubre el infectado), plantilla de Unity Learn (locomoción, música y ambiente), Polygon Office Building (nombre del propio `Read me`) y el bloque CINEMÁTICAS.
+Cada línea tiene su fuente arriba: equipo, materia, Gemini (2.5 Flash con reservas 3.5 Flash-Lite y 3.8 Flash), tipografías OFL, efectos procedurales propios, retrato generado en Unity, Nokobot M1911, Mixamo (Alex), «Modelos y animaciones adicionales: Unity Asset Store y Mixamo» (genérico a propósito: cubre el infectado), plantilla de Unity Learn (locomoción, música y ambiente), Polygon Office Building (nombre del propio `Read me`) y el bloque CINEMÁTICAS.
 
 ## Pendientes
 

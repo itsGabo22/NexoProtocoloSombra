@@ -6,7 +6,9 @@
 - Tarjeta gráfica compatible con DirectX 11.
 - Unos 400 MB libres (el juego descomprimido ocupa unos 250 MB más los vídeos).
 - Teclado y ratón. Altavoces o auriculares recomendados (el sonido avisa de los infectados).
-- No necesita internet: en el build, Elena responde con diálogos escritos por el equipo (modo sin conexión).
+- **Build offline** (el que se entrega): no necesita internet; Elena responde con diálogos escritos por el equipo.
+- **Build con IA real** (solo en el PC de Gabriel): necesita internet; Elena responde con Gemini y, si falla, con el respaldo offline.
+- Micrófono opcional para hablar con Elena con **V**.
 
 ## Ejecutar
 
@@ -14,7 +16,7 @@
 2. Abre `NexoProtocoloSombra_Windows\NexoProtocoloSombra.exe`.
 3. Si Windows muestra «Windows protegió tu PC» (SmartScreen): **Más información → Ejecutar de todas formas**. Es porque el ejecutable no está firmado.
 4. Arranca en **ventana de 1920 × 1080**. Para pantalla completa pulsa **Alt + Intro** o ve a **Opciones › Video › Modo de pantalla**. En un proyector, si la imagen se ve oscura, sube el brillo del proyector o del portátil: el juego es de terror pero debe leerse.
-5. Deja correr el arranque de NexoOS, pulsa cualquier tecla y elige **JUGAR**.
+5. En la pantalla **«PRESIONA [ENTER] PARA CONTINUAR»** pulsa Intro (o cualquier tecla / clic) y elige **NUEVA PARTIDA** en el menú principal (W/S o ↑/↓ y Intro, o el ratón). Tras los créditos finales vuelves a este menú.
 
 ## Controles
 
@@ -66,11 +68,40 @@ El build de entrega se genera con estos atajos activados como salida de emergenc
 
 ## Elena y la voz
 
-- En el build, Elena funciona **sin conexión**: las preguntas **1, 2 y 3** responden siempre. En el Piso 6, la pregunta **2** abre la puerta de las escaleras: es el camino previsto.
-- **Escribir (T):** también responde sin conexión; en el Editor con clave y red responde Gemini.
-- **El build de entrega no lleva clave de Gemini:** fuerza el modo offline y no incluye `ElenaSecrets.asset`. No copies la clave dentro de la carpeta del build ni en el zip: se reparten y el repositorio es público.
-- **Voz de Elena:** 51 líneas grabadas con tratamiento de radio. Se calla en la pausa y al cambiar de piso, y sigue el volumen general.
-- **Voz (V):** usa el dictado de Windows si está activado (*Configuración › Privacidad › Voz › Reconocimiento de voz en línea*). Si no hay micrófono, permiso o dictado, aparece un subtítulo que remite a las preguntas 1-3; el juego no se interrumpe.
+Detalle técnico completo: [`ELENA_AI.md`](ELENA_AI.md).
+
+- **Preguntas rápidas 1, 2 y 3:** responden siempre (con o sin internet). En los pisos 12 y 6, la **2** abre la puerta de las escaleras: es el camino previsto, también con Gemini en vivo.
+- **Escribir (T):** escribe la pregunta, **Intro** envía, **Esc** cancela.
+- **Voz (mantener V):** habla mientras mantienes V (máximo 8 s) y suelta. Verás **ESCUCHANDO...** y **PROCESANDO...**; tu frase aparece como «TÚ: …» y Elena responde.
+  - Con clave (Editor o build con IA real): el micrófono se graba con Unity y Gemini transcribe en español. **No hace falta** el ajuste de Windows de voz en línea.
+  - Sin clave (build offline): se usa el dictado de Windows si está activado (*Configuración › Privacidad y seguridad › Voz › Reconocimiento de voz en línea*).
+  - Sin micrófono o sin audio: aparece «No hay micrófono: usa 1/2/3/T» o «No te escuché, repite o usa 1/2/3/T». El juego nunca se bloquea.
+  - Comprueba antes de la demo: *Configuración › Privacidad y seguridad › Micrófono* permitido para aplicaciones de escritorio y el micrófono correcto como predeterminado.
+- **Marcador de origen:** bajo el diálogo de Elena aparece **«IA: Gemini»** (respuesta generada en vivo) o **«IA: respaldo»** (diálogo escrito por el equipo). Si Gemini tarda más de 8 s, responde el respaldo.
+- **Voz de Elena:** 51 líneas grabadas con tratamiento de radio; las respuestas de Gemini se sintetizan al momento (si no llegan a tiempo, solo subtítulo).
+
+## Generar los builds (Unity, menú Nexo › Build)
+
+| Menú | Uso | Clave |
+| --- | --- | --- |
+| **Windows (entrega: Elena offline)** | Build para entregar/compartir. Fuerza el respaldo y activa los atajos F5-F8 | No incluye la clave |
+| **Windows (entrega: IA real con respaldo)** | Build para la demo en el PC de Gabriel con Gemini en vivo | **Incluye la clave**: no lo subas ni lo compartas |
+| Windows (Elena offline, sin atajos de demo) | Igual que el offline, sin F5-F8 | No incluye la clave |
+
+Los tres escriben en `Builds/NexoProtocoloSombra_Windows/` (+ `.zip`), carpeta ignorada por Git. **Antes de compilar, renombra o copia esa carpeta si quieres conservar el build anterior.** En batchmode (Editor cerrado) se puede elegir otra carpeta:
+
+```
+Unity.exe -batchmode -projectPath <proyecto> -executeMethod Nexo.EditorTools.NexoReleaseBuilder.BuildBatch -nexoFolder NexoProtocoloSombra_Windows_<fecha> [-nexoRealAi] -logFile Logs/build.log
+```
+
+### Build con IA real (Gabriel, a mano)
+
+1. Con Unity cerrado, crea o comprueba `Assets/_Project/Data/Secrets/ElenaSecrets.asset` con la clave de Gemini (carpeta ignorada por Git).
+2. Abre Unity, selecciona `Data/ElenaConfig.asset` y arrastra `ElenaSecrets` a su campo **Secrets**.
+3. **Nexo › Checks › Elena Live (Gemini)**: debe terminar con `RESULTADO: OK` y respuestas «IA: Gemini» (ver `Logs/NexoElenaLiveCheck.txt`).
+4. **Nexo › Build › Windows (entrega: IA real con respaldo)** → acepta el aviso. Al terminar, el builder restaura los archivos que tocó.
+5. Prueba el `.exe` con internet: pregunta **1** → debe verse «IA: Gemini» bajo el diálogo.
+6. Antes de cualquier commit: `git restore Assets/_Project/Data/ElenaConfig.asset` (el enlace a la clave nunca se sube). No copies el build con clave a USB compartidos ni lo subas a la nube.
 
 ## Si algo falla
 
