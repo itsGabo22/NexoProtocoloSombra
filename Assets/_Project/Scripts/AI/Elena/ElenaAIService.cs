@@ -122,7 +122,7 @@ namespace Nexo.AI.Elena
                 ? _stateTracker.CaptureContext(intentKey, questionText)
                 : new ElenaRequestContext { floor = 12, player_intent = intentKey, player_text = questionText };
 
-            ElenaResponse response = null;
+            ElenaResponse remote = null;
             bool isOnline = Application.internetReachability != NetworkReachability.NotReachable;
             bool forceFallback = _config != null && _config.ForceFallback;
 
@@ -130,7 +130,7 @@ namespace Nexo.AI.Elena
             {
                 try
                 {
-                    response = await _remoteProvider.RequestAsync(context, _history);
+                    remote = await _remoteProvider.RequestAsync(context, _history);
                 }
                 catch (Exception ex)
                 {
@@ -138,25 +138,10 @@ namespace Nexo.AI.Elena
                 }
             }
 
-            bool usedFallback = false;
-            if (response == null || !response.IsValid(out _))
-            {
-                usedFallback = true;
-                if (_fallbackProvider != null)
-                {
-                    response = _fallbackProvider.Get(context.floor, intentKey);
-                }
-                else
-                {
-                    response = new ElenaResponse
-                    {
-                        dialogue = "Alex... sigue caminando hacia la esclusa, por favor.",
-                        emotion = "scared",
-                        ui_action = "none",
-                        trust_level = 50
-                    };
-                }
-            }
+            // Cadena Gemini → respaldo JSON → emergencia: nunca queda sin respuesta
+            ElenaResponse response = ElenaReplyResolver.Pick(remote, remote != null ? (_remoteProvider as GeminiProvider)?.LastModel : null,
+                () => _fallbackProvider?.Get(context.floor, intentKey), out bool usedFallback);
+            Debug.Log($"[ElenaAIService] Respuesta de Elena desde: {response.source}");
 
             RememberTurn(questionText, response.dialogue);
 

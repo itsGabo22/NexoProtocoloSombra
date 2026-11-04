@@ -44,6 +44,9 @@ namespace Nexo.AI.Elena
         /// <summary>Interferencia de la transmisión (0.0 - 1.0).</summary>
         public float glitch_intensity = 0f;
 
+        /// <summary>Origen de la respuesta (no se serializa ni viaja en el JSON): modelo de Gemini, «fallback» u offline.</summary>
+        [NonSerialized] public string source = string.Empty;
+
         public ElenaEmotion ParsedEmotion
         {
             get
