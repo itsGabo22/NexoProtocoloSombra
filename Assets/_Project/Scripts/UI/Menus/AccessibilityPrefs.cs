@@ -1,4 +1,5 @@
 using Nexo.Accessibility;
+using Nexo.UI;
 using UnityEngine;
 
 namespace Nexo.UI.Menus
@@ -16,6 +17,7 @@ namespace Nexo.UI.Menus
         private const string ReduceMotionKey = "nexo.a11y.reduceMotion";
         private const string SubtitlesKey = "nexo.a11y.subtitles";
         private const string SubtitleSizeKey = "nexo.a11y.subtitleSize";
+        private const string ReadingSpeedKey = "nexo.a11y.readingSpeed";
 
         /// <summary>Tamaño de subtítulos: 0 pequeño, 1 mediano, 2 grande (sin efecto en el HUD todavía).</summary>
         public static int SubtitleSize { get; private set; } = 1;
@@ -41,6 +43,8 @@ namespace Nexo.UI.Menus
                 Subtitles = PlayerPrefs.GetInt(SubtitlesKey, defaults.Subtitles ? 1 : 0) == 1
             };
             SubtitleSize = Mathf.Clamp(PlayerPrefs.GetInt(SubtitleSizeKey, SubtitleSize), 0, 2);
+            // Velocidad de lectura: 0 Normal, 1 Lento (más tiempo para subtítulos y notificaciones)
+            MessageTiming.ReadingSpeed = Mathf.Clamp(PlayerPrefs.GetInt(ReadingSpeedKey, 0), 0, 1);
 
             AccessibilitySettings.Apply(options);
         }
@@ -48,9 +52,11 @@ namespace Nexo.UI.Menus
         /// <summary>
         /// Guarda y aplica las opciones (aplicación inmediata en HUD y menús).
         /// </summary>
-        public static void Save(AccessibilityOptions options, int subtitleSize)
+        public static void Save(AccessibilityOptions options, int subtitleSize, int readingSpeed)
         {
             SubtitleSize = Mathf.Clamp(subtitleSize, 0, 2);
+            MessageTiming.ReadingSpeed = Mathf.Clamp(readingSpeed, 0, 1);
+            PlayerPrefs.SetInt(ReadingSpeedKey, MessageTiming.ReadingSpeed);
 
             PlayerPrefs.SetInt(ScaleKey, (int)options.Scale);
             PlayerPrefs.SetInt(ColorblindKey, (int)options.Colorblind);

@@ -36,6 +36,8 @@ namespace Nexo.UI
             public VisualElement Element;
             public IVisualElementScheduledItem Dismiss;
             public IVisualElementScheduledItem PulseEnd;
+            /// <summary>Vida de la tarjeta según su texto (MessageTiming).</summary>
+            public long LifetimeMs;
         }
 
         private static readonly string[] RootDebugLines =
@@ -799,8 +801,10 @@ namespace Nexo.UI
             card.schedule.Execute(() => card.AddToClassList("hud-notification--visible")).StartingIn(20);
 
             int cardId = result.CardId;
-            var state = new NotificationCard { Element = card };
-            state.Dismiss = card.schedule.Execute(() => ExpireCard(cardId)).StartingIn(NotificationMs);
+            // Cada tarjeta dura lo que se tarda en leerla (mín. 3,5 s, máx. 11 s; más con «lectura lenta»)
+            long lifetime = (long)(MessageTiming.Seconds(senderText.Length + bodyText.Length, 0f, MessageTiming.ReadingSpeed) * 1000f);
+            var state = new NotificationCard { Element = card, LifetimeMs = System.Math.Max(NotificationMs, lifetime) };
+            state.Dismiss = card.schedule.Execute(() => ExpireCard(cardId)).StartingIn(state.LifetimeMs);
             _cards[cardId] = state;
         }
 
@@ -810,7 +814,7 @@ namespace Nexo.UI
             if (!_cards.TryGetValue(cardId, out NotificationCard state)) return;
 
             state.Dismiss?.Pause();
-            state.Dismiss = state.Element.schedule.Execute(() => ExpireCard(cardId)).StartingIn(NotificationMs);
+            state.Dismiss = state.Element.schedule.Execute(() => ExpireCard(cardId)).StartingIn(state.LifetimeMs);
 
             if (_reduceMotion) return;
             state.PulseEnd?.Pause();
