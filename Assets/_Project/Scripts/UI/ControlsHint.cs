@@ -10,10 +10,10 @@ namespace Nexo.UI
     public static class ControlsHint
     {
         /// <summary>Texto de la franja (mayúsculas solo en las teclas).</summary>
-        public const string Text = "R recargar · clic der. apuntar · F visión térmica · V hablar con Elena · C agacharse";
+        public const string Text = "R recargar · clic der. apuntar · F visión térmica · V hablar con Elena · T escribir a Elena · C agacharse · Espacio saltar · G empujar · X cuchillo · J diario";
 
         /// <summary>Tiempo en pantalla antes de ocultarse sola.</summary>
-        public const long VisibleMs = 6000;
+        public const long VisibleMs = 9000;
 
         private static bool _shown;
 

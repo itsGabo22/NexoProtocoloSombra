@@ -21,6 +21,11 @@ Reconciliado el 2026-11-03 (noche) contra los packs presentes en la máquina de 
 | Archivo o carpeta | Origen | Licencia / nota |
 | :--- | :--- | :--- |
 | `Models/Characters/Ch33_nonPBR1.fbx` | Personaje Alex · Mixamo (Adobe) | Términos de Mixamo |
+| `Models/Characters/Ch33_Textures/Ch33_Diffuse.jpg`, `Ch33_Normal.png`, `Ch33_Hair.png` | Texturas incrustadas en `Ch33_nonPBR1.fbx` (Mixamo), extraídas y reducidas por `Scripts/Editor/NexoCharacterColors.cs` (2026-11-04) | Términos de Mixamo |
+| `Materials/Characters/MAT_Alex_*.mat`, `MAT_Elena_*.mat` | Materiales Standard de Alex y Elena creados por `NexoCharacterColors.cs` (Nexo › Characters › Aplicar color) | Propio |
+| `Prefabs/Characters/PF_ElenaVisual.prefab` | Figura de Elena tras el cristal del Piso 12: Ch33 (Mixamo) escalado a 1,30 m, `NexoElenaVisualBuilder.cs` | Términos de Mixamo + propio |
+| `Audio/Elena/Voice/elena_*.wav` (51) + `voice_manifest.json` | 28 líneas con Gemini TTS (Google, voz Leda) y 23 con la voz de Windows (Microsoft Helena), igualadas con `NexoElenaVoiceLeveler.cs` (24 kHz, −18 dBFS RMS). Ver `docs/ELENA_VOICE_REGEN.md` | Términos de la API de Gemini · voz del sistema Windows |
+| `Prefabs/Interactables/PF_KnifePickup.prefab`, `PF_Medkit.prefab` | Geometría procedural de `NexoGameplayPassBuilder.cs` | Propio |
 | `Animations/Clips/Ch33_nonPBR@Pistol Walk Backward.fbx` | Animación Mixamo (Adobe) | Términos de Mixamo |
 | `Animations/Clips/Infected/*.anim`, `Animations/Clips/Elena/*.anim` | Creados dentro del proyecto como `.anim` de Unity con fotogramas clave (commits `3bb3d22`, `40f3a7a`, `760eec1`, `decfb8a` de Carlos, 2026-11-02): no tienen FBX de origen y son curvas cortas (p. ej. `Elena_Idle`: 14 curvas, 28 claves; `Zombie_Walk`: 60 curvas, 134 claves), no capturas de movimiento importadas | Propio |
 | `UI/Fonts/BarlowCondensed-*.ttf` | Barlow Condensed, The Barlow Project Authors | SIL Open Font License 1.1 (`UI/Fonts/OFL_BarlowCondensed.txt`) |

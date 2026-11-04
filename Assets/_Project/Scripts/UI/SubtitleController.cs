@@ -1,3 +1,4 @@
+using Nexo.AI.Elena;
 using Nexo.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -6,7 +7,10 @@ namespace Nexo.UI
 {
     /// <summary>
     /// Muestra subtítulos en la etiqueta hud-subtitles a partir de GameEvents.OnSubtitle.
-    /// Cada línea se oculta sola tras un tiempo proporcional a su longitud (scheduler de UI Toolkit, sin Update).
+    /// Las líneas hacen cola (SubtitleQueue): cada una dura MessageTiming (según su longitud, la velocidad de lectura y,
+    /// si Elena la dice con voz, lo que dura el clip) y solo cede antes de tiempo, nunca por debajo de su mínimo, si hay
+    /// otras esperando. Los avisos de daño/agarre entran al instante. Un texto vacío limpia todo.
+    /// Tiempo real (los subtítulos siguen con el juego en pausa) y scheduler de UI Toolkit, sin Update.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     [DefaultExecutionOrder(100)]
@@ -14,13 +18,13 @@ namespace Nexo.UI
     {
         private const string HiddenClass = "hidden";
 
-        [Header("Duración en Pantalla")]
-        [SerializeField] private float _minDuration = 2.5f;
-        [SerializeField] private float _secondsPerCharacter = 0.06f;
-        [SerializeField] private float _maxDuration = 8f;
-
+        private readonly SubtitleQueue _queue = new SubtitleQueue();
         private Label _label;
-        private IVisualElementScheduledItem _hideItem;
+        private IVisualElementScheduledItem _tickItem;
+
+        /// <summary>Línea visible ahora (comprobaciones del Editor).</summary>
+        public string CurrentText => _queue.HasCurrent ? _queue.Current.Text : string.Empty;
+        public int PendingCount => _queue.PendingCount;
 
         private void OnEnable()
         {
@@ -35,6 +39,7 @@ namespace Nexo.UI
                 return;
             }
 
+            _queue.Clear();
             Hide();
             GameEvents.OnSubtitle += HandleSubtitle;
         }
@@ -42,30 +47,60 @@ namespace Nexo.UI
         private void OnDisable()
         {
             GameEvents.OnSubtitle -= HandleSubtitle;
-            _hideItem?.Pause();
+            _tickItem?.Pause();
         }
 
         private void HandleSubtitle(string text)
         {
+            if (_label == null) return;
             if (string.IsNullOrEmpty(text))
             {
+                _queue.Clear();
                 Hide();
                 return;
             }
 
-            // Ids internos traducidos solo en pantalla (el texto del evento no se modifica)
-            _label.text = HudTextSanitizer.Humanize(text);
-            _label.RemoveFromClassList(HiddenClass);
+            float voice = ElenaVoiceText.IsElenaSubtitle(text) ? ElenaVoiceLibrary.SecondsFor(text) : 0f;
+            var entry = new SubtitleQueue.Entry
+            {
+                Text = text,
+                Duration = MessageTiming.Seconds(text.Length, voice, MessageTiming.ReadingSpeed),
+                Minimum = MessageTiming.MinimumSeconds(voice, MessageTiming.ReadingSpeed),
+                Priority = SubtitlePriority.Classify(text)
+            };
 
-            float seconds = Mathf.Clamp(_minDuration + text.Length * _secondsPerCharacter, _minDuration, _maxDuration);
-            _hideItem?.Pause();
-            _hideItem = _label.schedule.Execute(Hide).StartingIn((long)(seconds * 1000f));
+            if (_queue.Push(entry, Time.realtimeSinceStartup)) ShowCurrent();
+            ScheduleTick();
+        }
+
+        private void Tick()
+        {
+            if (_queue.Tick(Time.realtimeSinceStartup))
+            {
+                if (_queue.HasCurrent) ShowCurrent();
+                else Hide();
+            }
+            ScheduleTick();
+        }
+
+        private void ScheduleTick()
+        {
+            _tickItem?.Pause();
+            if (!_queue.HasCurrent) return;
+            float wait = Mathf.Max(0.05f, _queue.Deadline() - Time.realtimeSinceStartup);
+            _tickItem = _label.schedule.Execute(Tick).StartingIn((long)(wait * 1000f));
+        }
+
+        private void ShowCurrent()
+        {
+            // Ids internos traducidos solo en pantalla (el texto del evento no se modifica)
+            _label.text = HudTextSanitizer.Humanize(_queue.Current.Text);
+            _label.RemoveFromClassList(HiddenClass);
         }
 
         private void Hide()
         {
             if (_label == null) return;
-
             _label.text = string.Empty;
             _label.AddToClassList(HiddenClass);
         }

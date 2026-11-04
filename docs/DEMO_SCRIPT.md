@@ -16,6 +16,7 @@ Para la presentación del 2026-11-04. Se ejecuta el build de Windows (`Builds/Ne
 | 0:45–2:00 | Opciones | OPCIONES → ACCESIBILIDAD (E). Alto contraste, reducir movimiento, ejemplo de notificación real frente a falsa. Esc. | «Escala, daltonismo Okabe-Ito, alto contraste, reducir movimiento y subtítulos se aplican al instante. Una notificación falsa se distingue por 4 pistas; con daltonismo quedan 3.» |
 | 2:00–2:30 | Intro | JUGAR. Dejar ver unos segundos de la cinemática y saltarla (Esc). | «Las cinemáticas se generaron con IA y se pueden saltar; si faltara un vídeo, el juego sigue sin él.» |
 | 2:30–5:00 | **Piso 12** | Leer el HUD (ILESO, ruido, radio de Elena con su retrato, batería). **F** térmica. Disparar a los 2 infectados (clic derecho apunta). Si uno agarra: Espacio. Usar la terminal de seguridad (E) y la red de cámaras (C). | «El HUD dice que estoy ileso. El disparo hace ruido y atrae a los infectados. Desde la terminal veo las cámaras de los tres pisos: el piso actual en vivo, los otros en diferido.» |
+| (en el 12) | Mecánicas | Mirar una nota (se resalta) y leerla (E): papel a pantalla completa; **J** diario. Matar al primer patrullero y recoger su cuchillo (E); **X** por la espalda = ejecución silenciosa. **G** empuja; **Espacio** salta. Asomarse tras el cristal de la sala de servidores: ahí está Elena. | «Las notas quedan en el diario. El cuchillo es silencioso; el disparo atrae a todos.» |
 | 5:00–5:45 | Elena | Pulsar **1, 2, 3**: videollamada, sello BIO-ID, barra de confianza. Bajar por la escalera (E). | «Elena responde con Gemini 2.5 Flash en un JSON estricto (diálogo, emoción y una acción de UI que validamos antes de ejecutar). Aquí va sin conexión: entra el fallback que escribimos por piso.» |
 | 5:45–8:30 | **Piso 6** | Explorar el pasillo; leer una nota; entrar al Lab B y vivir el apagón; usar el diferencial del pasillo; esconderse en un armario si se acerca algo. Pulsar **2**: Elena abre la puerta de las escaleras. Esc → mostrar REINICIAR PISO (no pulsarlo). Bajar. | «En este piso no se gana disparando: escondites, ruido y luz. Ojo con los mensajes de Elena sin sello BIO-ID: el imitador usa su voz. Vida y munición se conservan entre pisos.» |
 | 8:30–10:30 | **Piso 1** | Caminar al BioScanner del centro (unos 18 m) y poner la mano (E). No tocar nada durante el giro. | «El escáner dice la verdad: 98,4 % infectado. El HUD se rompe, el tema pasa a rojo colmena y Elena confiesa. Todo lo que el HUD decía era mentira.» |
@@ -31,6 +32,14 @@ Para la presentación del 2026-11-04. Se ejecuta el build de Windows (`Builds/Ne
 | Te dejaron sin vida o munición | **F6** vida · **F7** munición |
 
 Versión mínima de 5 minutos: arranque → JUGAR → 1-2-3 con Elena → F8 → BioScanner → créditos.
+
+## Elena con y sin internet
+
+| Situación | Qué pasa | Qué decir |
+| --- | --- | --- |
+| **Build de entrega** (lo que se presenta) | Siempre sin conexión: 1, 2, 3 y [T] responden con el fallback escrito por piso, con voz grabada. No hace falta wifi. | «Esta versión no depende de la red: Elena responde con líneas que escribimos para cada piso.» |
+| **Unity con clave y wifi** (plan B) | [T] y V van a Gemini; si tarda más de 5 s o falla, entra el fallback sin que se note. | «Con conexión, Elena genera la respuesta en vivo y validamos el JSON antes de ejecutar nada.» |
+| **Unity sin wifi** | Igual que el build: fallback. | «Sin red, el juego sigue igual.» |
 
 ## Si algo sale mal (qué hacer y qué decir)
 
@@ -79,7 +88,8 @@ El build de entrega (**Nexo › Build › Windows (entrega: Elena offline + ataj
 ## Limitaciones conocidas
 
 - Pipeline Built-in: la visión térmica es una capa de UI (tinte cian y viñeta), no un postproceso.
-- Elena se ve solo como retrato holográfico en la radio del HUD (la historia la sitúa al otro lado de la radio); no hay modelo 3D.
+- Elena se ve como retrato holográfico en la radio del HUD y como figura (niña, modelo sustituto Ch33 con colores propios) tras el cristal de la sala de servidores del Piso 12; desaparece al salir de la sala.
+- Voz de Elena: 28 líneas con Gemini TTS y 23 con la voz de Windows (mismo volumen y filtro; cambia el timbre). Ver `docs/ELENA_VOICE_REGEN.md`.
 - Infectados sin ragdoll: caídas y derribos procedurales.
 - Mando: menús por eventos de UI Toolkit; en juego, Interactuar y Recargar comparten el botón oeste y la linterna (F) no tiene botón [verificar en mando físico].
 - En Opciones › Video solo se aplican resolución, modo de pantalla y volumen; calidad, sombras, AA, brillo y VSync son de muestra.

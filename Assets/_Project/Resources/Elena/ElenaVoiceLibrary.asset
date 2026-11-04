@@ -1,0 +1,220 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55704d83124a450458df540e1fd9a376, type: 3}
+  m_Name: ElenaVoiceLibrary
+  m_EditorClassIdentifier: Nexo::Nexo.AI.Elena.ElenaVoiceLibrary
+  _engine: "Gemini TTS gemini-3.8-flash-tts \xB7 voz Leda + Gemini TTS gemini-3.8-flash-lite-tts \xB7 voz Leda + Gemini TTS gemini-3.1-flash-tts-preview \xB7 voz Leda + Gemini TTS gemini-2.5-flash-preview-tts \xB7 voz Leda + Windows System.Speech \xB7 Microsoft Helena Desktop"
+  _entries:
+  - Key: el vestibulo esta vacio el escaner maestro esta al fondo junto a la esclusa de evacuacion
+    Text: "El vest\xEDbulo est\xE1 vac\xEDo. El esc\xE1ner maestro est\xE1 al fondo, junto a la esclusa de evacuaci\xF3n."
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 7c0c8c50f70251b4ebd4b07a8cb6bc85, type: 3}
+  - Key: esa puerta no la puedo abrir yo la esclusa solo se abre si un humano limpio pone la mano en el escaner maestro
+    Text: "Esa puerta no la puedo abrir yo. La esclusa solo se abre si un humano limpio pone la mano en el esc\xE1ner maestro."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 1e4644c225baa2541a6417319162b11a, type: 3}
+  - Key: ya casi salimos alex el escaner solo deja pasar a alguien limpio y tu estas bien verdad
+    Text: "Ya casi salimos, Alex. El esc\xE1ner solo deja pasar a alguien limpio... y t\xFA est\xE1s bien, \xBFverdad?"
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: 19034df8a2860a846802a66f214823d5, type: 3}
+  - Key: pon la mano en el escaner y se abrira la esclusa luego nos vamos a casa te lo prometo
+    Text: "Pon la mano en el esc\xE1ner y se abrir\xE1 la esclusa. Luego nos vamos a casa, te lo prometo."
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 281e162c6ff9b7344b9af7b848de226c, type: 3}
+  - Key: la sala de contencion esta vacia lo veo por la camara si se apagan las luces pulsa f y usa la vision termica si
+    Text: "La sala de contenci\xF3n est\xE1 vac\xEDa, lo veo por la c\xE1mara. Si se apagan las luces, pulsa F y usa la visi\xF3n t\xE9rmica, \xBFs\xED?"
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: ba9d1e521c7fe154cb2ca7002f65fd49, type: 3}
+  - Key: espera espera ya te abri la puerta de las escaleras corre antes de que vuelvan a cerrarla
+    Text: "Espera, espera... \xA1ya! Te abr\xED la puerta de las escaleras. Corre antes de que vuelvan a cerrarla."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: ccac497fb3e7d7e47b1b25889f77f9fc, type: 3}
+  - Key: escuchame bien si te llega un mensaje mio sin el sello bio id no soy yo es una trampa alex
+    Text: "Esc\xFAchame bien: si te llega un mensaje m\xEDo sin el sello BIO-ID, no soy yo. Es una trampa, Alex."
+    Emotion: SCARED
+    Clip: {fileID: 8300000, guid: df9e9c07f51396e48af8ddf51c66a1ea, type: 3}
+  - Key: aqui abajo se oyen cosas si se va la luz no corras pulsa f y mira por donde vas
+    Text: "Aqu\xED abajo se oyen cosas... Si se va la luz, no corras. Pulsa F y mira por d\xF3nde vas."
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: b0090e544a4422544b39a0c60234dbff, type: 3}
+  - Key: por el pasillo de la izquierda no hay nadie lo veo por la camara ve agachado si
+    Text: "Por el pasillo de la izquierda no hay nadie, lo veo por la c\xE1mara. Ve agachado, \xBFs\xED?"
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 449885d2f99a06942842e19809f3eb33, type: 3}
+  - Key: ya ya ya listo te abri la puerta de las escaleras corre alex
+    Text: "Ya, ya, ya... \xA1listo! Te abr\xED la puerta de las escaleras. Corre, Alex."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: ad2cc5e41bf6e2b459c0e6923bab1619, type: 3}
+  - Key: tengo el llavero de mi mama dice que nos va a cuidar tu sigue caminando alex
+    Text: "Tengo el llavero de mi mam\xE1. Dice que nos va a cuidar. T\xFA sigue caminando, Alex."
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: 5180e6a24207e8540bc504f179544f2e, type: 3}
+  - Key: estoy aqui alex no me dejes sola por favor
+    Text: "Estoy aqu\xED, Alex. No me dejes sola, por favor."
+    Emotion: SCARED
+    Clip: {fileID: 8300000, guid: 2a167456707a35f48bd39214dec3b30c, type: 3}
+  - Key: alex sigue caminando hacia la esclusa por favor
+    Text: Alex... sigue caminando hacia la esclusa, por favor.
+    Emotion: SCARED
+    Clip: {fileID: 8300000, guid: 9b84da975d808a9428c9db21547f6818, type: 3}
+  - Key: puedes escucharme
+    Text: "\xBFPuedes escucharme?"
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: c0721e621cb2a874eb85721c6c53907f, type: 3}
+  - Key: no te muevas todavia necesito comprobar que eres tu
+    Text: "No te muevas todav\xEDa. Necesito comprobar que eres t\xFA."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 0701bdbcd000ecb418e8f4428bb9216c, type: 3}
+  - Key: bien estas vivo
+    Text: "...Bien. Est\xE1s vivo."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 25d26b04b00f80949988a9e48a388ded, type: 3}
+  - Key: soy elena la asistente del edificio el piso 12 esta en cuarentena y la salida segura esta bloqueada
+    Text: "Soy Elena, la asistente del edificio. El piso 12 est\xE1 en cuarentena y la salida segura est\xE1 bloqueada."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 7ebe2a6226f756641a01d7a5859da430, type: 3}
+  - Key: llega a la sala de servidores alli podre ayudarte
+    Text: "Llega a la sala de servidores. All\xED podr\xE9 ayudarte."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 30285ffdb5c8eff4eb9406c3710b6b74, type: 3}
+  - Key: ese empleado participaba en una investigacion no autorizada
+    Text: "Ese empleado participaba en una investigaci\xF3n no autorizada."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 3b6e4984b6ae2464d974d213d874b382, type: 3}
+  - Key: no deberias haber escuchado eso
+    Text: "No deber\xEDas haber escuchado eso."
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 8982d210418330d4a8de23b243fd2071, type: 3}
+  - Key: por favor continua hacia la sala de servidores
+    Text: "Por favor, contin\xFAa hacia la sala de servidores."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 2577dab34b804eb4cbcfb8a39be49bf4, type: 3}
+  - Key: no tengo autorizacion para hablar de ese incidente
+    Text: "No tengo autorizaci\xF3n para hablar de ese incidente."
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: 5233c84ec3cf5904ea357fdb5d33d1b1, type: 3}
+  - Key: el personal fue evacuado
+    Text: El personal fue evacuado.
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: f21a237580fac374da448e6df9543e94, type: 3}
+  - Key: eso es lo que indican los registros
+    Text: ...Eso es lo que indican los registros.
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 7d9749a436389a341af27f9acf6734b1, type: 3}
+  - Key: no fui yo
+    Text: No fui yo.
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 46ffe6c5f5602b14694d13737b392582, type: 3}
+  - Key: no respondas a esa voz
+    Text: No respondas a esa voz.
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: a88bac7dbc101a74c9bab5c123fe8627, type: 3}
+  - Key: alex sigue caminando
+    Text: Alex... sigue caminando.
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: eb97acfde1fdd134dbf7ac5aec063ecc, type: 3}
+  - Key: estas aqui te veo a traves del cristal
+    Text: "Est\xE1s aqu\xED. Te veo a trav\xE9s del cristal."
+    Emotion: HAPPY
+    Clip: {fileID: 8300000, guid: 5dfdd5e012b3abe4eb82778873aa1f21, type: 3}
+  - Key: los archivos que buscas estan en la consola de vigilancia
+    Text: "Los archivos que buscas est\xE1n en la consola de vigilancia."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 9d8d0c7d686f78242a8154454931555d, type: 3}
+  - Key: no pienso dejarte solo ahi fuera voy contigo
+    Text: "No pienso dejarte solo ah\xED fuera. Voy contigo."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 140b8faa8f4a4a240bcc0f3ede66a356, type: 3}
+  - Key: yo fui creada para ayudar a las personas
+    Text: Yo fui creada para ayudar a las personas.
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: bb80afea7d87cbd4997d8d99ed2279a4, type: 3}
+  - Key: no soy lo que estas buscando
+    Text: "No soy lo que est\xE1s buscando."
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: 3ca903f6966856c4480584b168d9e14a, type: 3}
+  - Key: las puertas se estan bloqueando te guiare hasta la escalera de emergencia
+    Text: "Las puertas se est\xE1n bloqueando. Te guiar\xE9 hasta la escalera de emergencia."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 506dbf211a8e9ca4b8dc5e9b5d2a51ff, type: 3}
+  - Key: la persiana no se liberara mientras el sistema detecte presencia hostil tienes que acabar con los dos infectados
+    Text: "La persiana no se liberar\xE1 mientras el sistema detecte presencia hostil. Tienes que acabar con los dos infectados."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 8f2888998f9e7334f94a4bd8d340b1b4, type: 3}
+  - Key: ese mensaje fue escrito durante un episodio de panico no le des importancia
+    Text: "Ese mensaje fue escrito durante un episodio de p\xE1nico. No le des importancia."
+    Emotion: CALM
+    Clip: {fileID: 8300000, guid: 193788bf43b55c042a94bafc9b199614, type: 3}
+  - Key: alex escucha
+    Text: Alex... escucha.
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 9e99255e90f75ea4eb8b2b8c5ff34536, type: 3}
+  - Key: lo que viste en el piso 12 no fue el comienzo
+    Text: Lo que viste en el piso 12 no fue el comienzo.
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 30a7cb8630a03a042ae4aae05e58a186, type: 3}
+  - Key: fue el lugar donde dejamos de tener el control
+    Text: Fue el lugar donde dejamos de tener el control.
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 0ce5d605524660349a39b713f4fca969, type: 3}
+  - Key: en el piso 6 no confies en todo lo que escuches
+    Text: "En el piso 6... no conf\xEDes en todo lo que escuches."
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 82ea99636b0cfa44fb889966a92f4be0, type: 3}
+  - Key: yo bajo por el ascensor de servicio con la tarjeta de mama nos vemos en el vestibulo si
+    Text: "Yo bajo por el ascensor de servicio con la tarjeta de mam\xE1. Nos vemos en el vest\xEDbulo, \xBFs\xED?"
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: d9bc47bbc2af81f488d5a4c0fe8282d5, type: 3}
+  - Key: eso eso lo escribio mi mama seguro estaba muy cansada cuando lo dejo
+    Text: "Eso... eso lo escribi\xF3 mi mam\xE1. Seguro estaba muy cansada cuando lo dej\xF3."
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: 56bd38d27d1fd5943934f9991a8baf29, type: 3}
+  - Key: se fue la luz no corras alex pulsa f y mira por donde vas
+    Text: "Se fue la luz. No corras, Alex. Pulsa F y mira por d\xF3nde vas."
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: 887266461694aa5489bd6846a030b857, type: 3}
+  - Key: esa no soy yo sigue conmigo
+    Text: Esa no soy yo. Sigue conmigo.
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 7118941f0e82cf640a79a96fce6e64b7, type: 3}
+  - Key: alex este es el piso de mi mama aqui hacian los experimentos no toques nada raro si
+    Text: "Alex, este es el piso de mi mam\xE1. Aqu\xED hac\xEDan los experimentos. No toques nada raro, \xBFs\xED?"
+    Emotion: WHISPER
+    Clip: {fileID: 8300000, guid: b96b8d3aaf6c0d248b743c233fff6f34, type: 3}
+  - Key: ese mensaje no lleva mi sello alex no es mio no abras esa puerta
+    Text: "\xA1Ese mensaje no lleva mi sello, Alex! No es m\xEDo. No abras esa puerta."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 3c4430cfc19aa8949bf8d41aaff56dff, type: 3}
+  - Key: ese mensaje no lleva mi sello alex no soy yo
+    Text: "\xA1Ese mensaje no lleva mi sello, Alex! No soy yo."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: f66def95380ff6645bbea68cfea34165, type: 3}
+  - Key: alex esa voz no soy yo mira el sello bio id
+    Text: Alex, esa voz no soy yo. Mira el sello BIO-ID.
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 1198a8037ddb85c4aaba1d156993ee1d, type: 3}
+  - Key: no le hagas caso si no ves mi sello no es mia
+    Text: "No le hagas caso. Si no ves mi sello, no es m\xEDa."
+    Emotion: URGENT
+    Clip: {fileID: 8300000, guid: 746f00f1294bb764da0c51177d4c6489, type: 3}
+  - Key: perdoname alex
+    Text: "Perd\xF3name, Alex."
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: 855bf69691c30a94c823e12e312a7037, type: 3}
+  - Key: necesitaba que llegaras hasta aqui
+    Text: "Necesitaba que llegaras hasta aqu\xED."
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: d34ab25e63d587d4f8f35f896c87da0f, type: 3}
+  - Key: tu abriste la puerta por los dos
+    Text: "T\xFA abriste la puerta por los dos."
+    Emotion: SAD
+    Clip: {fileID: 8300000, guid: 1662d9c4d415f6a45a875ae02549c6bf, type: 3}

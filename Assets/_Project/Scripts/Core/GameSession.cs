@@ -20,6 +20,8 @@ namespace Nexo.Core
         public static bool HasWeapon { get; private set; } = true;
         public static int HealthPoints { get; private set; }
         public static int HitCount { get; private set; }
+        /// <summary>gameplay-pass: el jugador lleva el cuchillo.</summary>
+        public static bool HasKnife { get; set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStatics()
@@ -28,6 +30,7 @@ namespace Nexo.Core
             RestorePending = false;
             NewGamePending = false;
             HasWeapon = true;
+            HasKnife = false;
         }
 
         public static void Save(int magazine, int reserve, bool hasWeapon, int healthPoints, int hitCount)

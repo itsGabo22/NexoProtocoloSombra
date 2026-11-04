@@ -12,16 +12,21 @@ namespace Nexo.EditorTools
 {
     /// <summary>
     /// Build de entrega para Windows (Builds/NexoProtocoloSombra_Windows + .zip, carpeta ignorada por Git).
-    /// SOLO durante el build:
-    ///   - ElenaConfig._forceFallback = true y _secrets = null: Elena sin conexión y la clave nunca entra en el ejecutable;
+    /// Dos entregas. SOLO durante el build:
+    ///   - «Elena offline»: ElenaConfig._forceFallback = true y _secrets = null: Elena sin conexión y la clave nunca entra
+    ///     en el ejecutable;
+    ///   - «IA real con respaldo»: _forceFallback = false y se conserva el ElenaSecrets local: el ejecutable LLEVA LA CLAVE
+    ///     (cualquiera que tenga la carpeta puede extraerla; no publicar ese build). Sin red, cuota o con error, Elena usa
+    ///     el respaldo offline del piso. Si no hay clave local, el build sale en modo offline y se avisa;
     ///   - (opcional, por defecto sí) DemoShortcuts.EnableDemoShortcuts = true en PF_Player: F5 piso siguiente, F6 vida,
     ///     F7 munición, F8 al BioScanner, como salida de emergencia en la presentación.
     /// En el finally se reescriben los BYTES originales de ElenaConfig.asset y PF_Player.prefab (también si el build
     /// falla), así `git status` queda limpio y se conserva la referencia a ElenaSecrets. Copia de seguridad en
     /// Temp/NexoReleaseBackup por si el Editor se cierra a mitad de build (se restaura al abrir el proyecto).
     /// Las cinemáticas de Assets/StreamingAssets/Cinematics se copian solas (StreamingAssets); al terminar se listan.
-    /// Menús: Nexo/Build/Windows (entrega: Elena offline + atajos de demo) y Nexo/Build/Windows (sin atajos de demo).
-    /// Batchmode: -executeMethod Nexo.EditorTools.NexoReleaseBuilder.BuildBatch [-nexoNoShortcuts] [-nexoNoZip] [-nexoFolder Nombre].
+    /// Menús: Nexo/Build/Windows (entrega: IA real con respaldo), Nexo/Build/Windows (entrega: Elena offline) y
+    /// Nexo/Build/Windows (Elena offline, sin atajos de demo).
+    /// Batchmode: -executeMethod Nexo.EditorTools.NexoReleaseBuilder.BuildBatch [-nexoRealAi] [-nexoNoShortcuts] [-nexoNoZip] [-nexoFolder Nombre].
     /// </summary>
     [InitializeOnLoad]
     public static class NexoReleaseBuilder
@@ -38,11 +43,20 @@ namespace Nexo.EditorTools
             EditorApplication.delayCall += RestoreLeftoverBackup;
         }
 
-        [MenuItem("Nexo/Build/Windows (entrega: Elena offline + atajos de demo)")]
-        public static void BuildMenu() => Build(DefaultFolder, true, true);
+        [MenuItem("Nexo/Build/Windows (entrega: IA real con respaldo)")]
+        public static void BuildMenuRealAi()
+        {
+            bool ok = Application.isBatchMode || EditorUtility.DisplayDialog("Build con IA real",
+                "Este build incluye tu clave de Gemini (ElenaSecrets). Cualquiera con la carpeta del juego puede extraerla: " +
+                "úsalo solo en tu PC para la demo y no lo subas ni lo compartas.", "Entendido, compilar", "Cancelar");
+            if (ok) Build(DefaultFolder, true, true, true);
+        }
 
-        [MenuItem("Nexo/Build/Windows (sin atajos de demo)")]
-        public static void BuildMenuNoShortcuts() => Build(DefaultFolder, false, true);
+        [MenuItem("Nexo/Build/Windows (entrega: Elena offline)")]
+        public static void BuildMenu() => Build(DefaultFolder, true, true, false);
+
+        [MenuItem("Nexo/Build/Windows (Elena offline, sin atajos de demo)")]
+        public static void BuildMenuNoShortcuts() => Build(DefaultFolder, false, true, false);
 
         /// <summary>Entrada para batchmode: sale con 0 si el build termina bien.</summary>
         public static void BuildBatch()
@@ -50,17 +64,20 @@ namespace Nexo.EditorTools
             string[] args = Environment.GetCommandLineArgs();
             bool shortcuts = !args.Contains("-nexoNoShortcuts");
             bool zip = !args.Contains("-nexoNoZip");
+            bool realAi = args.Contains("-nexoRealAi");
             int folderArg = Array.IndexOf(args, "-nexoFolder");
             string folder = folderArg >= 0 && folderArg + 1 < args.Length ? args[folderArg + 1] : DefaultFolder;
-            BuildResult result = Build(folder, shortcuts, zip);
+            BuildResult result = Build(folder, shortcuts, zip, realAi);
             EditorApplication.Exit(result == BuildResult.Succeeded ? 0 : 1);
         }
 
         /// <summary>Compatibilidad con llamadas anteriores: entrega con atajos de demo y zip.</summary>
-        public static BuildResult Build(string folderName) => Build(folderName, true, true);
+        public static BuildResult Build(string folderName) => Build(folderName, true, true, false);
 
         /// <summary>Genera Builds/&lt;folderName&gt;/NexoProtocoloSombra.exe y, si se pide, Builds/&lt;folderName&gt;.zip.</summary>
-        public static BuildResult Build(string folderName, bool demoShortcuts, bool zip)
+        public static BuildResult Build(string folderName, bool demoShortcuts, bool zip) => Build(folderName, demoShortcuts, zip, false);
+
+        public static BuildResult Build(string folderName, bool demoShortcuts, bool zip, bool realAi)
         {
             if (AssetDatabase.LoadAssetAtPath<ScriptableObject>(ConfigPath) == null || AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath) == null)
             {
@@ -82,7 +99,7 @@ namespace Nexo.EditorTools
 
             try
             {
-                SetBuildOnlyValues(demoShortcuts);
+                realAi = SetBuildOnlyValues(demoShortcuts, realAi);
 
                 if (Directory.Exists(folder)) Directory.Delete(folder, true);
                 Directory.CreateDirectory(folder);
@@ -96,7 +113,7 @@ namespace Nexo.EditorTools
                 };
                 BuildReport report = BuildPipeline.BuildPlayer(options);
                 BuildSummary summary = report.summary;
-                Debug.Log($"[NexoReleaseBuilder] {summary.result}: {summary.totalErrors} errores, {summary.totalWarnings} avisos, {summary.totalSize / 1048576f:F1} MB, {summary.totalTime.TotalSeconds:F0} s → {folder} (Elena offline, atajos de demo: {(demoShortcuts ? "sí" : "no")})");
+                Debug.Log($"[NexoReleaseBuilder] {summary.result}: {summary.totalErrors} errores, {summary.totalWarnings} avisos, {summary.totalSize / 1048576f:F1} MB, {summary.totalTime.TotalSeconds:F0} s → {folder} (Elena {(realAi ? "IA real con respaldo offline (EL BUILD LLEVA LA CLAVE)" : "offline")}, atajos de demo: {(demoShortcuts ? "sí" : "no")})");
 
                 if (summary.result == BuildResult.Succeeded)
                 {
@@ -126,12 +143,20 @@ namespace Nexo.EditorTools
             }
         }
 
-        private static void SetBuildOnlyValues(bool demoShortcuts)
+        /// <summary>Aplica los valores del build; devuelve si de verdad sale con IA real (requiere clave local).</summary>
+        private static bool SetBuildOnlyValues(bool demoShortcuts, bool realAi)
         {
             var config = AssetDatabase.LoadAssetAtPath<ScriptableObject>(ConfigPath);
             var so = new SerializedObject(config);
-            so.FindProperty("_forceFallback").boolValue = true;
-            so.FindProperty("_secrets").objectReferenceValue = null; // la clave nunca entra en el build
+            var secrets = so.FindProperty("_secrets").objectReferenceValue as Nexo.AI.Elena.ElenaSecrets;
+            if (realAi && (secrets == null || !secrets.HasApiKey))
+            {
+                Debug.LogWarning("[NexoReleaseBuilder] No hay ElenaSecrets con clave enlazado en ElenaConfig: el build sale con Elena offline.");
+                realAi = false;
+            }
+            so.FindProperty("_forceFallback").boolValue = !realAi;
+            // Offline: la clave nunca entra en el build. IA real: se mantiene el enlace local (el build la lleva)
+            if (!realAi) so.FindProperty("_secrets").objectReferenceValue = null;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(config);
 
@@ -155,7 +180,8 @@ namespace Nexo.EditorTools
 
             bool fallback = new SerializedObject(AssetDatabase.LoadAssetAtPath<ScriptableObject>(ConfigPath)).FindProperty("_forceFallback").boolValue;
             DemoShortcuts check = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath).GetComponentInChildren<DemoShortcuts>(true);
-            Debug.Log($"[NexoReleaseBuilder] Valores del build: _forceFallback={fallback}, EnableDemoShortcuts={(check != null && check.EnableDemoShortcuts)}");
+            Debug.Log($"[NexoReleaseBuilder] Valores del build: _forceFallback={fallback}, EnableDemoShortcuts={(check != null && check.EnableDemoShortcuts)}, IA real={realAi}");
+            return realAi;
         }
 
         private static void RestoreFiles(Dictionary<string, byte[]> originals)

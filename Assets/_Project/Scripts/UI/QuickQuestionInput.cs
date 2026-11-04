@@ -57,7 +57,7 @@ namespace Nexo.UI
 
         private void Select(int index)
         {
-            if (_isLocked) return;
+            if (_isLocked || UiTextEntry.BlocksHotkeys) return;
             GameEvents.RaiseQuickQuestionSelected(index);
         }
     }

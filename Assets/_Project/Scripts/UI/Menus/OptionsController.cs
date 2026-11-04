@@ -1,4 +1,5 @@
 using Nexo.Accessibility;
+using Nexo.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -63,6 +64,7 @@ namespace Nexo.UI.Menus
         private const int ReduceMotionRow = 3;
         private const int SubtitlesRow = 4;
         private const int SubtitleSizeRow = 5;
+        private const int ReadingSpeedRow = 6;
 
         private readonly Row[] _accessibilityRows =
         {
@@ -71,7 +73,8 @@ namespace Nexo.UI.Menus
             new Row("opta-row-colorblind", RowKind.Choice, new[] { "Ninguno", "Deuteranopia", "Protanopia", "Tritanopia" }, 0),
             new Row("opta-row-reduce-motion", RowKind.Toggle, null, 0),
             new Row("opta-row-subtitles", RowKind.Toggle, null, 1),
-            new Row("opta-row-subtitle-size", RowKind.Choice, new[] { "Pequeño", "Mediano", "Grande" }, 1)
+            new Row("opta-row-subtitle-size", RowKind.Choice, new[] { "Pequeño", "Mediano", "Grande" }, 1),
+            new Row("opta-row-reading-speed", RowKind.Choice, new[] { "Normal", "Lento" }, 0)
         };
 
         private readonly MenuNavigator _navigator;
@@ -254,6 +257,7 @@ namespace Nexo.UI.Menus
             _accessibilityRows[ReduceMotionRow].Value = o.ReduceMotion ? 1 : 0;
             _accessibilityRows[SubtitlesRow].Value = o.Subtitles ? 1 : 0;
             _accessibilityRows[SubtitleSizeRow].Value = AccessibilityPrefs.SubtitleSize;
+            _accessibilityRows[ReadingSpeedRow].Value = MessageTiming.ReadingSpeed;
         }
 
         /// <summary>
@@ -272,7 +276,7 @@ namespace Nexo.UI.Menus
             };
 
             // TODO apply: el tamaño de subtítulos se guarda pero SubtitleController aún no lo usa
-            AccessibilityPrefs.Save(options, _accessibilityRows[SubtitleSizeRow].Value);
+            AccessibilityPrefs.Save(options, _accessibilityRows[SubtitleSizeRow].Value, _accessibilityRows[ReadingSpeedRow].Value);
         }
 
         private void HandleVideoTabClicked(ClickEvent evt)
