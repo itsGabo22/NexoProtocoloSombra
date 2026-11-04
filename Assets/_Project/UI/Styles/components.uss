@@ -20,7 +20,8 @@
 .emotion-sad { border-color: var(--c-muted); }
 .emotion-whisper { border-color: var(--c-muted); opacity: 0.8; }
 /* Retrato real (Resources/Elena/portrait.png): recorte circular por border-radius; el borde de emoción se mantiene */
-.radio-portrait--image { -unity-background-scale-mode: scale-and-crop; }
+/* El PNG generado (Nexo/Elena/Generate Portrait) es blanco sobre transparente: se tiñe con el acento del tema */
+.radio-portrait--image { -unity-background-scale-mode: scale-and-crop; -unity-background-image-tint-color: var(--c-accent); }
 
 .radio-trust-track { height: 4px; background-color: var(--c-accent-dim); border-radius: 2px; }
 .radio-trust-fill { height: 100%; width: 0; background-color: var(--c-accent); border-radius: 2px; transition-property: width; transition-duration: 400ms; }
