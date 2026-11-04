@@ -858,6 +858,74 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &70210445
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 70210446}
+  - component: {fileID: 70210448}
+  - component: {fileID: 70210447}
+  m_Layer: 2
+  m_Name: F06_Checkpoint_03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &70210446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70210445}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.66451436, z: -0, w: 0.7472755}
+  m_LocalPosition: {x: -4.5, y: 0.08332837, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2054397308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &70210447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70210445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
+  _label: "Piso 6 \xB7 control 3"
+  _notify: 1
+--- !u!65 &70210448
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70210445}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5, y: 2.4, z: 3.5}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &82164103
 GameObject:
   m_ObjectHideFlags: 0
@@ -5630,6 +5698,39 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 476839171}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &505642289
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 505642290}
+  m_Layer: 0
+  m_Name: F06_GameplayPass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &505642290
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505642289}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2054397308}
+  - {fileID: 1020325271}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &509032218
 GameObject:
   m_ObjectHideFlags: 0
@@ -6440,6 +6541,7 @@ GameObject:
   m_Component:
   - component: {fileID: 614655296}
   - component: {fileID: 614655297}
+  - component: {fileID: 614655298}
   m_Layer: 0
   m_Name: Spawn_F06_LabB_Mimic
   m_TagString: Untagged
@@ -6499,6 +6601,21 @@ MonoBehaviour:
     - "Apaga la linterna, Alex. As\xED no nos ven."
     - "Las escaleras est\xE1n por el otro lado. Gira y corre."
     - "Alex... \xBFd\xF3nde est\xE1s? No me dejes sola."
+--- !u!114 &614655298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 614655295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f69ee0a5861f242bc5ea2067d39fc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InfectedLootDrop
+  _guaranteed: []
+  _chanceDrop: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  _chance: 0.35
 --- !u!1 &616312319
 GameObject:
   m_ObjectHideFlags: 0
@@ -7238,6 +7355,8 @@ MonoBehaviour:
   _doorClip: {fileID: 8300000, guid: adc758e54d1a9bb4f8fedb55292888b8, type: 3}
   _doorNoise: 25
   _minHideTime: 0.6
+  _lookYawLimit: 70
+  _lookPitchLimit: 35
 --- !u!1 &724140818
 GameObject:
   m_ObjectHideFlags: 0
@@ -7405,6 +7524,7 @@ GameObject:
   - component: {fileID: 730291571}
   - component: {fileID: 730291570}
   - component: {fileID: 730291569}
+  - component: {fileID: 730291573}
   m_Layer: 10
   m_Name: N2_Directora
   m_TagString: Untagged
@@ -7520,6 +7640,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730291567}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &730291573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730291567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &734294845
 GameObject:
   m_ObjectHideFlags: 0
@@ -8174,6 +8308,7 @@ GameObject:
   m_Component:
   - component: {fileID: 854973274}
   - component: {fileID: 854973275}
+  - component: {fileID: 854973276}
   m_Layer: 0
   m_Name: Spawn_F06_LabA_Crawler
   m_TagString: Untagged
@@ -8223,6 +8358,21 @@ MonoBehaviour:
     HearingRange: 0
     MimicryCooldown: 0
     MimicMessages: []
+--- !u!114 &854973276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 854973273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f69ee0a5861f242bc5ea2067d39fc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InfectedLootDrop
+  _guaranteed: []
+  _chanceDrop: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  _chance: 0.35
 --- !u!1 &856094880
 GameObject:
   m_ObjectHideFlags: 0
@@ -8283,6 +8433,8 @@ MonoBehaviour:
   _doorClip: {fileID: 8300000, guid: adc758e54d1a9bb4f8fedb55292888b8, type: 3}
   _doorNoise: 25
   _minHideTime: 0.6
+  _lookYawLimit: 70
+  _lookPitchLimit: 35
 --- !u!1 &864536286
 GameObject:
   m_ObjectHideFlags: 0
@@ -9117,6 +9269,7 @@ GameObject:
   - component: {fileID: 919440587}
   - component: {fileID: 919440586}
   - component: {fileID: 919440585}
+  - component: {fileID: 919440589}
   m_Layer: 10
   m_Name: N5_Monitor
   m_TagString: Untagged
@@ -9232,6 +9385,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919440583}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &919440589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919440583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &921550539
 GameObject:
   m_ObjectHideFlags: 0
@@ -9375,6 +9542,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 614655296}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &946869999
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1020325271}
+    m_Modifications:
+    - target: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_Name
+      value: F06_Medkit_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.700001
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.10332824
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6755902
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7372773
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+--- !u!4 &946870000 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  m_PrefabInstance: {fileID: 946869999}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &946967409
 GameObject:
   m_ObjectHideFlags: 0
@@ -9873,6 +10102,39 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1020325270
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1020325271}
+  m_Layer: 0
+  m_Name: F06_Medkits
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1020325271
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020325270}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1647598610}
+  - {fileID: 946870000}
+  m_Father: {fileID: 505642290}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1020876105
 GameObject:
   m_ObjectHideFlags: 0
@@ -9995,6 +10257,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1025349513}
   - component: {fileID: 1025349514}
+  - component: {fileID: 1025349515}
   m_Layer: 0
   m_Name: Spawn_F06_Corridor_Learner
   m_TagString: Untagged
@@ -10048,6 +10311,21 @@ MonoBehaviour:
     HearingRange: 0
     MimicryCooldown: 0
     MimicMessages: []
+--- !u!114 &1025349515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025349512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f69ee0a5861f242bc5ea2067d39fc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InfectedLootDrop
+  _guaranteed: []
+  _chanceDrop: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  _chance: 0.35
 --- !u!1 &1048322231
 GameObject:
   m_ObjectHideFlags: 0
@@ -10526,6 +10804,76 @@ MonoBehaviour:
   _doorClip: {fileID: 8300000, guid: adc758e54d1a9bb4f8fedb55292888b8, type: 3}
   _doorNoise: 25
   _minHideTime: 0.6
+  _lookYawLimit: 70
+  _lookPitchLimit: 35
+--- !u!1 &1106539662
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1106539663}
+  - component: {fileID: 1106539665}
+  - component: {fileID: 1106539664}
+  m_Layer: 2
+  m_Name: F06_Checkpoint_01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1106539663
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106539662}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 12, y: 0.08332825, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2054397308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1106539664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106539662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
+  _label: "Piso 6 \xB7 control 1"
+  _notify: 1
+--- !u!65 &1106539665
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106539662}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5, y: 2.4, z: 3.5}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &1137233809
 GameObject:
   m_ObjectHideFlags: 0
@@ -10629,6 +10977,74 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.9, z: 1.4}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1144734669
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1144734670}
+  - component: {fileID: 1144734672}
+  - component: {fileID: 1144734671}
+  m_Layer: 2
+  m_Name: F06_Checkpoint_02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1144734670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144734669}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.5465859, z: -0, w: 0.83740306}
+  m_LocalPosition: {x: 3.3, y: 0.08332825, z: 7.166667}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2054397308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1144734671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144734669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
+  _label: "Piso 6 \xB7 control 2"
+  _notify: 1
+--- !u!65 &1144734672
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144734669}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5, y: 2.4, z: 3.5}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &1145093798
 GameObject:
   m_ObjectHideFlags: 0
@@ -11476,6 +11892,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1226367639}
   - component: {fileID: 1226367640}
+  - component: {fileID: 1226367641}
   m_Layer: 0
   m_Name: Spawn_F06_Stairs_Chaser
   m_TagString: Untagged
@@ -11525,6 +11942,21 @@ MonoBehaviour:
     HearingRange: 0
     MimicryCooldown: 0
     MimicMessages: []
+--- !u!114 &1226367641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226367638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f69ee0a5861f242bc5ea2067d39fc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InfectedLootDrop
+  _guaranteed: []
+  _chanceDrop: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  _chance: 0.35
 --- !u!1 &1233540686
 GameObject:
   m_ObjectHideFlags: 0
@@ -12973,6 +13405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1443588932}
   - component: {fileID: 1443588933}
+  - component: {fileID: 1443588934}
   m_Layer: 0
   m_Name: Spawn_F06_Corridor_Crawler
   m_TagString: Untagged
@@ -13022,6 +13455,21 @@ MonoBehaviour:
     HearingRange: 0
     MimicryCooldown: 0
     MimicMessages: []
+--- !u!114 &1443588934
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443588931}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f69ee0a5861f242bc5ea2067d39fc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InfectedLootDrop
+  _guaranteed: []
+  _chanceDrop: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  _chance: 0.35
 --- !u!1 &1463306351
 GameObject:
   m_ObjectHideFlags: 0
@@ -15125,6 +15573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1647382484}
   - component: {fileID: 1647382485}
+  - component: {fileID: 1647382486}
   m_Layer: 0
   m_Name: Spawn_F06_LabA_Sentinel
   m_TagString: Untagged
@@ -15174,6 +15623,83 @@ MonoBehaviour:
     HearingRange: 0
     MimicryCooldown: 0
     MimicMessages: []
+--- !u!114 &1647382486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1647382483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f69ee0a5861f242bc5ea2067d39fc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InfectedLootDrop
+  _guaranteed: []
+  _chanceDrop: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  _chance: 0.35
+--- !u!1001 &1647598609
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1020325271}
+    m_Modifications:
+    - target: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_Name
+      value: F06_Medkit_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -13.233334
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.10332836
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.976296
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.21643962
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+--- !u!4 &1647598610 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  m_PrefabInstance: {fileID: 1647598609}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1655484060
 GameObject:
   m_ObjectHideFlags: 0
@@ -17506,6 +18032,7 @@ GameObject:
   - component: {fileID: 1903576944}
   - component: {fileID: 1903576943}
   - component: {fileID: 1903576942}
+  - component: {fileID: 1903576946}
   m_Layer: 10
   m_Name: N1_Aviso_Cuarentena
   m_TagString: Untagged
@@ -17621,6 +18148,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1903576940}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1903576946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903576940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &1903833743
 GameObject:
   m_ObjectHideFlags: 0
@@ -17858,6 +18399,7 @@ GameObject:
   - component: {fileID: 1926053428}
   - component: {fileID: 1926053427}
   - component: {fileID: 1926053426}
+  - component: {fileID: 1926053430}
   m_Layer: 10
   m_Name: N4_Informe_Sincronizados
   m_TagString: Untagged
@@ -17973,6 +18515,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1926053424}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1926053430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926053424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &1950741453
 GameObject:
   m_ObjectHideFlags: 0
@@ -18386,6 +18942,7 @@ GameObject:
   - component: {fileID: 1988762421}
   - component: {fileID: 1988762420}
   - component: {fileID: 1988762419}
+  - component: {fileID: 1988762423}
   m_Layer: 10
   m_Name: N3_Pizarra
   m_TagString: Untagged
@@ -18501,6 +19058,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1988762417}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1988762423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1988762417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &2005989363
 GameObject:
   m_ObjectHideFlags: 0
@@ -18702,6 +19273,7 @@ GameObject:
   - component: {fileID: 2018812059}
   - component: {fileID: 2018812058}
   - component: {fileID: 2018812057}
+  - component: {fileID: 2018812061}
   m_Layer: 10
   m_Name: N6_Nota_Suelta
   m_TagString: Untagged
@@ -18817,6 +19389,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2018812055}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2018812061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018812055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &2022783509
 GameObject:
   m_ObjectHideFlags: 0
@@ -19041,6 +19627,40 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041663044}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2054397307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2054397308}
+  m_Layer: 0
+  m_Name: F06_Checkpoints
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2054397308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2054397307}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1106539663}
+  - {fileID: 1144734670}
+  - {fileID: 70210446}
+  m_Father: {fileID: 505642290}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2059145399
 GameObject:
   m_ObjectHideFlags: 0
@@ -19938,3 +20558,4 @@ SceneRoots:
   - {fileID: 1509739941}
   - {fileID: 736445170}
   - {fileID: 1097587963}
+  - {fileID: 505642290}

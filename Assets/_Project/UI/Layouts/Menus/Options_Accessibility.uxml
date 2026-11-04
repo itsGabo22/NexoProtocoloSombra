@@ -52,6 +52,10 @@
                 <ui:AttributeOverrides element-name="setting-row-label" text="Tamaño de subtítulos" />
                 <ui:AttributeOverrides element-name="setting-row-value" text="Mediano" />
             </ui:Instance>
+            <ui:Instance template="NxSettingRowChoice" name="opta-row-reading-speed" focusable="true" tabindex="6" class="nx-focusable">
+                <ui:AttributeOverrides element-name="setting-row-label" text="Velocidad de lectura" />
+                <ui:AttributeOverrides element-name="setting-row-value" text="Normal" />
+            </ui:Instance>
         </ui:Instance>
 
         <ui:VisualElement name="opta-aside" class="opt-aside">

@@ -161,6 +161,9 @@ GameObject:
   - component: {fileID: 8190292801290388745}
   - component: {fileID: 1361685721644678070}
   - component: {fileID: 3034190721521066088}
+  - component: {fileID: 1268314850107394146}
+  - component: {fileID: 2071907798944785180}
+  - component: {fileID: 979974635416438213}
   m_Layer: 8
   m_Name: PF_Player
   m_TagString: Untagged
@@ -232,6 +235,8 @@ MonoBehaviour:
   _sprintSpeed: 7
   _crouchSpeed: 2.2
   _gravity: -19.62
+  _jumpHeight: 0.9
+  _jumpUnlockGrace: 0.35
   _mouseSensitivity: 2
   _maxLookAngle: 85
   _standingHeight: 1.8
@@ -454,6 +459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Nexo::Nexo.Player.PlayerStatePersistence
   _weapon: {fileID: 4623130270281869729}
   _health: {fileID: 302603602322145661}
+  _knife: {fileID: 979974635416438213}
 --- !u!114 &1361685721644678070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -502,6 +508,63 @@ MonoBehaviour:
   _health: {fileID: 0}
   _weapon: {fileID: 0}
   _scannerStandOff: 1.6
+--- !u!114 &1268314850107394146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691618561519237747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae35dd2858acbed439d28bef56896b88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Player.PlayerCheckpoints
+  _movement: {fileID: 1679263959686769015}
+  _health: {fileID: 302603602322145661}
+  _fallDepth: 6
+  _checkInterval: 0.25
+  _safeSampleInterval: 1
+  _safeMinAge: 2.5
+  _fadeOutSeconds: 0.35
+  _holdSeconds: 0.3
+  _fadeInSeconds: 0.6
+--- !u!114 &2071907798944785180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691618561519237747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d17856de5788f69438106ed18019813e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Player.PlayerShove
+  _movement: {fileID: 0}
+  _struggle: {fileID: 0}
+  _view: {fileID: 0}
+  _audio: {fileID: 1047424912720292539}
+  _shoveClip: {fileID: 8300000, guid: 03283de1f3650934c8fd6695daae9c55, type: 3}
+--- !u!114 &979974635416438213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691618561519237747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0071a9a39886b9240a37ce28eafdd284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Player.PlayerKnife
+  _movement: {fileID: 0}
+  _view: {fileID: 0}
+  _audio: {fileID: 1047424912720292539}
+  _slashClip: {fileID: 0}
+  _hitClip: {fileID: 8300000, guid: 03283de1f3650934c8fd6695daae9c55, type: 3}
+  _bladeMaterial: {fileID: 2100000, guid: 83b909f8176207646af613ab402f821e, type: 2}
+  _handleMaterial: {fileID: 2100000, guid: 6e4e760cd070c3e40b405cfbe87b159d, type: 2}
 --- !u!1 &7159589432008154132
 GameObject:
   m_ObjectHideFlags: 0

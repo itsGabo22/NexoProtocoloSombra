@@ -212,6 +212,12 @@ namespace Nexo.Player
             RefreshUi();
         }
 
+        /// <summary>gameplay-pass: el empujón [G] rompe el agarre al instante (el infectado cae hacia atrás).</summary>
+        public void BreakFree()
+        {
+            if (IsActive) Finish(true, false);
+        }
+
         private void RelocateZone() => _zoneStart = Random.Range(0.05f, 0.95f - _zoneWidth);
 
         private void Finish(bool pushedBack, bool losePoint)

@@ -37,6 +37,7 @@ namespace Nexo.Player
 
         private void HandleShowObjective(InputAction.CallbackContext context)
         {
+            if (UiTextEntry.BlocksHotkeys) return;
             string objective = StorySequence.CurrentObjective;
             GameEvents.RaiseNotification(new HudNotification("OBJETIVO",
                 string.IsNullOrEmpty(objective) ? "Explora el piso y escucha a Elena." : objective, false));

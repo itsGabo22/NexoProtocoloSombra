@@ -100,11 +100,8 @@ namespace Nexo.AI.Infected
         };
 
         [Header("Daño (M1911)")]
+        [Tooltip("gameplay-pass: solo informativo; la vida real y el daño por zona salen de InfectedDamageRules.")]
         [SerializeField] private int _maxHealth = 3;
-        [Tooltip("Daño por disparo según la zona: torso / cabeza / piernas.")]
-        [SerializeField] private int _torsoDamage = 1;
-        [SerializeField] private int _headDamage = 3;
-        [SerializeField] private int _legDamage = 1;
         [Tooltip("Aturdimiento por zona: torso / cabeza / piernas (segundos).")]
         [SerializeField] private float _stunDuration = 0.6f;
         [SerializeField] private float _headStunDuration = 1.3f;
@@ -218,6 +215,8 @@ namespace Nexo.AI.Infected
             if (_visualRoot == null) _visualRoot = transform.Find("Body");
             if (_reactions == null) _reactions = GetComponent<InfectedHitReactions>();
             if (_memory == null) _memory = GetComponent<InfectedLearningMemory>();
+            // gameplay-pass: la vida sale de InfectedDamageRules (3 disparos al cuerpo, cabeza letal), no del prefab (6)
+            _maxHealth = InfectedDamageRules.MaxHealth(_behavior, 0);
             _health = _maxHealth;
             _homePosition = transform.position;
             _homeRotation = transform.rotation;
@@ -317,7 +316,9 @@ namespace Nexo.AI.Infected
             _mimicryEnabled = overrides.MimicryEnabled;
             _sabotageEnabled = overrides.SabotageEnabled;
             if (overrides.MimicMessages != null && overrides.MimicMessages.Length > 0) _mimicMessages = overrides.MimicMessages;
-            if (overrides.MaxHealth > 0) { _maxHealth = overrides.MaxHealth; _health = _maxHealth; }
+            // gameplay-pass: reptante 2 disparos al cuerpo, resto 3 (o el override del punto si es > 0)
+            _maxHealth = InfectedDamageRules.MaxHealth(_behavior, overrides.MaxHealth);
+            _health = _maxHealth;
             if (overrides.SightDistance > 0f) _sightDistance = overrides.SightDistance;
             if (overrides.HearingRange > 0f) _maxHearingRange = overrides.HearingRange;
             if (overrides.MimicryCooldown > 0f) _mimicryCooldown = overrides.MimicryCooldown;
@@ -410,6 +411,7 @@ namespace Nexo.AI.Infected
                 UpdateAnimatorSpeed();
 
                 float distance = DistanceToPlayer();
+                KeepPersonalSpace(distance);
                 UpdateProximity(distance <= _nearbyRadius);
 
                 // Lejos del jugador y sin nada que hacer: piensa menos a menudo
@@ -433,7 +435,8 @@ namespace Nexo.AI.Infected
             if (_isDowned || _isDead) return;
 
             HitZone zone = _reactions != null ? _reactions.ResolveZone(_aimCamera) : HitZone.Torso;
-            int damage = zone == HitZone.Head ? _headDamage : zone == HitZone.Legs ? _legDamage : _torsoDamage;
+            // gameplay-pass: daño por zona de InfectedDamageRules (cabeza = letal, también sin revivir)
+            int damage = InfectedDamageRules.ShotDamage(zone, _health);
 
             LastKnownPlayerPos = shotOrigin;
             _awareness = 1f;
@@ -443,16 +446,87 @@ namespace Nexo.AI.Infected
 
             if (_health <= 0)
             {
-                if (_reviveAfterDowned) _downedRoutine = StartCoroutine(DownedRoutine());
+                GameEvents.RaiseHitConfirmed(true);
+                if (_reviveAfterDowned && zone != HitZone.Head) _downedRoutine = StartCoroutine(DownedRoutine());
                 else Die(shotOrigin);
                 return;
             }
+            GameEvents.RaiseHitConfirmed(false);
 
             float stun = zone == HitZone.Head ? _headStunDuration : zone == HitZone.Legs ? _legStunDuration : _stunDuration;
             if (zone == HitZone.Legs) _limpUntil = Time.time + _limpDuration;
             _incapacitatedUntil = Time.time + stun;
             if (_reactions != null) _reactions.PlayHit(zone, shotOrigin, stun);
             ChangeState(Chase);
+        }
+
+        /// <summary>gameplay-pass: el infectado ya ha detectado al jugador (no hay ejecución sigilosa con el cuchillo).</summary>
+        public bool IsAwareOfPlayer => _canSeePlayer || _awareness >= 0.5f || _currentState == Chase || _currentState == Attack || _currentState == Search;
+
+        /// <summary>
+        /// gameplay-pass: empujón del jugador [G]. Lo desequilibra <paramref name="stagger"/> s, lo hace retroceder
+        /// <paramref name="push"/> m sobre el NavMesh (sin atravesar paredes) y después vuelve a perseguir.
+        /// </summary>
+        public void ApplyShove(Vector3 from, float stagger, float push)
+        {
+            if (_isDead || _isDowned) return;
+            StopMoving();
+            StopLookAround();
+            LastKnownPlayerPos = from;
+            _awareness = 1f;
+            _incapacitatedUntil = Time.time + stagger;
+            _lastAttackTime = Time.time; // no ataca nada más recuperarse
+            if (_reactions != null) _reactions.PlayHit(HitZone.Torso, from, stagger);
+            StartCoroutine(PushBackRoutine(from, push, 0.25f));
+            ChangeState(Chase);
+        }
+
+        private IEnumerator PushBackRoutine(Vector3 from, float meters, float duration)
+        {
+            Vector3 away = transform.position - from;
+            away.y = 0f;
+            away = away.sqrMagnitude > 0.001f ? away.normalized : -transform.forward;
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                if (_isDead || _agent == null || !_agent.enabled || !_agent.isOnNavMesh) yield break;
+                _agent.Move(away * (meters * Time.deltaTime / duration));
+                yield return null;
+            }
+        }
+
+        /// <summary>gameplay-pass: tajo de cuchillo. Por la espalda sin haber sido detectado = ejecución silenciosa.</summary>
+        public void ApplyMeleeHit(Vector3 origin, bool stealthTakedown)
+        {
+            if (_isDowned || _isDead) return;
+            _health -= Mathf.Max(1, InfectedDamageRules.KnifeHit(stealthTakedown, _health));
+            if (_health <= 0)
+            {
+                GameEvents.RaiseHitConfirmed(true);
+                Die(origin);
+                return;
+            }
+            GameEvents.RaiseHitConfirmed(false);
+            LastKnownPlayerPos = origin;
+            _awareness = 1f;
+            StopMoving();
+            StopLookAround();
+            _incapacitatedUntil = Time.time + _stunDuration;
+            if (_reactions != null) _reactions.PlayHit(HitZone.Torso, origin, _stunDuration);
+            ChangeState(Chase);
+        }
+
+        /// <summary>
+        /// gameplay-pass: nunca se mete dentro del jugador. Si queda a menos de 0,8 m (acorralándolo contra una esquina),
+        /// se aparta un poco: el CharacterController no vibra atrapado entre la pared y la cápsula del infectado.
+        /// </summary>
+        private void KeepPersonalSpace(float distance)
+        {
+            const float personalSpace = 0.8f;
+            if (_player == null || distance >= personalSpace || _agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
+            Vector3 away = transform.position - _player.position;
+            away.y = 0f;
+            if (away.sqrMagnitude < 0.0001f) away = -transform.forward;
+            _agent.Move(away.normalized * Mathf.Min(0.3f, personalSpace - distance));
         }
 
         /// <summary>Muerte definitiva: se desploma, deja de percibir y de bloquear el paso.</summary>

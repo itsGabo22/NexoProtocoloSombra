@@ -1,0 +1,463 @@
+{
+    "entries": [
+        {
+            "key": "ya casi salimos alex el escaner solo deja pasar a alguien limpio y tu estas bien verdad",
+            "text": "Ya casi salimos, Alex. El escáner solo deja pasar a alguien limpio... y tú estás bien, ¿verdad?",
+            "emotion": "SAD",
+            "source": "fallback_floor01:FEAR",
+            "file": "elena_f01_f6fc73c1.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-tts · voz Leda",
+            "seconds": 8.930000305175781
+        },
+        {
+            "key": "el vestibulo esta vacio el escaner maestro esta al fondo junto a la esclusa de evacuacion",
+            "text": "El vestíbulo está vacío. El escáner maestro está al fondo, junto a la esclusa de evacuación.",
+            "emotion": "WHISPER",
+            "source": "fallback_floor01:SAFE_PATH",
+            "file": "elena_f01_50463a22.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 9.920000076293945
+        },
+        {
+            "key": "pon la mano en el escaner y se abrira la esclusa luego nos vamos a casa te lo prometo",
+            "text": "Pon la mano en el escáner y se abrirá la esclusa. Luego nos vamos a casa, te lo prometo.",
+            "emotion": "WHISPER",
+            "source": "fallback_floor01:GENERIC",
+            "file": "elena_f01_ab33bbbf.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 4.550000190734863
+        },
+        {
+            "key": "la sala de contencion esta vacia lo veo por la camara si se apagan las luces pulsa f y usa la vision termica si",
+            "text": "La sala de contención está vacía, lo veo por la cámara. Si se apagan las luces, pulsa F y usa la visión térmica, ¿sí?",
+            "emotion": "WHISPER",
+            "source": "fallback_floor06:SAFE_PATH",
+            "file": "elena_f06_5b285700.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 6.849999904632568
+        },
+        {
+            "key": "aqui abajo se oyen cosas si se va la luz no corras pulsa f y mira por donde vas",
+            "text": "Aquí abajo se oyen cosas... Si se va la luz, no corras. Pulsa F y mira por dónde vas.",
+            "emotion": "WHISPER",
+            "source": "fallback_floor06:GENERIC",
+            "file": "elena_f06_223fda26.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 4.289999961853027
+        },
+        {
+            "key": "por el pasillo de la izquierda no hay nadie lo veo por la camara ve agachado si",
+            "text": "Por el pasillo de la izquierda no hay nadie, lo veo por la cámara. Ve agachado, ¿sí?",
+            "emotion": "WHISPER",
+            "source": "fallback_floor12:SAFE_PATH",
+            "file": "elena_f12_0f933d04.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 10.869999885559082
+        },
+        {
+            "key": "puedes escucharme",
+            "text": "¿Puedes escucharme?",
+            "emotion": "WHISPER",
+            "source": "Floor12_Offices:Seq_01_Intro",
+            "file": "elena_f12_5176df3b.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 0.9800000190734863
+        },
+        {
+            "key": "no deberias haber escuchado eso",
+            "text": "No deberías haber escuchado eso.",
+            "emotion": "WHISPER",
+            "source": "Floor12_Offices:Seq_05_Recording",
+            "file": "elena_f12_5797fad3.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 4.75
+        },
+        {
+            "key": "alex sigue caminando",
+            "text": "Alex... sigue caminando.",
+            "emotion": "WHISPER",
+            "source": "Floor12_Offices:Seq_08_FalseVoice",
+            "file": "elena_f12_d7c3888c.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 3.609999895095825
+        },
+        {
+            "key": "alex escucha",
+            "text": "Alex... escucha.",
+            "emotion": "WHISPER",
+            "source": "Floor12_Offices:Seq_09_Final",
+            "file": "elena_f12_07636b93.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 1.3200000524520874
+        },
+        {
+            "key": "lo que viste en el piso 12 no fue el comienzo",
+            "text": "Lo que viste en el piso 12 no fue el comienzo.",
+            "emotion": "WHISPER",
+            "source": "Floor12_Offices:Seq_09_Final",
+            "file": "elena_f12_c72f17b0.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 8.520000457763672
+        },
+        {
+            "key": "fue el lugar donde dejamos de tener el control",
+            "text": "Fue el lugar donde dejamos de tener el control.",
+            "emotion": "WHISPER",
+            "source": "Floor12_Offices:Seq_09_Final",
+            "file": "elena_f12_bf76e5df.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 2.630000114440918
+        },
+        {
+            "key": "en el piso 6 no confies en todo lo que escuches",
+            "text": "En el piso 6... no confíes en todo lo que escuches.",
+            "emotion": "WHISPER",
+            "source": "Floor12_Offices:Seq_09_Final",
+            "file": "elena_f12_5d4d93d6.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 3.2300000190734863
+        },
+        {
+            "key": "yo bajo por el ascensor de servicio con la tarjeta de mama nos vemos en el vestibulo si",
+            "text": "Yo bajo por el ascensor de servicio con la tarjeta de mamá. Nos vemos en el vestíbulo, ¿sí?",
+            "emotion": "WHISPER",
+            "source": "Floor06_Labs:Seq_F06_04_Salida",
+            "file": "elena_f06_3e627614.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 10.270000457763672
+        },
+        {
+            "key": "se fue la luz no corras alex pulsa f y mira por donde vas",
+            "text": "Se fue la luz. No corras, Alex. Pulsa F y mira por dónde vas.",
+            "emotion": "WHISPER",
+            "source": "Floor06_Labs:Seq_F06_03_LabB_Apagon",
+            "file": "elena_f06_800acb72.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 4.230000019073486
+        },
+        {
+            "key": "alex este es el piso de mi mama aqui hacian los experimentos no toques nada raro si",
+            "text": "Alex, este es el piso de mi mamá. Aquí hacían los experimentos. No toques nada raro, ¿sí?",
+            "emotion": "WHISPER",
+            "source": "Floor06_Labs:Seq_F06_00_Llegada",
+            "file": "elena_f06_0c1c80e8.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 5.449999809265137
+        },
+        {
+            "key": "esa puerta no la puedo abrir yo la esclusa solo se abre si un humano limpio pone la mano en el escaner maestro",
+            "text": "Esa puerta no la puedo abrir yo. La esclusa solo se abre si un humano limpio pone la mano en el escáner maestro.",
+            "emotion": "URGENT",
+            "source": "fallback_floor01:OPEN_DOOR",
+            "file": "elena_f01_66e364b1.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 9.630000114440918
+        },
+        {
+            "key": "espera espera ya te abri la puerta de las escaleras corre antes de que vuelvan a cerrarla",
+            "text": "Espera, espera... ¡ya! Te abrí la puerta de las escaleras. Corre antes de que vuelvan a cerrarla.",
+            "emotion": "URGENT",
+            "source": "fallback_floor06:OPEN_DOOR",
+            "file": "elena_f06_650225c2.wav",
+            "engine": "Gemini TTS gemini-3.1-flash-tts-preview · voz Leda",
+            "seconds": 6.179999828338623
+        },
+        {
+            "key": "ya ya ya listo te abri la puerta de las escaleras corre alex",
+            "text": "Ya, ya, ya... ¡listo! Te abrí la puerta de las escaleras. Corre, Alex.",
+            "emotion": "URGENT",
+            "source": "fallback_floor12:OPEN_DOOR",
+            "file": "elena_f12_3f3f096c.wav",
+            "engine": "Gemini TTS gemini-3.1-flash-tts-preview · voz Leda",
+            "seconds": 4.599999904632568
+        },
+        {
+            "key": "la persiana no se liberara mientras el sistema detecte presencia hostil tienes que acabar con los dos infectados",
+            "text": "La persiana no se liberará mientras el sistema detecte presencia hostil. Tienes que acabar con los dos infectados.",
+            "emotion": "URGENT",
+            "source": "Floor12_Offices:Seq_07_ProtocoloSombra",
+            "file": "elena_f12_c2e2bc7a.wav",
+            "engine": "Gemini TTS gemini-2.5-flash-preview-tts · voz Leda",
+            "seconds": 6.739999771118164
+        },
+        {
+            "key": "esa no soy yo sigue conmigo",
+            "text": "Esa no soy yo. Sigue conmigo.",
+            "emotion": "URGENT",
+            "source": "Floor06_Labs:Seq_F06_03_LabB_Apagon",
+            "file": "elena_f06_30a2b351.wav",
+            "engine": "Gemini TTS gemini-2.5-flash-preview-tts · voz Leda",
+            "seconds": 1.1399999856948853
+        },
+        {
+            "key": "ese mensaje no lleva mi sello alex no es mio no abras esa puerta",
+            "text": "¡Ese mensaje no lleva mi sello, Alex! No es mío. No abras esa puerta.",
+            "emotion": "URGENT",
+            "source": "Floor06_Labs:Seq_F06_01_ReglaDelSello",
+            "file": "elena_f06_79b38ea7.wav",
+            "engine": "Gemini TTS gemini-2.5-flash-preview-tts · voz Leda",
+            "seconds": 2.549999952316284
+        },
+        {
+            "key": "ese mensaje no lleva mi sello alex no soy yo",
+            "text": "¡Ese mensaje no lleva mi sello, Alex! No soy yo.",
+            "emotion": "URGENT",
+            "source": "Floor06_Labs:F06_FakeVoiceWarning",
+            "file": "elena_f06_ab789dd9.wav",
+            "engine": "Gemini TTS gemini-2.5-flash-preview-tts · voz Leda",
+            "seconds": 3.5299999713897705
+        },
+        {
+            "key": "alex esa voz no soy yo mira el sello bio id",
+            "text": "Alex, esa voz no soy yo. Mira el sello BIO-ID.",
+            "emotion": "URGENT",
+            "source": "Floor06_Labs:F06_FakeVoiceWarning",
+            "file": "elena_f06_dbb98ef5.wav",
+            "engine": "Gemini TTS gemini-2.5-flash-preview-tts · voz Leda",
+            "seconds": 4.039999961853027
+        },
+        {
+            "key": "no le hagas caso si no ves mi sello no es mia",
+            "text": "No le hagas caso. Si no ves mi sello, no es mía.",
+            "emotion": "URGENT",
+            "source": "Floor06_Labs:F06_FakeVoiceWarning",
+            "file": "elena_f06_d37aa143.wav",
+            "engine": "Gemini TTS gemini-2.5-flash-preview-tts · voz Leda",
+            "seconds": 3.549999952316284
+        },
+        {
+            "key": "escuchame bien si te llega un mensaje mio sin el sello bio id no soy yo es una trampa alex",
+            "text": "Escúchame bien: si te llega un mensaje mío sin el sello BIO-ID, no soy yo. Es una trampa, Alex.",
+            "emotion": "SCARED",
+            "source": "fallback_floor06:FEAR",
+            "file": "elena_f06_c4a35182.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 5.110000133514404
+        },
+        {
+            "key": "estoy aqui alex no me dejes sola por favor",
+            "text": "Estoy aquí, Alex. No me dejes sola, por favor.",
+            "emotion": "SCARED",
+            "source": "fallback_floor12:GENERIC",
+            "file": "elena_f12_af330791.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 9.829999923706055
+        },
+        {
+            "key": "alex sigue caminando hacia la esclusa por favor",
+            "text": "Alex... sigue caminando hacia la esclusa, por favor.",
+            "emotion": "SCARED",
+            "source": "ElenaAIService:emergencia",
+            "file": "elena_misc_9d6f45a2.wav",
+            "engine": "Gemini TTS gemini-3.8-flash-lite-tts · voz Leda",
+            "seconds": 3.2300000190734863
+        },
+        {
+            "key": "tengo el llavero de mi mama dice que nos va a cuidar tu sigue caminando alex",
+            "text": "Tengo el llavero de mi mamá. Dice que nos va a cuidar. Tú sigue caminando, Alex.",
+            "emotion": "SAD",
+            "source": "fallback_floor12:FEAR",
+            "file": "elena_f12_272001a9.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 3.6217687129974365
+        },
+        {
+            "key": "no tengo autorizacion para hablar de ese incidente",
+            "text": "No tengo autorización para hablar de ese incidente.",
+            "emotion": "SAD",
+            "source": "Floor12_Offices:Seq_05_Recording",
+            "file": "elena_f12_741dbe9c.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.99546480178833
+        },
+        {
+            "key": "yo fui creada para ayudar a las personas",
+            "text": "Yo fui creada para ayudar a las personas.",
+            "emotion": "SAD",
+            "source": "Floor12_Offices:Seq_07_ProtocoloSombra",
+            "file": "elena_f12_35e083af.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.5664398670196533
+        },
+        {
+            "key": "no soy lo que estas buscando",
+            "text": "No soy lo que estás buscando.",
+            "emotion": "SAD",
+            "source": "Floor12_Offices:Seq_07_ProtocoloSombra",
+            "file": "elena_f12_8b070722.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.1174603700637817
+        },
+        {
+            "key": "eso eso lo escribio mi mama seguro estaba muy cansada cuando lo dejo",
+            "text": "Eso... eso lo escribió mi mamá. Seguro estaba muy cansada cuando lo dejó.",
+            "emotion": "SAD",
+            "source": "Floor06_Labs:Seq_F06_02_LabA_Sombra",
+            "file": "elena_f06_f33d4130.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 3.2925169467926025
+        },
+        {
+            "key": "perdoname alex",
+            "text": "Perdóname, Alex.",
+            "emotion": "SAD",
+            "source": "Floor01_Lobby:giro",
+            "file": "elena_f01_63d4ea0a.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.0077097415924072
+        },
+        {
+            "key": "necesitaba que llegaras hasta aqui",
+            "text": "Necesitaba que llegaras hasta aquí.",
+            "emotion": "SAD",
+            "source": "Floor01_Lobby:giro",
+            "file": "elena_f01_7895e003.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.3469387292861938
+        },
+        {
+            "key": "tu abriste la puerta por los dos",
+            "text": "Tú abriste la puerta por los dos.",
+            "emotion": "SAD",
+            "source": "Floor01_Lobby:giro",
+            "file": "elena_f01_9237b881.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.1773242950439453
+        },
+        {
+            "key": "no te muevas todavia necesito comprobar que eres tu",
+            "text": "No te muevas todavía. Necesito comprobar que eres tú.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_01_Intro",
+            "file": "elena_f12_82cb5bd2.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 2.3546485900878906
+        },
+        {
+            "key": "bien estas vivo",
+            "text": "...Bien. Estás vivo.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_01_Intro",
+            "file": "elena_f12_2229cfd3.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.047619104385376
+        },
+        {
+            "key": "soy elena la asistente del edificio el piso 12 esta en cuarentena y la salida segura esta bloqueada",
+            "text": "Soy Elena, la asistente del edificio. El piso 12 está en cuarentena y la salida segura está bloqueada.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_01_Intro",
+            "file": "elena_f12_c6da58e6.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 4.559637069702148
+        },
+        {
+            "key": "llega a la sala de servidores alli podre ayudarte",
+            "text": "Llega a la sala de servidores. Allí podré ayudarte.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_01_Intro",
+            "file": "elena_f12_f6c66ec3.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 2.204988718032837
+        },
+        {
+            "key": "ese empleado participaba en una investigacion no autorizada",
+            "text": "Ese empleado participaba en una investigación no autorizada.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_05_Recording",
+            "file": "elena_f12_566afca8.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 2.384580612182617
+        },
+        {
+            "key": "por favor continua hacia la sala de servidores",
+            "text": "Por favor, continúa hacia la sala de servidores.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_05_Recording",
+            "file": "elena_f12_4e41d3ee.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 2.1351473331451416
+        },
+        {
+            "key": "el personal fue evacuado",
+            "text": "El personal fue evacuado.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_03_Evacuated",
+            "file": "elena_f12_231b3578.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.047619104385376
+        },
+        {
+            "key": "eso es lo que indican los registros",
+            "text": "...Eso es lo que indican los registros.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_03_Evacuated",
+            "file": "elena_f12_4d53b54c.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.2870748043060303
+        },
+        {
+            "key": "los archivos que buscas estan en la consola de vigilancia",
+            "text": "Los archivos que buscas están en la consola de vigilancia.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_06_ServerArrive",
+            "file": "elena_f12_fb586330.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 2.2249433994293213
+        },
+        {
+            "key": "no pienso dejarte solo ahi fuera voy contigo",
+            "text": "No pienso dejarte solo ahí fuera. Voy contigo.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_06_ServerArrive",
+            "file": "elena_f12_b7049068.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 2.1750566959381104
+        },
+        {
+            "key": "ese mensaje fue escrito durante un episodio de panico no le des importancia",
+            "text": "Ese mensaje fue escrito durante un episodio de pánico. No le des importancia.",
+            "emotion": "CALM",
+            "source": "Floor12_Offices:Seq_02_NoteReply",
+            "file": "elena_f12_3dc602a6.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 3.422222137451172
+        },
+        {
+            "key": "no fui yo",
+            "text": "No fui yo.",
+            "emotion": "URGENT",
+            "source": "Floor12_Offices:Seq_08_FalseVoice",
+            "file": "elena_f12_0ce2048e.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 0.45895692706108093
+        },
+        {
+            "key": "no respondas a esa voz",
+            "text": "No respondas a esa voz.",
+            "emotion": "URGENT",
+            "source": "Floor12_Offices:Seq_08_FalseVoice",
+            "file": "elena_f12_1171f498.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 0.9278911352157593
+        },
+        {
+            "key": "las puertas se estan bloqueando te guiare hasta la escalera de emergencia",
+            "text": "Las puertas se están bloqueando. Te guiaré hasta la escalera de emergencia.",
+            "emotion": "URGENT",
+            "source": "Floor12_Offices:Seq_07_ProtocoloSombra",
+            "file": "elena_f12_93c8429b.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 2.9034013748168945
+        },
+        {
+            "key": "estas aqui te veo a traves del cristal",
+            "text": "Estás aquí. Te veo a través del cristal.",
+            "emotion": "HAPPY",
+            "source": "Floor12_Offices:Seq_06_ServerArrive",
+            "file": "elena_f12_303eeb35.wav",
+            "engine": "Windows System.Speech · Microsoft Helena Desktop",
+            "seconds": 1.7560091018676758
+        }
+    ]
+}

@@ -13,11 +13,13 @@ namespace Nexo.Player
     {
         [SerializeField] private PlayerWeapon _weapon;
         [SerializeField] private PlayerHealth _health;
+        [SerializeField] private PlayerKnife _knife;
 
         private void Awake()
         {
             if (_weapon == null) _weapon = GetComponent<PlayerWeapon>();
             if (_health == null) _health = GetComponent<PlayerHealth>();
+            if (_knife == null) _knife = GetComponent<PlayerKnife>();
         }
 
         private void OnEnable()
@@ -47,8 +49,10 @@ namespace Nexo.Player
                 // JUGAR desde el menú: se descarta lo de la partida anterior
                 GameSession.NewGamePending = false;
                 GameSession.RestorePending = false;
+                Nexo.Narrative.NoteJournal.Clear(); // el diario empieza vacío en una partida nueva
                 if (_weapon != null) { _weapon.ResetToDefaults(); _weapon.enabled = true; }
                 if (_health != null) _health.ResetFull();
+                if (_knife != null) _knife.SetHasKnife(false);
                 Save();
                 return;
             }
@@ -66,6 +70,7 @@ namespace Nexo.Player
 
         private void Save()
         {
+            GameSession.HasKnife = _knife != null && _knife.HasKnife;
             GameSession.Save(
                 _weapon != null ? _weapon.Magazine : 0,
                 _weapon != null ? _weapon.Reserve : 0,
@@ -82,6 +87,7 @@ namespace Nexo.Player
                 _weapon.enabled = GameSession.HasWeapon;
             }
             if (_health != null) _health.SetState(GameSession.HealthPoints, GameSession.HitCount);
+            if (_knife != null) _knife.SetHasKnife(GameSession.HasKnife);
         }
     }
 }

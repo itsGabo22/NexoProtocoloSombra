@@ -8,7 +8,7 @@ namespace Nexo.Interaction
 {
     /// <summary>
     /// Escondite (taquilla): [E] para entrar y [E] para salir. Dentro el jugador no se mueve ni dispara, la cámara
-    /// queda en el punto interior y se oye su respiración. Los infectados que no le vieron entrar no pueden verle
+    /// queda en el punto interior (puede mirar alrededor con límites) y se oye su respiración. Los infectados que no le vieron entrar no pueden verle
     /// (PlayerHiding); si le vieron, lo sacan a la fuerza. Abrir/cerrar la puerta hace algo de ruido.
     /// Sin Update: entrada por callback y una corrutina corta de transición.
     /// </summary>
@@ -23,6 +23,9 @@ namespace Nexo.Interaction
         [SerializeField] private AudioClip _doorClip;
         [SerializeField, Range(0f, 100f)] private float _doorNoise = 25f;
         [SerializeField] private float _minHideTime = 0.6f;
+        [Tooltip("Giro máximo de la mirada dentro del escondite respecto a la dirección de entrada (grados).")]
+        [SerializeField] private float _lookYawLimit = LookLimits.HidingYaw;
+        [SerializeField] private float _lookPitchLimit = LookLimits.HidingPitch;
 
         private InputAction _exitAction;
         private PlayerMovement _player;
@@ -71,6 +74,8 @@ namespace Nexo.Interaction
             PlayerHiding.SetHidden(true);
             _player.SetInputLocked(true, false);
             Teleport(_insidePoint != null ? _insidePoint : transform);
+            // Dentro se puede mirar alrededor (±70° / ±35°) sin moverse; [E] para salir
+            _player.BeginLimitedLook(_lookYawLimit, _lookPitchLimit);
             PlayDoor();
             if (_breathing != null) _breathing.Play();
             GameEvents.RaiseSubtitle("(Contienes la respiración dentro de la taquilla)");
@@ -131,6 +136,7 @@ namespace Nexo.Interaction
             _occupied = false;
             _exitAction.Disable();
             PlayerHiding.SetHidden(false);
+            if (_player != null) _player.EndLimitedLook();
             if (_breathing != null) _breathing.Stop();
             Teleport(_exitPoint != null ? _exitPoint : transform);
             PlayDoor();

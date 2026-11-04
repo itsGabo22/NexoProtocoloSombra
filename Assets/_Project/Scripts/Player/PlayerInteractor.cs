@@ -143,7 +143,7 @@ namespace Nexo.Player
 
         private void HandleInteractPerformed(InputAction.CallbackContext context)
         {
-            if (_isCaptured || _currentInteractable == null) return;
+            if (_isCaptured || _currentInteractable == null || UiTextEntry.BlocksHotkeys) return;
 
             _currentInteractable.Interact();
 
@@ -156,7 +156,9 @@ namespace Nexo.Player
 
         private void SetCurrentInteractable(IInteractable interactable)
         {
+            if (!ReferenceEquals(_currentInteractable, interactable)) SetHighlight(_currentInteractable, false);
             _currentInteractable = interactable;
+            SetHighlight(interactable, true);
             if (_hudController != null)
             {
                 _hudController.SetInteractPrompt(interactable.Prompt);
@@ -167,11 +169,18 @@ namespace Nexo.Player
         {
             if (_currentInteractable == null) return;
 
+            SetHighlight(_currentInteractable, false);
             _currentInteractable = null;
             if (_hudController != null)
             {
                 _hudController.SetInteractPrompt(string.Empty);
             }
+        }
+
+        /// <summary>gameplay-pass: resalte opcional del objeto mirado (notas en papel).</summary>
+        private static void SetHighlight(IInteractable interactable, bool on)
+        {
+            if (interactable is Component c && c != null && c.TryGetComponent(out InteractableHighlight highlight)) highlight.SetHighlighted(on);
         }
     }
 }
