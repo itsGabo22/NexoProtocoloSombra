@@ -411,6 +411,7 @@ namespace Nexo.AI.Infected
                 UpdateAnimatorSpeed();
 
                 float distance = DistanceToPlayer();
+                KeepPersonalSpace(distance);
                 UpdateProximity(distance <= _nearbyRadius);
 
                 // Lejos del jugador y sin nada que hacer: piensa menos a menudo
@@ -457,6 +458,75 @@ namespace Nexo.AI.Infected
             _incapacitatedUntil = Time.time + stun;
             if (_reactions != null) _reactions.PlayHit(zone, shotOrigin, stun);
             ChangeState(Chase);
+        }
+
+        /// <summary>gameplay-pass: el infectado ya ha detectado al jugador (no hay ejecución sigilosa con el cuchillo).</summary>
+        public bool IsAwareOfPlayer => _canSeePlayer || _awareness >= 0.5f || _currentState == Chase || _currentState == Attack || _currentState == Search;
+
+        /// <summary>
+        /// gameplay-pass: empujón del jugador [G]. Lo desequilibra <paramref name="stagger"/> s, lo hace retroceder
+        /// <paramref name="push"/> m sobre el NavMesh (sin atravesar paredes) y después vuelve a perseguir.
+        /// </summary>
+        public void ApplyShove(Vector3 from, float stagger, float push)
+        {
+            if (_isDead || _isDowned) return;
+            StopMoving();
+            StopLookAround();
+            LastKnownPlayerPos = from;
+            _awareness = 1f;
+            _incapacitatedUntil = Time.time + stagger;
+            _lastAttackTime = Time.time; // no ataca nada más recuperarse
+            if (_reactions != null) _reactions.PlayHit(HitZone.Torso, from, stagger);
+            StartCoroutine(PushBackRoutine(from, push, 0.25f));
+            ChangeState(Chase);
+        }
+
+        private IEnumerator PushBackRoutine(Vector3 from, float meters, float duration)
+        {
+            Vector3 away = transform.position - from;
+            away.y = 0f;
+            away = away.sqrMagnitude > 0.001f ? away.normalized : -transform.forward;
+            for (float t = 0f; t < duration; t += Time.deltaTime)
+            {
+                if (_isDead || _agent == null || !_agent.enabled || !_agent.isOnNavMesh) yield break;
+                _agent.Move(away * (meters * Time.deltaTime / duration));
+                yield return null;
+            }
+        }
+
+        /// <summary>gameplay-pass: tajo de cuchillo. Por la espalda sin haber sido detectado = ejecución silenciosa.</summary>
+        public void ApplyMeleeHit(Vector3 origin, bool stealthTakedown)
+        {
+            if (_isDowned || _isDead) return;
+            _health -= Mathf.Max(1, InfectedDamageRules.KnifeHit(stealthTakedown, _health));
+            if (_health <= 0)
+            {
+                GameEvents.RaiseHitConfirmed(true);
+                Die(origin);
+                return;
+            }
+            GameEvents.RaiseHitConfirmed(false);
+            LastKnownPlayerPos = origin;
+            _awareness = 1f;
+            StopMoving();
+            StopLookAround();
+            _incapacitatedUntil = Time.time + _stunDuration;
+            if (_reactions != null) _reactions.PlayHit(HitZone.Torso, origin, _stunDuration);
+            ChangeState(Chase);
+        }
+
+        /// <summary>
+        /// gameplay-pass: nunca se mete dentro del jugador. Si queda a menos de 0,8 m (acorralándolo contra una esquina),
+        /// se aparta un poco: el CharacterController no vibra atrapado entre la pared y la cápsula del infectado.
+        /// </summary>
+        private void KeepPersonalSpace(float distance)
+        {
+            const float personalSpace = 0.8f;
+            if (_player == null || distance >= personalSpace || _agent == null || !_agent.enabled || !_agent.isOnNavMesh) return;
+            Vector3 away = transform.position - _player.position;
+            away.y = 0f;
+            if (away.sqrMagnitude < 0.0001f) away = -transform.forward;
+            _agent.Move(away.normalized * Mathf.Min(0.3f, personalSpace - distance));
         }
 
         /// <summary>Muerte definitiva: se desploma, deja de percibir y de bloquear el paso.</summary>

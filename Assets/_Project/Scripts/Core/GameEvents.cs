@@ -85,6 +85,8 @@ namespace Nexo.Core
         public static event Action<int> OnPlayerHealed;
         /// <summary>Un ataque del jugador alcanza a un infectado (true si lo mata): marca de impacto del HUD.</summary>
         public static event Action<bool> OnHitConfirmed;
+        /// <summary>El jugador consigue (true) o pierde (false) el cuchillo: panel del arma del HUD.</summary>
+        public static event Action<bool> OnKnifeChanged;
 
         public static void RaiseNoiseChanged(float noise) => OnNoiseChanged?.Invoke(noise);
         public static void RaiseBatteryChanged(float battery) => OnBatteryChanged?.Invoke(battery);
@@ -117,6 +119,7 @@ namespace Nexo.Core
         public static void RaiseScreenFade(float alpha, float seconds) => OnScreenFade?.Invoke(alpha, seconds);
         public static void RaisePlayerHealed(int points) => OnPlayerHealed?.Invoke(points);
         public static void RaiseHitConfirmed(bool killed) => OnHitConfirmed?.Invoke(killed);
+        public static void RaiseKnifeChanged(bool hasKnife) => OnKnifeChanged?.Invoke(hasKnife);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -152,6 +155,7 @@ namespace Nexo.Core
             OnScreenFade = null;
             OnPlayerHealed = null;
             OnHitConfirmed = null;
+            OnKnifeChanged = null;
         }
     }
 }

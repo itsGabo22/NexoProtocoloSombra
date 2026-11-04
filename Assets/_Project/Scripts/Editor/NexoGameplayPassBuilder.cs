@@ -26,6 +26,9 @@ namespace Nexo.EditorTools
     public static class NexoGameplayPassBuilder
     {
         private const string PlayerPrefab = "Assets/_Project/Prefabs/Systems/PF_Player.prefab";
+        private const string ElenaServicePrefab = "Assets/_Project/Prefabs/Systems/PF_ElenaService.prefab";
+        private const string HudPrefab = "Assets/_Project/Prefabs/Systems/PF_HUD.prefab";
+        private const string ElenaConfigPath = "Assets/_Project/Data/ElenaConfig.asset";
         private const string MedkitPrefab = "Assets/_Project/Prefabs/Interactables/PF_Medkit.prefab";
         private const string MaterialsFolder = "Assets/_Project/Materials/Gameplay";
         private const string MedkitClip = "Assets/_Project/Audio/SFX/SFX_Medkit_Pickup.wav";
@@ -57,11 +60,14 @@ namespace Nexo.EditorTools
         public static void BuildAll()
         {
             GameObject medkit = BuildMedkitPrefab();
+            GameObject knifePickup = BuildKnifePrefab();
             ConfigurePlayerPrefab();
+            ConfigureElenaService();
+            ConfigureHud();
             foreach ((string path, string prefix) in Floors)
             {
                 Scene scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
-                BuildFloor(scene, prefix, medkit);
+                BuildFloor(scene, prefix, medkit, knifePickup);
                 EditorSceneManager.MarkSceneDirty(scene);
                 EditorSceneManager.SaveScene(scene);
             }
@@ -96,6 +102,24 @@ namespace Nexo.EditorTools
             Part(root, "Handle", new Vector3(0f, 0.25f, 0f), new Vector3(0.16f, 0.03f, 0.03f), red);
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, MedkitPrefab);
+            Object.DestroyImmediate(root);
+            return prefab;
+        }
+
+        private static GameObject BuildKnifePrefab()
+        {
+            var root = new GameObject("PF_KnifePickup") { layer = InteractableLayer };
+            var box = root.AddComponent<BoxCollider>();
+            box.isTrigger = true;
+            box.center = new Vector3(0f, 0.08f, 0f);
+            box.size = new Vector3(0.35f, 0.2f, 0.5f);
+            root.AddComponent<KnifePickup>();
+            GameObject model = PlayerKnife.BuildKnifeModel(root.transform,
+                EmissiveMaterial("MAT_Knife_Blade", new Color(0.75f, 0.77f, 0.8f), new Color(0.25f, 0.27f, 0.3f)),
+                EmissiveMaterial("MAT_Knife_Handle", new Color(0.12f, 0.1f, 0.09f), Color.black));
+            model.transform.localPosition = new Vector3(0f, 0.03f, 0f);
+            model.transform.localRotation = Quaternion.Euler(0f, 0f, 90f);
+            GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, "Assets/_Project/Prefabs/Interactables/PF_KnifePickup.prefab");
             Object.DestroyImmediate(root);
             return prefab;
         }
@@ -138,12 +162,79 @@ namespace Nexo.EditorTools
             GameObject contents = PrefabUtility.LoadPrefabContents(PlayerPrefab);
             try
             {
-                var checkpoints = contents.GetComponent<PlayerCheckpoints>() ?? contents.AddComponent<PlayerCheckpoints>();
+                if (!contents.TryGetComponent(out PlayerCheckpoints checkpoints)) checkpoints = contents.AddComponent<PlayerCheckpoints>();
                 var so = new SerializedObject(checkpoints);
                 so.FindProperty("_movement").objectReferenceValue = contents.GetComponent<PlayerMovement>();
                 so.FindProperty("_health").objectReferenceValue = contents.GetComponent<PlayerHealth>();
                 so.ApplyModifiedPropertiesWithoutUndo();
+
+                // Empujón [G] y cuchillo [X]
+                AudioSource audio = contents.GetComponentInChildren<AudioSource>();
+                AudioClip hitClip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/SFX/SFX_Infected_HitFlesh.wav");
+                if (!contents.TryGetComponent(out PlayerShove shove)) shove = contents.AddComponent<PlayerShove>();
+                var sso = new SerializedObject(shove);
+                sso.FindProperty("_audio").objectReferenceValue = audio;
+                sso.FindProperty("_shoveClip").objectReferenceValue = hitClip;
+                sso.ApplyModifiedPropertiesWithoutUndo();
+                if (!contents.TryGetComponent(out PlayerKnife knife)) knife = contents.AddComponent<PlayerKnife>();
+                var kso = new SerializedObject(knife);
+                kso.FindProperty("_audio").objectReferenceValue = audio;
+                kso.FindProperty("_hitClip").objectReferenceValue = hitClip;
+                kso.FindProperty("_bladeMaterial").objectReferenceValue = EmissiveMaterial("MAT_Knife_Blade", new Color(0.75f, 0.77f, 0.8f), new Color(0.08f, 0.08f, 0.09f));
+                kso.FindProperty("_handleMaterial").objectReferenceValue = EmissiveMaterial("MAT_Knife_Handle", new Color(0.12f, 0.1f, 0.09f), Color.black);
+                kso.ApplyModifiedPropertiesWithoutUndo();
+                if (contents.TryGetComponent(out PlayerStatePersistence persistence))
+                {
+                    var pso = new SerializedObject(persistence);
+                    pso.FindProperty("_knife").objectReferenceValue = knife;
+                    pso.ApplyModifiedPropertiesWithoutUndo();
+                }
                 PrefabUtility.SaveAsPrefabAsset(contents, PlayerPrefab);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
+        }
+
+        /// <summary>PF_ElenaService: voz de Elena (ElenaVoicePlayer + AudioSource 2D) junto a ElenaAIService.</summary>
+        private static void ConfigureElenaService()
+        {
+            GameObject contents = PrefabUtility.LoadPrefabContents(ElenaServicePrefab);
+            try
+            {
+                if (!contents.TryGetComponent(out AudioSource source)) source = contents.AddComponent<AudioSource>();
+                source.playOnAwake = false;
+                source.spatialBlend = 0f;
+                if (!contents.TryGetComponent(out Nexo.AI.Elena.ElenaVoicePlayer player)) player = contents.AddComponent<Nexo.AI.Elena.ElenaVoicePlayer>();
+                var so = new SerializedObject(player);
+                so.FindProperty("_config").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Nexo.AI.Elena.ElenaConfig>(ElenaConfigPath);
+                so.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(contents, ElenaServicePrefab);
+            }
+            finally
+            {
+                PrefabUtility.UnloadPrefabContents(contents);
+            }
+        }
+
+        /// <summary>PF_HUD: cuadro de texto para escribir a Elena ([T]).</summary>
+        private static void ConfigureHud()
+        {
+            GameObject contents = PrefabUtility.LoadPrefabContents(HudPrefab);
+            try
+            {
+                if (!contents.TryGetComponent(out Nexo.UI.ElenaTextInput _)) contents.AddComponent<Nexo.UI.ElenaTextInput>();
+                if (!contents.TryGetComponent(out Nexo.UI.NoteReader reader)) reader = contents.AddComponent<Nexo.UI.NoteReader>();
+                if (!contents.TryGetComponent(out AudioSource paperAudio)) paperAudio = contents.AddComponent<AudioSource>();
+                paperAudio.playOnAwake = false;
+                paperAudio.spatialBlend = 0f;
+                var rso = new SerializedObject(reader);
+                rso.FindProperty("_font").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Font>("Assets/_Project/UI/Fonts/IBMPlexMono-Medium.ttf");
+                rso.FindProperty("_audio").objectReferenceValue = paperAudio;
+                rso.FindProperty("_paperClip").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_Project/Audio/SFX/SFX_Paper_Rustle.wav");
+                rso.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(contents, HudPrefab);
             }
             finally
             {
@@ -153,7 +244,7 @@ namespace Nexo.EditorTools
 
         // ---------- Pisos ----------
 
-        private static void BuildFloor(Scene scene, string prefix, GameObject medkit)
+        private static void BuildFloor(Scene scene, string prefix, GameObject medkit, GameObject knifePickup)
         {
             string rootName = prefix + "_GameplayPass";
             foreach (GameObject old in scene.GetRootGameObjects().Where(g => g.name == rootName).ToArray()) Object.DestroyImmediate(old);
@@ -219,13 +310,21 @@ namespace Nexo.EditorTools
             // Botín en todos los infectados (botiquín al 35 %)
             foreach (InfectedSpawnPoint sp in Object.FindObjectsByType<InfectedSpawnPoint>(FindObjectsSortMode.None))
             {
-                var loot = sp.GetComponent<InfectedLootDrop>() ?? sp.gameObject.AddComponent<InfectedLootDrop>();
+                if (!sp.TryGetComponent(out InfectedLootDrop loot)) loot = sp.gameObject.AddComponent<InfectedLootDrop>();
                 var so = new SerializedObject(loot);
                 so.FindProperty("_chanceDrop").objectReferenceValue = medkit;
                 so.FindProperty("_chance").floatValue = 0.35f;
+                // Cuchillo: lo suelta siempre el patrullero principal del Piso 12
+                SerializedProperty guaranteed = so.FindProperty("_guaranteed");
+                guaranteed.arraySize = prefix == "F12" && sp.name == "InfectedSpawn" ? 1 : 0;
+                if (guaranteed.arraySize == 1) guaranteed.GetArrayElementAtIndex(0).objectReferenceValue = knifePickup;
                 so.ApplyModifiedPropertiesWithoutUndo();
                 EditorUtility.SetDirty(loot);
             }
+
+            // Notas en papel: resalte al mirarlas
+            foreach (LoreNote n in Object.FindObjectsByType<LoreNote>(FindObjectsSortMode.None))
+                if (!n.TryGetComponent(out InteractableHighlight _)) n.gameObject.AddComponent<InteractableHighlight>();
 
             Debug.Log($"[NexoGameplayPassBuilder] {scene.name}: anclas {anchors.Count}, válidas {navAnchors.Count}; exclusiones " +
                       string.Join(" ", exclusions.Select(e => $"[{F(e.min)}..{F(e.max)}]")));

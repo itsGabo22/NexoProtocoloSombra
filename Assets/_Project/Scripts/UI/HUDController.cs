@@ -74,6 +74,7 @@ namespace Nexo.UI
         private float _fadeStart;
         private float _fadeSeconds;
         private IVisualElementScheduledItem _hitMarkerEnd;
+        private Label _knifeLabel;
         private VisualElement _portrait;
         private VisualElement _trustFill;
         private VisualElement _batteryFill;
@@ -170,6 +171,7 @@ namespace Nexo.UI
             GameEvents.OnCinematicFinished += HandleCinematicFinished;
             GameEvents.OnScreenFade += HandleScreenFade;
             GameEvents.OnHitConfirmed += HandleHitConfirmed;
+            GameEvents.OnKnifeChanged += HandleKnifeChanged;
             AccessibilitySettings.Changed += HandleAccessibilityChanged;
             HandleAccessibilityChanged(AccessibilitySettings.Current);
 
@@ -208,6 +210,7 @@ namespace Nexo.UI
             GameEvents.OnCinematicFinished -= HandleCinematicFinished;
             GameEvents.OnScreenFade -= HandleScreenFade;
             GameEvents.OnHitConfirmed -= HandleHitConfirmed;
+            GameEvents.OnKnifeChanged -= HandleKnifeChanged;
             AccessibilitySettings.Changed -= HandleAccessibilityChanged;
             _fadeStep?.Pause();
             _hitMarkerEnd?.Pause();
@@ -278,6 +281,7 @@ namespace Nexo.UI
             _capture = _root.Q<VisualElement>("hud-capture");
             _crosshair = _root.Q<VisualElement>("hud-crosshair");
             BuildFadeOverlay();
+            BuildKnifeLabel();
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -499,6 +503,23 @@ namespace Nexo.UI
             bool done = Time.unscaledTime - _fadeStart >= _fadeSeconds;
             if (done) _fade.style.opacity = _fadeTo;
             return done;
+        }
+
+        /// <summary>Línea «CUCHILLO [X]» bajo la munición (oculta hasta conseguirlo); no toca la rejilla de balas.</summary>
+        private void BuildKnifeLabel()
+        {
+            if (_weaponPanel == null || _knifeLabel != null) return;
+            _knifeLabel = new Label("CUCHILLO [X] · LISTO") { name = "hud-weapon-knife", pickingMode = PickingMode.Ignore };
+            _knifeLabel.AddToClassList("text-xs");
+            _knifeLabel.AddToClassList("text-accent");
+            _knifeLabel.style.marginTop = 4;
+            _knifeLabel.style.display = DisplayStyle.None;
+            _weaponPanel.Add(_knifeLabel);
+        }
+
+        private void HandleKnifeChanged(bool hasKnife)
+        {
+            if (_knifeLabel != null) _knifeLabel.style.display = hasKnife ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         /// <summary>Marca de impacto: la mira crece un instante (más si el disparo mata).</summary>

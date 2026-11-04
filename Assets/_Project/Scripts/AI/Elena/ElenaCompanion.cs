@@ -38,6 +38,9 @@ namespace Nexo.AI.Elena
 
         public bool IsFollowing => _isFollowing;
 
+        /// <summary>gameplay-pass: Elena sale de la sala de servidores (la figura visible tras el cristal se apaga).</summary>
+        public event System.Action FollowStarted;
+
         private void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
@@ -76,6 +79,7 @@ namespace Nexo.AI.Elena
             if (_isFollowing) return;
             if (exitPoint != null) _agent.Warp(exitPoint.position);
             _isFollowing = true;
+            FollowStarted?.Invoke();
             _routine = StartCoroutine(FollowRoutine());
         }
 

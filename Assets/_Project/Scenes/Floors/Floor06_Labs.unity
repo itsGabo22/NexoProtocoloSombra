@@ -858,6 +858,74 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &70210445
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 70210446}
+  - component: {fileID: 70210448}
+  - component: {fileID: 70210447}
+  m_Layer: 2
+  m_Name: F06_Checkpoint_03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &70210446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70210445}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.66451436, z: -0, w: 0.7472755}
+  m_LocalPosition: {x: -4.5, y: 0.08332837, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2054397308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &70210447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70210445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
+  _label: "Piso 6 \xB7 control 3"
+  _notify: 1
+--- !u!65 &70210448
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70210445}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5, y: 2.4, z: 3.5}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &82164103
 GameObject:
   m_ObjectHideFlags: 0
@@ -5630,6 +5698,39 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 476839171}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &505642289
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 505642290}
+  m_Layer: 0
+  m_Name: F06_GameplayPass
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &505642290
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505642289}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2054397308}
+  - {fileID: 1020325271}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &509032218
 GameObject:
   m_ObjectHideFlags: 0
@@ -6430,40 +6531,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 590467432}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &595228137
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 595228138}
-  m_Layer: 0
-  m_Name: F06_Checkpoints
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &595228138
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 595228137}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 805218900}
-  - {fileID: 739871897}
-  - {fileID: 1246590680}
-  m_Father: {fileID: 1117269920}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &614655295
 GameObject:
   m_ObjectHideFlags: 0
@@ -6775,68 +6842,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 626377950}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &628652359
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1809644168}
-    m_Modifications:
-    - target: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_Name
-      value: F06_Medkit_01
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -13.233334
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.10332836
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 7.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.976296
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.21643962
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
---- !u!4 &628652360 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-  m_PrefabInstance: {fileID: 628652359}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &653545116
 GameObject:
   m_ObjectHideFlags: 0
@@ -7519,6 +7524,7 @@ GameObject:
   - component: {fileID: 730291571}
   - component: {fileID: 730291570}
   - component: {fileID: 730291569}
+  - component: {fileID: 730291573}
   m_Layer: 10
   m_Name: N2_Directora
   m_TagString: Untagged
@@ -7634,6 +7640,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 730291567}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &730291573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730291567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &734294845
 GameObject:
   m_ObjectHideFlags: 0
@@ -7890,74 +7910,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 29120087}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &739871896
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 739871897}
-  - component: {fileID: 739871899}
-  - component: {fileID: 739871898}
-  m_Layer: 2
-  m_Name: F06_Checkpoint_02
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &739871897
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 739871896}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.5465859, z: -0, w: 0.83740306}
-  m_LocalPosition: {x: 3.3, y: 0.08332825, z: 7.166667}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 595228138}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &739871898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 739871896}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
-  _label: "Piso 6 \xB7 control 2"
-  _notify: 1
---- !u!65 &739871899
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 739871896}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 3.5, y: 2.4, z: 3.5}
-  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &754274020
 GameObject:
   m_ObjectHideFlags: 0
@@ -8346,74 +8298,6 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!1 &805218899
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 805218900}
-  - component: {fileID: 805218902}
-  - component: {fileID: 805218901}
-  m_Layer: 2
-  m_Name: F06_Checkpoint_01
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &805218900
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 805218899}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 12, y: 0.08332825, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 595228138}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &805218901
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 805218899}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
-  _label: "Piso 6 \xB7 control 1"
-  _notify: 1
---- !u!65 &805218902
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 805218899}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 3.5, y: 2.4, z: 3.5}
-  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &854973273
 GameObject:
   m_ObjectHideFlags: 0
@@ -9385,6 +9269,7 @@ GameObject:
   - component: {fileID: 919440587}
   - component: {fileID: 919440586}
   - component: {fileID: 919440585}
+  - component: {fileID: 919440589}
   m_Layer: 10
   m_Name: N5_Monitor
   m_TagString: Untagged
@@ -9500,6 +9385,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919440583}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &919440589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919440583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &921550539
 GameObject:
   m_ObjectHideFlags: 0
@@ -9643,6 +9542,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 614655296}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &946869999
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1020325271}
+    m_Modifications:
+    - target: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_Name
+      value: F06_Medkit_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.700001
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.10332824
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6755902
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7372773
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+--- !u!4 &946870000 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  m_PrefabInstance: {fileID: 946869999}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &946967409
 GameObject:
   m_ObjectHideFlags: 0
@@ -10141,6 +10102,39 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &1020325270
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1020325271}
+  m_Layer: 0
+  m_Name: F06_Medkits
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1020325271
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1020325270}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1647598610}
+  - {fileID: 946870000}
+  m_Father: {fileID: 505642290}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1020876105
 GameObject:
   m_ObjectHideFlags: 0
@@ -10812,7 +10806,7 @@ MonoBehaviour:
   _minHideTime: 0.6
   _lookYawLimit: 70
   _lookPitchLimit: 35
---- !u!1 &1117269919
+--- !u!1 &1106539662
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10820,31 +10814,66 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1117269920}
-  m_Layer: 0
-  m_Name: F06_GameplayPass
+  - component: {fileID: 1106539663}
+  - component: {fileID: 1106539665}
+  - component: {fileID: 1106539664}
+  m_Layer: 2
+  m_Name: F06_Checkpoint_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1117269920
+--- !u!4 &1106539663
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1117269919}
+  m_GameObject: {fileID: 1106539662}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 12, y: 0.08332825, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 595228138}
-  - {fileID: 1809644168}
-  m_Father: {fileID: 0}
+  m_Children: []
+  m_Father: {fileID: 2054397308}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1106539664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106539662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
+  _label: "Piso 6 \xB7 control 1"
+  _notify: 1
+--- !u!65 &1106539665
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106539662}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5, y: 2.4, z: 3.5}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &1137233809
 GameObject:
   m_ObjectHideFlags: 0
@@ -10948,6 +10977,74 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 0.9, z: 1.4}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1144734669
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1144734670}
+  - component: {fileID: 1144734672}
+  - component: {fileID: 1144734671}
+  m_Layer: 2
+  m_Name: F06_Checkpoint_02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1144734670
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144734669}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.5465859, z: -0, w: 0.83740306}
+  m_LocalPosition: {x: 3.3, y: 0.08332825, z: 7.166667}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2054397308}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1144734671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144734669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
+  _label: "Piso 6 \xB7 control 2"
+  _notify: 1
+--- !u!65 &1144734672
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1144734669}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.5, y: 2.4, z: 3.5}
+  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &1145093798
 GameObject:
   m_ObjectHideFlags: 0
@@ -12168,74 +12265,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1245584535}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1246590679
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1246590680}
-  - component: {fileID: 1246590682}
-  - component: {fileID: 1246590681}
-  m_Layer: 2
-  m_Name: F06_Checkpoint_03
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1246590680
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1246590679}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.66451436, z: -0, w: 0.7472755}
-  m_LocalPosition: {x: -4.5, y: 0.08332837, z: 1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 595228138}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1246590681
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1246590679}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b16bf2ddc22f5434c873571216d672fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Nexo::Nexo.Interaction.CheckpointTrigger
-  _label: "Piso 6 \xB7 control 3"
-  _notify: 1
---- !u!65 &1246590682
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1246590679}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 3.5, y: 2.4, z: 3.5}
-  m_Center: {x: 0, y: 1.2, z: 0}
 --- !u!1 &1252184591
 GameObject:
   m_ObjectHideFlags: 0
@@ -15609,6 +15638,68 @@ MonoBehaviour:
   _guaranteed: []
   _chanceDrop: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
   _chance: 0.35
+--- !u!1001 &1647598609
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1020325271}
+    m_Modifications:
+    - target: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_Name
+      value: F06_Medkit_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -13.233334
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.10332836
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.976296
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.21643962
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+--- !u!4 &1647598610 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
+  m_PrefabInstance: {fileID: 1647598609}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1655484060
 GameObject:
   m_ObjectHideFlags: 0
@@ -16742,68 +16833,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 856094881}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1723392282
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1809644168}
-    m_Modifications:
-    - target: {fileID: 1819235469447490748, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_Name
-      value: F06_Medkit_02
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 11.700001
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.10332824
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 7.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.6755902
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.7372773
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
---- !u!4 &1723392283 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1941574673448729630, guid: 30523b77f8139ec42922aad0c3583f80, type: 3}
-  m_PrefabInstance: {fileID: 1723392282}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1776506354
 GameObject:
   m_ObjectHideFlags: 0
@@ -17416,39 +17445,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1793710600}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1809644167
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1809644168}
-  m_Layer: 0
-  m_Name: F06_Medkits
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1809644168
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1809644167}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 628652360}
-  - {fileID: 1723392283}
-  m_Father: {fileID: 1117269920}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1854704199
 GameObject:
   m_ObjectHideFlags: 0
@@ -18036,6 +18032,7 @@ GameObject:
   - component: {fileID: 1903576944}
   - component: {fileID: 1903576943}
   - component: {fileID: 1903576942}
+  - component: {fileID: 1903576946}
   m_Layer: 10
   m_Name: N1_Aviso_Cuarentena
   m_TagString: Untagged
@@ -18151,6 +18148,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1903576940}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1903576946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903576940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &1903833743
 GameObject:
   m_ObjectHideFlags: 0
@@ -18388,6 +18399,7 @@ GameObject:
   - component: {fileID: 1926053428}
   - component: {fileID: 1926053427}
   - component: {fileID: 1926053426}
+  - component: {fileID: 1926053430}
   m_Layer: 10
   m_Name: N4_Informe_Sincronizados
   m_TagString: Untagged
@@ -18503,6 +18515,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1926053424}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1926053430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1926053424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &1950741453
 GameObject:
   m_ObjectHideFlags: 0
@@ -18916,6 +18942,7 @@ GameObject:
   - component: {fileID: 1988762421}
   - component: {fileID: 1988762420}
   - component: {fileID: 1988762419}
+  - component: {fileID: 1988762423}
   m_Layer: 10
   m_Name: N3_Pizarra
   m_TagString: Untagged
@@ -19031,6 +19058,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1988762417}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1988762423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1988762417}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &2005989363
 GameObject:
   m_ObjectHideFlags: 0
@@ -19232,6 +19273,7 @@ GameObject:
   - component: {fileID: 2018812059}
   - component: {fileID: 2018812058}
   - component: {fileID: 2018812057}
+  - component: {fileID: 2018812061}
   m_Layer: 10
   m_Name: N6_Nota_Suelta
   m_TagString: Untagged
@@ -19347,6 +19389,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2018812055}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2018812061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018812055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b510067ac5e7a4eb8bcb67a5fe10c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Nexo::Nexo.Interaction.InteractableHighlight
+  _glow: {r: 0.55, g: 0.5, b: 0.38, a: 1}
+  _renderers: []
 --- !u!1 &2022783509
 GameObject:
   m_ObjectHideFlags: 0
@@ -19571,6 +19627,40 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2041663044}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &2054397307
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2054397308}
+  m_Layer: 0
+  m_Name: F06_Checkpoints
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2054397308
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2054397307}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1106539663}
+  - {fileID: 1144734670}
+  - {fileID: 70210446}
+  m_Father: {fileID: 505642290}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2059145399
 GameObject:
   m_ObjectHideFlags: 0
@@ -20468,4 +20558,4 @@ SceneRoots:
   - {fileID: 1509739941}
   - {fileID: 736445170}
   - {fileID: 1097587963}
-  - {fileID: 1117269920}
+  - {fileID: 505642290}
