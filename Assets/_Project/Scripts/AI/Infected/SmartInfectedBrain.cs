@@ -100,11 +100,8 @@ namespace Nexo.AI.Infected
         };
 
         [Header("Daño (M1911)")]
+        [Tooltip("gameplay-pass: solo informativo; la vida real y el daño por zona salen de InfectedDamageRules.")]
         [SerializeField] private int _maxHealth = 3;
-        [Tooltip("Daño por disparo según la zona: torso / cabeza / piernas.")]
-        [SerializeField] private int _torsoDamage = 1;
-        [SerializeField] private int _headDamage = 3;
-        [SerializeField] private int _legDamage = 1;
         [Tooltip("Aturdimiento por zona: torso / cabeza / piernas (segundos).")]
         [SerializeField] private float _stunDuration = 0.6f;
         [SerializeField] private float _headStunDuration = 1.3f;
@@ -218,6 +215,8 @@ namespace Nexo.AI.Infected
             if (_visualRoot == null) _visualRoot = transform.Find("Body");
             if (_reactions == null) _reactions = GetComponent<InfectedHitReactions>();
             if (_memory == null) _memory = GetComponent<InfectedLearningMemory>();
+            // gameplay-pass: la vida sale de InfectedDamageRules (3 disparos al cuerpo, cabeza letal), no del prefab (6)
+            _maxHealth = InfectedDamageRules.MaxHealth(_behavior, 0);
             _health = _maxHealth;
             _homePosition = transform.position;
             _homeRotation = transform.rotation;
@@ -317,7 +316,9 @@ namespace Nexo.AI.Infected
             _mimicryEnabled = overrides.MimicryEnabled;
             _sabotageEnabled = overrides.SabotageEnabled;
             if (overrides.MimicMessages != null && overrides.MimicMessages.Length > 0) _mimicMessages = overrides.MimicMessages;
-            if (overrides.MaxHealth > 0) { _maxHealth = overrides.MaxHealth; _health = _maxHealth; }
+            // gameplay-pass: reptante 2 disparos al cuerpo, resto 3 (o el override del punto si es > 0)
+            _maxHealth = InfectedDamageRules.MaxHealth(_behavior, overrides.MaxHealth);
+            _health = _maxHealth;
             if (overrides.SightDistance > 0f) _sightDistance = overrides.SightDistance;
             if (overrides.HearingRange > 0f) _maxHearingRange = overrides.HearingRange;
             if (overrides.MimicryCooldown > 0f) _mimicryCooldown = overrides.MimicryCooldown;
@@ -433,7 +434,8 @@ namespace Nexo.AI.Infected
             if (_isDowned || _isDead) return;
 
             HitZone zone = _reactions != null ? _reactions.ResolveZone(_aimCamera) : HitZone.Torso;
-            int damage = zone == HitZone.Head ? _headDamage : zone == HitZone.Legs ? _legDamage : _torsoDamage;
+            // gameplay-pass: daño por zona de InfectedDamageRules (cabeza = letal, también sin revivir)
+            int damage = InfectedDamageRules.ShotDamage(zone, _health);
 
             LastKnownPlayerPos = shotOrigin;
             _awareness = 1f;
@@ -443,10 +445,12 @@ namespace Nexo.AI.Infected
 
             if (_health <= 0)
             {
-                if (_reviveAfterDowned) _downedRoutine = StartCoroutine(DownedRoutine());
+                GameEvents.RaiseHitConfirmed(true);
+                if (_reviveAfterDowned && zone != HitZone.Head) _downedRoutine = StartCoroutine(DownedRoutine());
                 else Die(shotOrigin);
                 return;
             }
+            GameEvents.RaiseHitConfirmed(false);
 
             float stun = zone == HitZone.Head ? _headStunDuration : zone == HitZone.Legs ? _legStunDuration : _stunDuration;
             if (zone == HitZone.Legs) _limpUntil = Time.time + _limpDuration;

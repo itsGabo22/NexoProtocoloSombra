@@ -77,6 +77,14 @@ namespace Nexo.Core
         public static event Action<string> OnCinematicStarted;
         /// <summary>Termina una cinemática (fin, salto o error): todo vuelve al estado previo.</summary>
         public static event Action<string> OnCinematicFinished;
+        /// <summary>El jugador cruza un punto de control (posición de reaparición, orientación y etiqueta).</summary>
+        public static event Action<Vector3, float, string> OnCheckpointReached;
+        /// <summary>Fundido a negro del HUD: opacidad destino (0-1) y duración en segundos (tiempo real).</summary>
+        public static event Action<float, float> OnScreenFade;
+        /// <summary>El jugador recupera vida (puntos sumados).</summary>
+        public static event Action<int> OnPlayerHealed;
+        /// <summary>Un ataque del jugador alcanza a un infectado (true si lo mata): marca de impacto del HUD.</summary>
+        public static event Action<bool> OnHitConfirmed;
 
         public static void RaiseNoiseChanged(float noise) => OnNoiseChanged?.Invoke(noise);
         public static void RaiseBatteryChanged(float battery) => OnBatteryChanged?.Invoke(battery);
@@ -105,6 +113,10 @@ namespace Nexo.Core
         public static void RaiseWeaponReloadChanged(bool isReloading) => OnWeaponReloadChanged?.Invoke(isReloading);
         public static void RaiseCinematicStarted(string id) => OnCinematicStarted?.Invoke(id);
         public static void RaiseCinematicFinished(string id) => OnCinematicFinished?.Invoke(id);
+        public static void RaiseCheckpointReached(Vector3 position, float yaw, string label) => OnCheckpointReached?.Invoke(position, yaw, label);
+        public static void RaiseScreenFade(float alpha, float seconds) => OnScreenFade?.Invoke(alpha, seconds);
+        public static void RaisePlayerHealed(int points) => OnPlayerHealed?.Invoke(points);
+        public static void RaiseHitConfirmed(bool killed) => OnHitConfirmed?.Invoke(killed);
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetAll()
@@ -136,6 +148,10 @@ namespace Nexo.Core
             OnWeaponReloadChanged = null;
             OnCinematicStarted = null;
             OnCinematicFinished = null;
+            OnCheckpointReached = null;
+            OnScreenFade = null;
+            OnPlayerHealed = null;
+            OnHitConfirmed = null;
         }
     }
 }

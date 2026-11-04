@@ -65,6 +65,13 @@ namespace Nexo.UI
         private VisualElement _debug;
         private VisualElement _capture;
         private VisualElement _crosshair;
+        private VisualElement _fade;
+        private IVisualElementScheduledItem _fadeStep;
+        private float _fadeFrom;
+        private float _fadeTo;
+        private float _fadeStart;
+        private float _fadeSeconds;
+        private IVisualElementScheduledItem _hitMarkerEnd;
         private VisualElement _portrait;
         private VisualElement _trustFill;
         private VisualElement _batteryFill;
@@ -159,6 +166,8 @@ namespace Nexo.UI
             GameEvents.OnAmmoPicked += HandleAmmoPicked;
             GameEvents.OnCinematicStarted += HandleCinematicStarted;
             GameEvents.OnCinematicFinished += HandleCinematicFinished;
+            GameEvents.OnScreenFade += HandleScreenFade;
+            GameEvents.OnHitConfirmed += HandleHitConfirmed;
             AccessibilitySettings.Changed += HandleAccessibilityChanged;
             HandleAccessibilityChanged(AccessibilitySettings.Current);
 
@@ -195,7 +204,12 @@ namespace Nexo.UI
             GameEvents.OnAmmoPicked -= HandleAmmoPicked;
             GameEvents.OnCinematicStarted -= HandleCinematicStarted;
             GameEvents.OnCinematicFinished -= HandleCinematicFinished;
+            GameEvents.OnScreenFade -= HandleScreenFade;
+            GameEvents.OnHitConfirmed -= HandleHitConfirmed;
             AccessibilitySettings.Changed -= HandleAccessibilityChanged;
+            _fadeStep?.Pause();
+            _hitMarkerEnd?.Pause();
+            if (_fade != null) _fade.style.opacity = 0f;
             if (_hiddenByCinematic) HandleCinematicFinished(string.Empty);
 
             for (int i = 0; i < _quick.Length; i++)
@@ -261,6 +275,7 @@ namespace Nexo.UI
             _debug = _root.Q<VisualElement>("hud-debug");
             _capture = _root.Q<VisualElement>("hud-capture");
             _crosshair = _root.Q<VisualElement>("hud-crosshair");
+            BuildFadeOverlay();
 
             for (int i = 0; i < _quick.Length; i++)
             {
@@ -446,6 +461,59 @@ namespace Nexo.UI
 
         /// <summary>«+N» junto al nombre del arma y un pulso breve del panel (sin pulso con reducir movimiento).</summary>
         /// <summary>Durante una cinemática se oculta todo el HUD; al terminar recupera el display que tenía.</summary>
+        /// <summary>Capa negra a pantalla completa para el fundido de reaparición (creada por código, no bloquea el ratón).</summary>
+        private void BuildFadeOverlay()
+        {
+            if (_fade != null) return;
+            _fade = new VisualElement { name = "hud-fade", pickingMode = PickingMode.Ignore };
+            _fade.style.position = Position.Absolute;
+            _fade.style.left = 0; _fade.style.right = 0; _fade.style.top = 0; _fade.style.bottom = 0;
+            _fade.style.backgroundColor = Color.black;
+            _fade.style.opacity = 0f;
+            _root.Add(_fade);
+        }
+
+        private void HandleScreenFade(float alpha, float seconds)
+        {
+            if (_fade == null) return;
+            _fade.BringToFront();
+            _fadeStep?.Pause();
+            _fadeFrom = _fade.resolvedStyle.opacity;
+            _fadeTo = Mathf.Clamp01(alpha);
+            _fadeStart = Time.unscaledTime;
+            _fadeSeconds = Mathf.Max(0f, seconds);
+            if (_fadeSeconds <= 0f || _reduceMotion) { _fade.style.opacity = _fadeTo; return; }
+            _fadeStep = _fade.schedule.Execute(StepFade).Every(16).Until(FadeDone);
+        }
+
+        private void StepFade()
+        {
+            float k = Mathf.Clamp01((Time.unscaledTime - _fadeStart) / _fadeSeconds);
+            _fade.style.opacity = Mathf.Lerp(_fadeFrom, _fadeTo, k);
+        }
+
+        private bool FadeDone()
+        {
+            bool done = Time.unscaledTime - _fadeStart >= _fadeSeconds;
+            if (done) _fade.style.opacity = _fadeTo;
+            return done;
+        }
+
+        /// <summary>Marca de impacto: la mira crece un instante (más si el disparo mata).</summary>
+        private void HandleHitConfirmed(bool killed)
+        {
+            if (_crosshair == null) return;
+            float scale = killed ? 1.9f : 1.45f;
+            _crosshair.style.scale = new Scale(new Vector3(scale, scale, 1f));
+            _hitMarkerEnd?.Pause();
+            _hitMarkerEnd = _crosshair.schedule.Execute(EndHitMarker).StartingIn(killed ? 180 : 110);
+        }
+
+        private void EndHitMarker()
+        {
+            if (_crosshair != null) _crosshair.style.scale = StyleKeyword.Null;
+        }
+
         private void HandleCinematicStarted(string id)
         {
             if (_root == null || _hiddenByCinematic) return;
