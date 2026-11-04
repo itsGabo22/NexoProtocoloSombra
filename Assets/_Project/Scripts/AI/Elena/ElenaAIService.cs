@@ -142,6 +142,9 @@ namespace Nexo.AI.Elena
             ElenaResponse response = ElenaReplyResolver.Pick(remote, remote != null ? (_remoteProvider as GeminiProvider)?.LastModel : null,
                 () => _fallbackProvider?.Get(context.floor, intentKey), out bool usedFallback);
             Debug.Log($"[ElenaAIService] Respuesta de Elena desde: {response.source}");
+            // Cambio de Gabriel (2026-11-04): con Gemini en vivo, [2] debe abrir la puerta del guion igual que el respaldo (sin bloqueos)
+            if (!usedFallback && _fallbackProvider != null && ElenaReplyResolver.KeepScriptedUnlock(response, _fallbackProvider.Get(context.floor, intentKey)))
+                Debug.Log($"[ElenaAIService] Orden del guion conservada: {response.ui_action} {response.target_id}");
 
             RememberTurn(questionText, response.dialogue);
 

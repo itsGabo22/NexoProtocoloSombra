@@ -63,6 +63,30 @@ namespace Nexo.Tests
         }
 
         [Test]
+        public void ScriptedUnlock_AddedWhenLiveReplyMissesIt()
+        {
+            ElenaResponse live = Valid("Voy a intentarlo, Alex.");
+            var scripted = new ElenaResponse { dialogue = "Abro las escaleras.", emotion = "calm", ui_action = "UNLOCK_DOOR", target_id = "F06_Door_Stairs", trust_level = 60 };
+            Assert.IsTrue(ElenaReplyResolver.KeepScriptedUnlock(live, scripted));
+            Assert.AreEqual("UNLOCK_DOOR", live.ui_action);
+            Assert.AreEqual("F06_Door_Stairs", live.target_id);
+            Assert.AreEqual("Voy a intentarlo, Alex.", live.dialogue, "se conserva el diálogo de Gemini");
+        }
+
+        [Test]
+        public void ScriptedUnlock_NotAddedWhenAlreadyPresentOrNotScripted()
+        {
+            var scripted = new ElenaResponse { dialogue = "x", emotion = "calm", ui_action = "UNLOCK_DOOR", target_id = "F06_Door_Stairs" };
+            var live = new ElenaResponse { dialogue = "y", emotion = "calm", ui_action = "unlock_door", target_id = "f06_door_stairs" };
+            Assert.IsFalse(ElenaReplyResolver.KeepScriptedUnlock(live, scripted));
+            ElenaResponse other = Valid();
+            Assert.IsFalse(ElenaReplyResolver.KeepScriptedUnlock(other, Valid("sin orden")));
+            Assert.AreEqual("none", other.ui_action);
+            Assert.IsFalse(ElenaReplyResolver.KeepScriptedUnlock(null, scripted));
+            Assert.IsFalse(ElenaReplyResolver.KeepScriptedUnlock(other, null));
+        }
+
+        [Test]
         public void ModelOrder_Dialog_PrimaryThenFallbacksWithoutDuplicates()
         {
             var order = GeminiModelOrder.Dialog("gemini-3.8-flash", new[] { "gemini-3.5-flash-lite", " ", "gemini-3.8-flash", "gemini-3.5-flash-lite" });
