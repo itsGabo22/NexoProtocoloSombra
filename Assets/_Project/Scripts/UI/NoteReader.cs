@@ -98,6 +98,11 @@ namespace Nexo.UI
             VisualElement root = document != null ? document.rootVisualElement : null;
             if (root == null || _overlay != null) return;
 
+            // fix (Carlos, 2026-11-04): este UIDocument está en la raíz de PF_HUD, así que el HUD, la terminal y la rueda
+            // de órdenes quedan anidados dentro y su raíz medía 0 px de alto (HUD aplastado arriba). Se estiran al panel
+            // en el siguiente fotograma, cuando ya existen sus raíces.
+            root.schedule.Execute(StretchNestedDocuments);
+
             _overlay = new VisualElement { name = "hud-note-overlay", pickingMode = PickingMode.Position };
             Stretch(_overlay);
             _overlay.style.backgroundColor = new Color(0f, 0f, 0f, 0.72f);
@@ -168,6 +173,18 @@ namespace Nexo.UI
             root.Add(_overlay);
         }
 
+        /// <summary>Estira al panel la raíz de cada UIDocument hijo (anidado en el de PF_HUD).</summary>
+        private void StretchNestedDocuments()
+        {
+            UIDocument own = GetComponent<UIDocument>();
+            foreach (UIDocument child in GetComponentsInChildren<UIDocument>(true))
+            {
+                if (child == own || child.rootVisualElement == null) continue;
+                Stretch(child.rootVisualElement);
+                child.rootVisualElement.pickingMode = PickingMode.Ignore;
+            }
+        }
+
         private static void Stretch(VisualElement e)
         {
             e.style.position = Position.Absolute;
@@ -198,6 +215,7 @@ namespace Nexo.UI
             _body.text = HudTextSanitizer.Humanize(body.Trim());
             _scroll.scrollOffset = Vector2.zero;
             _overlay.style.display = DisplayStyle.Flex;
+            _overlay.BringToFront(); // por encima del HUD anidado
             _overlay.BringToFront();
             // «Coger» la hoja: sube desde abajo con un leve giro
             _sheet.style.translate = new Translate(0, Length.Percent(60));
@@ -271,6 +289,7 @@ namespace Nexo.UI
                 _journalList.Add(row);
             }
             _journal.style.display = DisplayStyle.Flex;
+            _journal.BringToFront();
             _journal.BringToFront();
             IsJournalOpen = true;
             _openedFrame = Time.frameCount;
