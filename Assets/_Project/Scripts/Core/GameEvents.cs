@@ -68,6 +68,8 @@ namespace Nexo.Core
         public static event Action<int> OnInfectedNearbyChanged;
         public static event Action<int> OnAmmoPicked;
         public static event Action<string> OnPlayerSpoke;
+        /// <summary>Estado de la entrada de voz [V] para la HUD (ESCUCHANDO..., PROCESANDO..., errores). Vacío = ocultar.</summary>
+        public static event Action<string> OnVoiceStatus;
         public static event Action<Transform> OnPlayerAttacked;
         /// <summary>Munición del arma tras cualquier cambio: cargador, reserva y tamaño del cargador (panel de arma del HUD).</summary>
         public static event Action<int, int, int> OnAmmoChanged;
@@ -110,6 +112,7 @@ namespace Nexo.Core
         public static void RaiseInfectedNearbyChanged(int count) => OnInfectedNearbyChanged?.Invoke(count);
         public static void RaiseAmmoPicked(int rounds) => OnAmmoPicked?.Invoke(rounds);
         public static void RaisePlayerSpoke(string text) => OnPlayerSpoke?.Invoke(text);
+        public static void RaiseVoiceStatus(string text) => OnVoiceStatus?.Invoke(text);
         public static void RaisePlayerAttacked(Transform attacker) => OnPlayerAttacked?.Invoke(attacker);
         public static void RaiseAmmoChanged(int magazine, int reserve, int magazineSize) => OnAmmoChanged?.Invoke(magazine, reserve, magazineSize);
         public static void RaiseWeaponReloadChanged(bool isReloading) => OnWeaponReloadChanged?.Invoke(isReloading);
@@ -146,6 +149,7 @@ namespace Nexo.Core
             OnInfectedNearbyChanged = null;
             OnAmmoPicked = null;
             OnPlayerSpoke = null;
+            OnVoiceStatus = null;
             OnPlayerAttacked = null;
             OnAmmoChanged = null;
             OnWeaponReloadChanged = null;
