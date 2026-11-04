@@ -45,6 +45,8 @@
                 <ui:Label name="cr-locomotion-value" text="Starter Assets, plantilla de Unity Learn (Unity Technologies) · Unity Companion License" class="body text-main wrap nx-mb-24" />
                 <ui:Label name="cr-building-label" text="EDIFICIO DE OFICINAS Y ENTORNO" class="label text-muted nx-mb-4" />
                 <ui:Label name="cr-building-value" text="Polygon Office Building (Unity Asset Store) · Standard Unity Asset Store EULA" class="body text-main wrap nx-mb-24" />
+                <ui:Label name="cr-cinematics-label" text="CINEMÁTICAS" class="label text-muted nx-mb-4" />
+                <ui:Label name="cr-cinematics-value" text="Generadas con IA (Gemini y Veo, Google)" class="body text-main wrap nx-mb-24" />
             </ui:VisualElement>
         </ui:VisualElement>
 
