@@ -43,7 +43,7 @@ Actualizada el 2026-11-03 (integración final). Sustituye a la versión anterior
 
 ## 4. Elena (Gemini + fallback)
 
-- `Data/ElenaConfig.asset`: modelo `gemini-2.5-flash`, timeout 6 s, `_forceFallback` (en el repo queda en **false** para que Gemini funcione en el Editor; ponlo en **true** solo para generar el build de entrega y restáuralo después).
+- `Data/ElenaConfig.asset`: modelo `gemini-2.5-flash`, timeout 6 s, `_forceFallback` (en el repo queda en **false** para que Gemini funcione en el Editor; **Nexo › Build › Windows** lo pone en true, quita `_secrets` y activa `EnableDemoShortcuts` de `PF_Player` solo durante el build, y restaura ambos archivos byte a byte al terminar).
 - La clave vive en `ElenaSecrets.asset` dentro de `Data/Secrets/` (ignorado). Sin clave, sin red o con JSON inválido entra el fallback (`fallback_floor12/06/01`).
 - `ElenaUiCommandRouter` solo abre puertas cuyo `target_id` esté en `available_doors`.
 
@@ -75,5 +75,5 @@ Actualizada el 2026-11-03 (integración final). Sustituye a la versión anterior
 - `Camera_Capture` no dibuja lo que vive en `Systems_Persistent` (jugador, arma, HUD). Para ver el arma, renderiza la Main Camera a un `RenderTexture` desde `RunCommand`; para ver el HUD usa `ScreenCapture.CaptureScreenshot` y espera un frame.
 - `ReadConsole` ignora filtros de fecha y devuelve máx. 200 entradas.
 - El puente se cae ~20 s en recompilaciones, al entrar en Play y durante builds: espera y reintenta una vez.
-- Con el Editor sin foco, Play no avanza: `Application.runInBackground = true` en Play, y al salir **`PlayerSettings.runInBackground = false`** (si no, ProjectSettings queda modificado).
+- Con el Editor sin foco, Play no avanza: `Application.runInBackground = true` en Play, y al salir deja **`PlayerSettings.runInBackground = true`** (valor del repo desde 2026-11-03; si no, ProjectSettings queda modificado).
 - Nunca dejes el Editor en Play. Guarda las escenas tras editarlas. Ignora el error rojo `manager != NULL` (bug del Hierarchy de Unity 6.6).
