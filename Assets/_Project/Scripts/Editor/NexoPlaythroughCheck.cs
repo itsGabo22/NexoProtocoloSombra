@@ -268,6 +268,9 @@ namespace Nexo.EditorTools
             CheckNewGame("JUGAR (1.ª partida)");
             yield return ElenaQuickQuestions(12);
 
+            // ---- Mecánicas del pase de jugabilidad (2026-11-04) ----
+            yield return NewMechanicsFloor12();
+
             // ---- Clip corrupto: error o tiempo de preparación agotado, nunca bloquea ----
             yield return CorruptClipCheck();
 
@@ -303,6 +306,10 @@ namespace Nexo.EditorTools
             {
                 hiding.Interact();
                 Check(PlayerHiding.IsHidden, "HidingSpot.Interact esconde al jugador");
+                // Mirada limitada dentro del escondite (±70° / ±35°)
+                Check(Movement().IsLookLimited, "dentro del escondite la mirada queda limitada");
+                Check(Mathf.Approximately(LookLimits.Clamp(120f, LookLimits.HidingYaw), 70f) && Mathf.Approximately(LookLimits.Clamp(-80f, LookLimits.HidingPitch), -35f),
+                    "límites de mirada en el escondite: ±70° horizontal / ±35° vertical");
             }
             MarkTrigger();
             Check(FloorProgression.Active.LoadNext(), "FloorProgression.LoadNext acepta 6 → 1");
@@ -527,6 +534,270 @@ namespace Nexo.EditorTools
             Check(health.Hits == hits, "Espacio para saltar no cuenta como empujón fallido (sin golpe)");
             Check(!Movement().IsInputLocked, "control devuelto tras la cinemática");
             yield return WaitSeconds(1.0);
+        }
+
+        // ---------- Mecánicas del pase de jugabilidad ----------
+
+        private static int _jumps;
+        private static void HandleJumped() => _jumps++;
+
+        /// <summary>
+        /// Verifica en Play, por los componentes que usa la entrada real, las mecánicas del pase de jugabilidad:
+        /// aviso de controles, voces 51/51, figura de Elena, notas y diario, texto a Elena, cola de mensajes, voz,
+        /// caída con punto de control, botiquín, empujón, cuchillo (botín y ejecución por la espalda) y salto.
+        /// Donde la entrada de teclado no llega al juego (Editor sin foco) se usa el método público del componente.
+        /// </summary>
+        private static IEnumerator NewMechanicsFloor12()
+        {
+            Log("== Mecánicas nuevas (Piso 12) ==");
+            PlayerMovement movement = Movement();
+            PlayerHealth health = PlayerHealth.Current;
+            Check(movement != null && health != null, "jugador y vida disponibles");
+            if (movement == null || health == null) yield break;
+
+            // Aviso de controles con las teclas nuevas
+            string hint = ControlsHint.Text;
+            Check(hint.Contains("Espacio saltar") && hint.Contains("G empujar") && hint.Contains("X cuchillo") && hint.Contains("J diario") && hint.Contains("T escribir"),
+                "el aviso de controles incluye Espacio, G, X, J y T");
+
+            // Voces de Elena: 51/51 líneas con clip
+            ElenaVoiceLibrary library = ElenaVoiceLibrary.Instance;
+            int withClip = 0;
+            if (library != null) foreach (ElenaVoiceLibrary.Entry e in library.Entries) if (e.Clip != null) withClip++;
+            Check(library != null && withClip == library.Entries.Count && withClip >= 51, $"voz de Elena: {withClip}/{(library != null ? library.Entries.Count : 0)} líneas con clip");
+
+            // Figura de Elena tras el cristal; primitivas azules ocultas
+            ElenaVisualIdle visual = FindInScene<ElenaVisualIdle>("Floor12_Offices");
+            Check(visual != null && visual.gameObject.activeInHierarchy, "figura de Elena visible tras el cristal del Piso 12");
+            ElenaCompanion companion = FindInScene<ElenaCompanion>("Floor12_Offices");
+            if (companion != null)
+            {
+                int bluePrimitives = 0;
+                foreach (MeshRenderer r in companion.GetComponentsInChildren<MeshRenderer>(true))
+                {
+                    if (visual != null && r.transform.IsChildOf(visual.transform)) continue;
+                    if (r.enabled && r.gameObject.activeInHierarchy) bluePrimitives++;
+                }
+                Check(bluePrimitives == 0, $"cápsula azul de Elena oculta ({bluePrimitives} primitivas visibles)");
+            }
+            Check(CountInScene<ElenaVisualIdle>("Floor06_Labs") == 0 && CountInScene<ElenaVisualIdle>("Floor01_Lobby") == 0,
+                "la figura de Elena solo existe en el Piso 12");
+
+            // Notas: papel a pantalla completa, diario sin duplicados
+            LoreNote note = FindInScene<LoreNote>("Floor12_Offices");
+            NoteReader reader = NoteReader.Current;
+            if (note != null && reader != null)
+            {
+                int before = NoteJournal.Count;
+                note.Interact();
+                yield return WaitSeconds(0.3);
+                Check(reader.IsReading, "leer una nota abre el papel a pantalla completa");
+                Check(NoteJournal.Count == before + 1 || NoteJournal.Count == before, $"la nota entra en el diario ({before} → {NoteJournal.Count})");
+                reader.Close();
+                yield return WaitSeconds(0.2);
+                Check(!reader.IsReading, "la nota se cierra");
+                int afterFirst = NoteJournal.Count;
+                note.Interact();
+                yield return WaitSeconds(0.2);
+                reader.Close();
+                Check(NoteJournal.Count == afterFirst, "releer la misma nota no la duplica en el diario");
+                reader.ShowJournal();
+                yield return WaitSeconds(0.2);
+                Check(reader.IsJournalOpen, $"el diario [J] se abre ({NoteJournal.Count} notas)");
+                reader.CloseJournal();
+                yield return WaitSeconds(0.2);
+                Check(!reader.IsJournalOpen && !movement.IsInputLocked, "el diario se cierra y devuelve el control");
+            }
+            else Fail("no hay LoreNote o NoteReader en el Piso 12");
+
+            // Texto a Elena [T] (sin clave: responde el modo offline)
+            ElenaTextInput typed = Object.FindAnyObjectByType<ElenaTextInput>();
+            if (typed != null)
+            {
+                int responses = _elenaResponses;
+                Check(typed.DebugOpenWith("¿Por dónde salgo?"), "[T] abre la caja de texto para Elena");
+                Check(typed.IsOpen, "caja de texto abierta");
+                typed.Submit();
+                yield return WaitFor(() => _elenaResponses > responses, 12, "Elena responde al texto escrito (modo offline)");
+                if (typed.IsOpen) typed.Close();
+                yield return WaitSeconds(0.2);
+                Check(!typed.IsOpen && !movement.IsInputLocked, "la caja de texto se cierra y devuelve el control");
+            }
+            else Fail("no hay ElenaTextInput");
+
+            // Cola de mensajes: una línea larga se mantiene; un aviso de daño pasa delante
+            SubtitleController subtitles = Object.FindAnyObjectByType<SubtitleController>();
+            if (subtitles != null)
+            {
+                const string longLine = "ELENA: Alex, escúchame bien, no corras por el pasillo: el ruido de los pasos se oye en todo el piso. Ve despacio.";
+                GameEvents.RaiseSubtitle(string.Empty); // vacía la cola (la respuesta al texto escrito puede seguir en pantalla)
+                yield return null;
+                GameEvents.RaiseSubtitle(longLine);
+                yield return WaitSeconds(2.0);
+                Check(subtitles.CurrentText == longLine, "una línea larga de Elena sigue en pantalla a los 2 s");
+                GameEvents.RaiseSubtitle("(Te golpean: 1/4)");
+                yield return WaitSeconds(0.1);
+                Check(subtitles.CurrentText == "(Te golpean: 1/4)", "un aviso de daño pasa delante de la cola");
+            }
+            else Fail("no hay SubtitleController");
+
+            // Voz de Elena con el tratamiento de radio
+            ElenaVoicePlayer voice = Object.FindAnyObjectByType<ElenaVoicePlayer>();
+            if (voice != null && library != null && library.Entries.Count > 0)
+            {
+                int played = voice.ClipsPlayed;
+                voice.Speak(library.Entries[0].Text, "CALM", false);
+                yield return WaitSeconds(0.3);
+                Check(voice.ClipsPlayed == played + 1 && voice.IsSpeaking, "la voz de Elena se reproduce");
+                var source = voice.GetComponent<AudioSource>();
+                Check(source == null || (source.GetComponent<AudioHighPassFilter>() != null && source.GetComponent<AudioLowPassFilter>() != null) || voice.GetComponentInChildren<AudioLowPassFilter>(true) != null,
+                    "la voz pasa por el filtro de radio (paso alto y paso bajo)");
+            }
+            else Fail("no hay ElenaVoicePlayer o biblioteca de voces");
+
+            // Caída: fundido, reaparece en el punto de control y pierde 1 vida
+            PlayerCheckpoints checkpoints = movement.GetComponent<PlayerCheckpoints>();
+            if (checkpoints != null)
+            {
+                health.ResetFull();
+                yield return WaitSeconds(3.0); // el seguimiento del suelo seguro necesita unos segundos
+                int respawns = checkpoints.FallRespawns;
+                int points = health.Points;
+                Vector3 start = movement.transform.position;
+                movement.TeleportTo(start + Vector3.down * 12f, movement.transform.eulerAngles.y);
+                yield return WaitFor(() => checkpoints.FallRespawns > respawns && !checkpoints.IsRespawning, 8, "la caída dispara el punto de control");
+                Check(health.Points == points - 1, $"la caída cuesta 1 vida ({points} → {health.Points})");
+                Check(movement.transform.position.y > start.y - 3f, $"reaparece sobre el suelo (y {movement.transform.position.y:0.0})");
+                Check(!movement.IsInputLocked, "control devuelto tras reaparecer");
+
+                // Botiquín: +1 vida y tope
+                MedkitPickup medkit = null;
+                foreach (MedkitPickup m in Object.FindObjectsByType<MedkitPickup>(FindObjectsInactive.Exclude))
+                {
+                    if (m.gameObject.scene.name == "Floor12_Offices") { medkit = m; break; }
+                }
+                if (medkit != null)
+                {
+                    int p = health.Points;
+                    medkit.Interact();
+                    yield return WaitSeconds(0.2);
+                    Check(health.Points == Mathf.Min(health.MaxPoints, p + 1) && !medkit.gameObject.activeSelf, $"botiquín: +1 vida ({p} → {health.Points}) y desaparece");
+                    MedkitPickup second = null;
+                    foreach (MedkitPickup m in Object.FindObjectsByType<MedkitPickup>(FindObjectsInactive.Exclude))
+                    {
+                        if (m.gameObject.scene.name == "Floor12_Offices") { second = m; break; }
+                    }
+                    if (second != null && health.Points == health.MaxPoints)
+                    {
+                        second.Interact();
+                        yield return WaitSeconds(0.2);
+                        Check(health.Points == health.MaxPoints && second.gameObject.activeSelf, "con la vida al máximo el botiquín no se gasta");
+                    }
+                }
+                else Fail("no hay botiquín en el Piso 12");
+            }
+            else Fail("el jugador no tiene PlayerCheckpoints");
+
+            // Empujón [G]: aparta al infectado, tiene enfriamiento y rompe un agarre
+            PlayerShove shove = movement.GetComponent<PlayerShove>();
+            // El botín vive en el InfectedSpawnPoint (InfectedLootDrop), no en el infectado que genera
+            SmartInfectedBrain looter = null, other = null;
+            foreach (InfectedLootDrop loot in Object.FindObjectsByType<InfectedLootDrop>(FindObjectsInactive.Exclude))
+            {
+                if (loot.gameObject.scene.name != "Floor12_Offices") continue;
+                var spawn = loot.GetComponent<InfectedSpawnPoint>();
+                if (spawn == null || spawn.Instance == null || spawn.Instance.IsDead) continue;
+                foreach (GameObject g in loot.Guaranteed) if (g != null && g.GetComponentInChildren<KnifePickup>(true) != null) looter = spawn.Instance;
+            }
+            foreach (SmartInfectedBrain b in Object.FindObjectsByType<SmartInfectedBrain>(FindObjectsInactive.Exclude))
+            {
+                if (b.gameObject.scene.name == "Floor12_Offices" && !b.IsDead && b != looter) { other = b; break; }
+            }
+            Check(looter != null, "un infectado del Piso 12 lleva el cuchillo como botín");
+            if (shove != null && other != null)
+            {
+                Transform view = movement.GetComponentInChildren<Camera>().transform;
+                Vector3 front = Flat(view.forward).normalized;
+                yield return WaitSeconds(1.6); // por si el enfriamiento seguía activo (antes de colocarlo: si no, se acerca o se aleja)
+                other.Agent.Warp(movement.transform.position + front * 1.3f);
+                Physics.SyncTransforms(); // Warp mueve el transform; el collider no se actualiza hasta el siguiente paso de física
+                float before = Vector3.Distance(Flat(other.transform.position), Flat(movement.transform.position));
+                bool shoved = shove.TryShove();
+                Check(shoved, "[G] empuja al infectado que tienes delante");
+                if (!shoved)
+                {
+                    Log($"  diagnóstico: ready={shove.IsReady} hotkeys={UiTextEntry.BlocksHotkeys} timeScale={Time.timeScale} locked={movement.IsInputLocked} hidden={PlayerHiding.IsHidden} " +
+                        $"overlap={Physics.OverlapSphere(movement.transform.position + Vector3.up, MeleeRules.ShoveRange + 0.5f, (1 << 0) | (1 << 9), QueryTriggerInteraction.Ignore).Length}");
+                }
+                yield return WaitSeconds(0.5);
+                float after = Vector3.Distance(Flat(other.transform.position), Flat(movement.transform.position));
+                Check(after > before + 0.3f, $"el empujón lo aparta ({before:0.00} → {after:0.00} m)");
+                Check(!shove.TryShove(), "el empujón tiene enfriamiento");
+
+                StruggleQTE struggle = movement.GetComponent<StruggleQTE>();
+                if (struggle != null)
+                {
+                    yield return WaitSeconds(1.7);
+                    struggle.Begin(other);
+                    yield return WaitSeconds(0.2);
+                    Check(struggle.IsActive, "forcejeo iniciado");
+                    Check(shove.TryShove(), "[G] durante el agarre lo rompe");
+                    yield return WaitSeconds(0.3);
+                    Check(!struggle.IsActive && !movement.IsInputLocked, "tras romper el agarre el jugador recupera el control");
+                }
+            }
+            else Fail("no hay PlayerShove o infectado para probar el empujón");
+
+            // Cuchillo [X]: botín del patrullero y ejecución silenciosa por la espalda
+            PlayerKnife knife = PlayerKnife.Current;
+            if (knife != null && looter != null)
+            {
+                knife.SetHasKnife(false);
+                looter.ApplyMeleeHit(movement.transform.position, true);
+                yield return WaitSeconds(0.6);
+                Check(looter.IsDead, "el patrullero cae (ejecución)");
+                KnifePickup pickup = null;
+                foreach (KnifePickup k in Object.FindObjectsByType<KnifePickup>(FindObjectsInactive.Exclude)) { pickup = k; break; }
+                Check(pickup != null, "al morir suelta el cuchillo");
+                if (pickup != null)
+                {
+                    pickup.Interact();
+                    Check(knife.HasKnife && !pickup.gameObject.activeSelf, "[E] recoge el cuchillo");
+                }
+                if (other != null && !other.IsDead)
+                {
+                    Vector3 behind = other.transform.position - other.transform.forward * 1.2f;
+                    bool stealth = MeleeRules.IsStealthTakedown(false, other.transform.forward, other.transform.position, behind);
+                    Check(stealth, "desde la espalda y sin ser visto cuenta como ejecución silenciosa");
+                    Check(!MeleeRules.IsStealthTakedown(false, other.transform.forward, other.transform.position, other.transform.position + other.transform.forward * 1.2f),
+                        "de frente no es ejecución silenciosa");
+                }
+                Check(HudAmmoPanelIntact(), "el panel del arma sigue mostrando la munición con el cuchillo");
+            }
+            else Fail("no hay PlayerKnife o patrullero con cuchillo");
+
+            // Salto [Espacio]
+            movement.Jumped -= HandleJumped;
+            movement.Jumped += HandleJumped;
+            _jumps = 0;
+            yield return WaitSeconds(0.6);
+            yield return PressKey(Key.Space);
+            yield return WaitSeconds(0.4);
+            if (_keySimulationWorks) Check(_jumps == 1, $"[Espacio] salta una vez ({_jumps})");
+            else Log("NOTA: el teclado simulado no llega al juego con el Editor sin foco; el salto queda cubierto por JumpRules (EditMode) y por la prueba manual.");
+            movement.Jumped -= HandleJumped;
+
+            health.ResetFull();
+        }
+
+        private static bool HudAmmoPanelIntact()
+        {
+            HUDController hud = Object.FindAnyObjectByType<HUDController>();
+            if (hud == null) return false;
+            UIDocument doc = hud.GetComponent<UIDocument>();
+            if (doc == null || doc.rootVisualElement == null) return false;
+            VisualElement panel = doc.rootVisualElement.Q<VisualElement>("hud-weapon");
+            return panel == null || panel.resolvedStyle.display != DisplayStyle.None;
         }
 
         private static IEnumerator Floor06Checks()
@@ -896,7 +1167,10 @@ namespace Nexo.EditorTools
             {
                 Fail($"{kind} con id técnico: «{text}»");
             }
-            if (!_twistStarted && !NarrativeEvents.TwistHasPlayed && (upper.Contains("98.4") || (upper.Contains("INFECTAD") && !upper.Contains("NO INFECTAD"))))
+            // «Infectados» en plural son los enemigos (p. ej. el contador de la persiana del Piso 12) y no revela nada de Alex;
+            // el singular sí (salvo la mentira del HUD, «NO INFECTADO»).
+            string aboutAlex = upper.Replace("NO INFECTAD", string.Empty).Replace("INFECTADOS", string.Empty);
+            if (!_twistStarted && !NarrativeEvents.TwistHasPlayed && (upper.Contains("98.4") || aboutAlex.Contains("INFECTAD")))
             {
                 Fail($"{kind} revela la infección antes del giro: «{text}»");
             }
